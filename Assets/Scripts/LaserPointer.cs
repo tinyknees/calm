@@ -10,7 +10,7 @@ public class LaserPointer : MonoBehaviour
         public uint flags;
         public float distance;
         public Transform target;
-        public Vector2 textureCoord2;
+        public Vector2 textureCoord;
     }
 
     public delegate void PointerEventHandler(object sender, PointerEventArgs e);
@@ -41,7 +41,7 @@ public class LaserPointer : MonoBehaviour
     protected Transform previousContact = null;
 
     private SteamVR_TrackedController controller;
-    private Vector2 prevTextureCoord2;
+    private Vector2 prevTextureCoord;
     private float prevDistance;
 
     // Unity lifecycle method
@@ -149,7 +149,7 @@ public class LaserPointer : MonoBehaviour
             argsOut.distance = 0f;
             argsOut.flags = 0;
             argsOut.target = previousContact;
-            argsOut.textureCoord2 = hitInfo.textureCoord;
+            argsOut.textureCoord = hitInfo.textureCoord;
             OnPointerOut(argsOut);
             previousContact = null;
         }
@@ -162,20 +162,19 @@ public class LaserPointer : MonoBehaviour
             {
                 argsIn.controllerIndex = controller.controllerIndex;
             }
-            Debug.Log(hitInfo.transform);
             argsIn.distance = hitInfo.distance;
             argsIn.flags = 0;
             argsIn.target = hitInfo.transform;
-            argsIn.textureCoord2 = hitInfo.textureCoord2;
+            argsIn.textureCoord = hitInfo.textureCoord;
             OnPointerIn(argsIn);
             prevDistance = hitInfo.distance;
-            prevTextureCoord2 = hitInfo.textureCoord;
+            prevTextureCoord = hitInfo.textureCoord;
             previousContact = hitInfo.transform;
         }
 
         // Different hit coordinate or distance but same contact
         if (hasTarget &&
-            (hitInfo.distance != prevDistance || hitInfo.textureCoord2 != prevTextureCoord2) &&
+            (hitInfo.distance != prevDistance || hitInfo.textureCoord != prevTextureCoord) &&
             previousContact == hitInfo.transform)
         {
             PointerEventArgs argsUpdate = new PointerEventArgs();
@@ -186,7 +185,7 @@ public class LaserPointer : MonoBehaviour
             argsUpdate.distance = hitInfo.distance;
             argsUpdate.flags = 0;
             argsUpdate.target = hitInfo.transform;
-            argsUpdate.textureCoord2 = hitInfo.textureCoord;
+            argsUpdate.textureCoord = hitInfo.textureCoord;
             OnPointerUpdate(argsUpdate);
         }
 
