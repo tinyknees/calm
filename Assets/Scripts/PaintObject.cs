@@ -46,6 +46,9 @@ public class PaintObject : MonoBehaviour
         controllerEvents = GetComponent<ControllerEvents>();
 
         laserPointerDefaultColor = laserPointer.color;
+
+        brushCursor.GetComponent<SpriteRenderer>().sprite = cursorPaint;
+
     }
 
     void Init()
@@ -171,17 +174,21 @@ public class PaintObject : MonoBehaviour
     //Returns the position on the texuremap according to a hit in the mesh collider
     bool HitTestUVPosition(ref Vector3 uvWorldPosition)
     {
-        RaycastHit hit;
-        Ray cursorRay = new Ray(sceneCamera.transform.position, sceneCamera.transform.forward);
-        if (Physics.Raycast(cursorRay, out hit, 200))
+        //RaycastHit hit;
+        //Ray cursorRay = new Ray(sceneCamera.transform.position, sceneCamera.transform.forward);
+        //if (Physics.Raycast(cursorRay, out hit, 200))
+        if (hitObj.target != null)
         {
             MeshCollider meshCollider = hitObj.target.GetComponent<Collider>() as MeshCollider;
             if (meshCollider == null || meshCollider.sharedMesh == null)
                 return false;
-            Vector2 pixelUV = new Vector2(hitObj.textureCoord2.x, hitObj.textureCoord2.y);
+            Debug.Log("Got here " + hitObj.target);
+            Vector2 pixelUV = new Vector2(hitObj.textureCoord.x, hitObj.textureCoord.y);
+            Debug.Log("UV: " + pixelUV);
             uvWorldPosition.x = pixelUV.x - canvasCam.orthographicSize;//To center the UV on X
             uvWorldPosition.y = pixelUV.y - canvasCam.orthographicSize;//To center the UV on Y
             uvWorldPosition.z = 0.0f;
+            Debug.Log("world pos: " + uvWorldPosition);
             return true;
         }
         else
