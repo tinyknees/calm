@@ -77,7 +77,7 @@ public class SteamVR_Settings : EditorWindow
 			(!EditorPrefs.HasKey(ignore + buildTarget) &&
 				EditorUserBuildSettings.activeBuildTarget != recommended_BuildTarget) ||
 			(!EditorPrefs.HasKey(ignore + showUnitySplashScreen) &&
-				PlayerSettings.showUnitySplashScreen != recommended_ShowUnitySplashScreen) ||
+				PlayerSettings.SplashScreen.show != recommended_ShowUnitySplashScreen) ||
 			(!EditorPrefs.HasKey(ignore + defaultIsFullScreen) &&
 				PlayerSettings.defaultIsFullScreen != recommended_DefaultIsFullScreen) ||
 			(!EditorPrefs.HasKey(ignore + defaultScreenSize) &&
