@@ -62,6 +62,8 @@ public class PaintObject : MonoBehaviour
         controllerEvents.TriggerReleased += HandlerTriggerReleased;
         laserPointer.PointerIn += HandlePointerIn;
         laserPointer.PointerOut += HandlePointerOut;
+        controllerEvents.SwipedRight += HandleSwipedRight;
+        controllerEvents.SwipedLeft += HandleSwipedLeft;
     }
 
     // Unity lifecycle method
@@ -131,6 +133,21 @@ public class PaintObject : MonoBehaviour
         hitObj = e;
     }
 
+    private void HandleSwipedLeft(object sender, ControllerEvents.ControllerInteractionEventArgs e)
+    {
+//        colorIndex--;
+        brushColor = Color.blue;
+        controllerEvents.gameObject.GetComponentInChildren<Renderer>().material.color = Color.blue;
+    }
+
+    private void HandleSwipedRight(object sender, ControllerEvents.ControllerInteractionEventArgs e)
+    {
+//        colorIndex++;
+        brushColor = Color.red;
+        controllerEvents.gameObject.GetComponentInChildren<Renderer>().material.color = Color.red;
+    }
+
+
     void DoAction()
     {
         if (saving)
@@ -182,13 +199,10 @@ public class PaintObject : MonoBehaviour
             MeshCollider meshCollider = hitObj.target.GetComponent<Collider>() as MeshCollider;
             if (meshCollider == null || meshCollider.sharedMesh == null)
                 return false;
-            Debug.Log("Got here " + hitObj.target);
             Vector2 pixelUV = new Vector2(hitObj.textureCoord.x, hitObj.textureCoord.y);
-            Debug.Log("UV: " + pixelUV);
             uvWorldPosition.x = pixelUV.x - canvasCam.orthographicSize;//To center the UV on X
             uvWorldPosition.y = pixelUV.y - canvasCam.orthographicSize;//To center the UV on Y
             uvWorldPosition.z = 0.0f;
-            Debug.Log("world pos: " + uvWorldPosition);
             return true;
         }
         else
