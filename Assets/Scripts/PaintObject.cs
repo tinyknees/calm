@@ -27,17 +27,18 @@ public class PaintObject : MonoBehaviour
     //paint
     public GameObject brushCursor, brushContainer; //The cursor that overlaps the model and our container for the brushes painted
     public Camera sceneCamera, canvasCam;  //The camera that looks at the model, and the camera that looks at the canvas.
-    public Sprite cursorPaint, cursorDecal; // Cursor for the differen functions 
+    public Sprite cursorPaint; // Cursor for the differen functions 
     public RenderTexture canvasTexture; // Render Texture that looks at our Base Texture and the painted brushes
-    public Material baseMaterial; // The material of our base texture (Were we will save the painted texture)
-    public SteamVR_TrackedController controller;
+    public Material baseMaterial; // The material of our base texture (Where we will save the painted texture)
 
-    float brushSize = 1.0f; //The size of our brush
-    Color brushColor; //The selected color
-    int brushCounter = 0, MAX_BRUSH_COUNT = 1000; //To avoid having millions of brushes
-    bool saving = false; //Flag to check if we are saving the texture
+    private float brushSize = 0.5f; //The size of our brush
+    private Color brushColor; //The selected color
+    private int brushCounter = 0, MAX_BRUSH_COUNT = 1000; //To avoid having millions of brushes
+    private bool saving = false; //Flag to check if we are saving the texture
 
-
+    private Color[] brushColors = new Color[3];
+    int colorIndex = 0;
+    
 
     // Unity lifecycle method
     void Awake()
@@ -46,13 +47,13 @@ public class PaintObject : MonoBehaviour
         controllerEvents = GetComponent<ControllerEvents>();
 
         laserPointerDefaultColor = laserPointer.color;
-
         brushCursor.GetComponent<SpriteRenderer>().sprite = cursorPaint;
+        brushColors[0] = Color.red;
+        brushColors[1] = Color.blue;
+        brushColors[2] = Color.yellow;
+        brushColor = brushColors[0];
 
-    }
-
-    void Init()
-    {
+        brushCursor.transform.localScale *= brushSize;
     }
 
     // Unity lifecycle method
@@ -78,11 +79,11 @@ public class PaintObject : MonoBehaviour
     // Unity lifecycle method
     void Update()
     {
-//        UpdateBrushCursor();
+        UpdateBrushCursor();
         if (hitTarget && triggerPressed)
         {
             drawing = true;
-            DoAction();
+            DoPaint();
         }
         else
         {
@@ -135,20 +136,27 @@ public class PaintObject : MonoBehaviour
 
     private void HandleSwipedLeft(object sender, ControllerEvents.ControllerInteractionEventArgs e)
     {
-//        colorIndex--;
-        brushColor = Color.blue;
-        controllerEvents.gameObject.GetComponentInChildren<Renderer>().material.color = Color.blue;
+        colorIndex--;
+        if (colorIndex < 0)
+            colorIndex = brushColors.Length - 1;
+        brushColor = brushColors[colorIndex];
+        controllerEvents.gameObject.GetComponentInChildren<Renderer>().material.color = brushColors[colorIndex];
+        brushCursor.GetComponent<SpriteRenderer>().material.color = brushColors[colorIndex];
     }
 
     private void HandleSwipedRight(object sender, ControllerEvents.ControllerInteractionEventArgs e)
     {
-//        colorIndex++;
-        brushColor = Color.red;
-        controllerEvents.gameObject.GetComponentInChildren<Renderer>().material.color = Color.red;
+
+        colorIndex++;
+        if (colorIndex == brushColors.Length)
+            colorIndex = 0;
+        brushColor = brushColors[colorIndex];
+        controllerEvents.gameObject.GetComponentInChildren<Renderer>().material.color = brushColors[colorIndex];
+        brushCursor.GetComponent<SpriteRenderer>().material.color = brushColors[colorIndex];
     }
 
 
-    void DoAction()
+    void DoPaint()
     {
         if (saving)
             return;
@@ -174,12 +182,15 @@ public class PaintObject : MonoBehaviour
 
         }
     }
+
+
     //To update at realtime the painting cursor on the mesh
     void UpdateBrushCursor()
     {
         Vector3 uvWorldPosition = Vector3.zero;
         if (HitTestUVPosition(ref uvWorldPosition) && !saving)
         {
+            Debug.Log("here");
             brushCursor.SetActive(true);
             brushCursor.transform.position = uvWorldPosition + brushContainer.transform.position;
         }
@@ -188,14 +199,17 @@ public class PaintObject : MonoBehaviour
             brushCursor.SetActive(false);
         }
     }
+
+
     //Returns the position on the texuremap according to a hit in the mesh collider
     bool HitTestUVPosition(ref Vector3 uvWorldPosition)
     {
-        //RaycastHit hit;
-        //Ray cursorRay = new Ray(sceneCamera.transform.position, sceneCamera.transform.forward);
-        //if (Physics.Raycast(cursorRay, out hit, 200))
         if (hitObj.target != null)
         {
+            canvasCam = hitObj.target.GetComponentInChildren<Camera>();
+            brushContainer = hitObj.target.transform.FindChild("BrushContainer").gameObject;
+//          canvasCam.transform.position = hitObj.target.transform.position + new Vector3(20, 0, -2);
+//        brushContainer.transform.position = hitObj.target.transform.position + new Vector3(20, 0, 0);
             MeshCollider meshCollider = hitObj.target.GetComponent<Collider>() as MeshCollider;
             if (meshCollider == null || meshCollider.sharedMesh == null)
                 return false;
@@ -211,24 +225,28 @@ public class PaintObject : MonoBehaviour
         }
 
     }
+
+
     //Sets the base material with a our canvas texture, then removes all our brushes
     void SaveTexture()
     {
-        brushCounter = 0;
-        System.DateTime date = System.DateTime.Now;
-        RenderTexture.active = canvasTexture;
-        Texture2D tex = new Texture2D(canvasTexture.width, canvasTexture.height, TextureFormat.RGB24, false);
-        tex.ReadPixels(new Rect(0, 0, canvasTexture.width, canvasTexture.height), 0, 0);
-        tex.Apply();
-        RenderTexture.active = null;
-        baseMaterial.mainTexture = tex; //Put the painted texture as the base
-        foreach (Transform child in brushContainer.transform)
-        {//Clear brushes
-            Destroy(child.gameObject);
-        }
-        //StartCoroutine ("SaveTextureToFile"); //Do you want to save the texture? This is your method!
+        //brushCounter = 0;
+        //System.DateTime date = System.DateTime.Now;
+        //RenderTexture.active = canvasTexture;
+        //Texture2D tex = new Texture2D(canvasTexture.width, canvasTexture.height, TextureFormat.RGB24, false);
+        //tex.ReadPixels(new Rect(0, 0, canvasTexture.width, canvasTexture.height), 0, 0);
+        //tex.Apply();
+        //RenderTexture.active = null;
+        //baseMaterial.mainTexture = tex; //Put the painted texture as the base
+        //foreach (Transform child in brushContainer.transform)
+        //{//Clear brushes
+        //    Destroy(child.gameObject);
+        //}
+        ////StartCoroutine ("SaveTextureToFile"); //Do you want to save the texture? This is your method!
         Invoke("ShowCursor", 0.1f);
     }
+
+
     //Show again the user cursor (To avoid saving it to the texture)
     void ShowCursor()
     {
