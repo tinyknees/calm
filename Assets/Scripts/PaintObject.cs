@@ -8,7 +8,7 @@ using System;
 [RequireComponent(typeof(LaserPointer))]
 public class PaintObject : MonoBehaviour
 {
-    public Color laserPointerDefaultColor; // default laser pointer color
+    private Color laserPointerDefaultColor; // default laser pointer color
 
     // Flags for state
     private LaserPointer laserPointer; // references the laser coming from controller
@@ -207,7 +207,7 @@ public class PaintObject : MonoBehaviour
             if (canvasCam.targetTexture == null)
             {
                 RenderTexture rt = new RenderTexture(1024, 1024, 32, RenderTextureFormat.ARGB32);
-                rt.name = "Test";
+                rt.name = "PaintTexture";
                 rt.Create();
                 canvasCam.targetTexture = rt;
                 canvasCam.enabled = true;
