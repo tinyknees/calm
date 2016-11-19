@@ -8,33 +8,31 @@ using System;
 [RequireComponent(typeof(LaserPointer))]
 public class PaintObject : MonoBehaviour
 {
+    public Color laserPointerDefaultColor; // default laser pointer color
 
-    // Moving Object Stuff
-    private LaserPointer laserPointer;
-    private ControllerEvents controllerEvents;
-    private LaserPointer.PointerEventArgs hitObj;
+    // Flags for state
+    private LaserPointer laserPointer; // references the laser coming from controller
+    private ControllerEvents controllerEvents; // the controller where event happened
+    private LaserPointer.PointerEventArgs hitObj; // shortcut to the object the laser collided with
     private ControllerEvents.ControllerInteractionEventArgs activeController;
-    private Color laserPointerDefaultColor;
 
-    private Vector3 lastControllerPos;
+    private bool triggerPressed = false; // is the trigger being held
+    private bool hitTarget = false; // has the controller laser intersected with an object
 
-    private bool movingObject = false;
-    private bool triggerPressed = false;
-    private bool hitTarget = false;
-    private bool drawing;
-
-
-    //paint
-    public GameObject brushCursor, brushContainer; //The cursor that overlaps the model and our container for the brushes painted
-    public Camera sceneCamera, canvasCam;  //The camera that looks at the model, and the camera that looks at the canvas.
+    // Painting specific globals
+    public GameObject brushCursor; //The cursor that overlaps the model
+    public Camera sceneCamera;  //The camera that looks at the model
     public Sprite cursorPaint; // Cursor for the differen functions 
-    public RenderTexture canvasTexture; // Render Texture that looks at our Base Texture and the painted brushes
     public Material baseMaterial; // The material of our base texture (Where we will save the painted texture)
 
     private float brushSize = 0.5f; //The size of our brush
     private Color brushColor; //The selected color
     private int brushCounter = 0, MAX_BRUSH_COUNT = 1000; //To avoid having millions of brushes
     private bool saving = false; //Flag to check if we are saving the texture
+
+    private GameObject brushContainer; // Our container for the brushes painted
+    private Camera canvasCam; // The camera that looks at the canvas
+    private RenderTexture canvasTexture; // Render Texture that looks at our Base Texture and the painted brushes
 
     private Color[] brushColors = new Color[3];
     int colorIndex = 0;
@@ -82,20 +80,13 @@ public class PaintObject : MonoBehaviour
         UpdateBrushCursor();
         if (hitTarget && triggerPressed)
         {
-            drawing = true;
             DoPaint();
         }
-        else
-        {
-            drawing = false;
-        }
-
     }
 
     //Event Handler
     private void HandleTriggerPressed(object sender, ControllerEvents.ControllerInteractionEventArgs e)
     {
-        lastControllerPos = controllerEvents.gameObject.transform.position;
         laserPointer.enabled = true;
         triggerPressed = true;
         laserPointer.PointerIn -= HandlePointerIn;
@@ -107,7 +98,6 @@ public class PaintObject : MonoBehaviour
     {
         //laserPointer.enabled = false;
         triggerPressed = false;
-        movingObject = false;
         laserPointer.PointerIn += HandlePointerIn;
         laserPointer.PointerOut += HandlePointerOut;
     }
@@ -137,24 +127,28 @@ public class PaintObject : MonoBehaviour
     private void HandleSwipedLeft(object sender, ControllerEvents.ControllerInteractionEventArgs e)
     {
         colorIndex--;
-        if (colorIndex < 0)
-            colorIndex = brushColors.Length - 1;
-        brushColor = brushColors[colorIndex];
-        controllerEvents.gameObject.GetComponentInChildren<Renderer>().material.color = brushColors[colorIndex];
-        brushCursor.GetComponent<SpriteRenderer>().material.color = brushColors[colorIndex];
+        ChangeBrushColor();
     }
 
     private void HandleSwipedRight(object sender, ControllerEvents.ControllerInteractionEventArgs e)
     {
-
         colorIndex++;
+        ChangeBrushColor();
+    }
+
+    void ChangeBrushColor()
+    {
         if (colorIndex == brushColors.Length)
+        {
             colorIndex = 0;
+        } else if (colorIndex < 0)
+        {
+            colorIndex = brushColors.Length - 1;
+        }
         brushColor = brushColors[colorIndex];
         controllerEvents.gameObject.GetComponentInChildren<Renderer>().material.color = brushColors[colorIndex];
         brushCursor.GetComponent<SpriteRenderer>().material.color = brushColors[colorIndex];
     }
-
 
     void DoPaint()
     {
@@ -190,7 +184,6 @@ public class PaintObject : MonoBehaviour
         Vector3 uvWorldPosition = Vector3.zero;
         if (HitTestUVPosition(ref uvWorldPosition) && !saving)
         {
-            Debug.Log("here");
             brushCursor.SetActive(true);
             brushCursor.transform.position = uvWorldPosition + brushContainer.transform.position;
         }
@@ -206,10 +199,21 @@ public class PaintObject : MonoBehaviour
     {
         if (hitObj.target != null)
         {
-            canvasCam = hitObj.target.GetComponentInChildren<Camera>();
-            brushContainer = hitObj.target.transform.FindChild("BrushContainer").gameObject;
-//          canvasCam.transform.position = hitObj.target.transform.position + new Vector3(20, 0, -2);
-//        brushContainer.transform.position = hitObj.target.transform.position + new Vector3(20, 0, 0);
+            // use appropriate camera and brush container for the object we are looking at
+            canvasCam = hitObj.target.FindChild("PaintCanvas").GetComponentInChildren<Camera>();
+            brushContainer = hitObj.target.transform.FindChild("PaintCanvas").FindChild("BrushContainer").gameObject;
+
+            // set up textures if none already
+            if (canvasCam.targetTexture == null)
+            {
+                RenderTexture rt = new RenderTexture(1024, 1024, 32, RenderTextureFormat.ARGB32);
+                rt.name = "Test";
+                rt.Create();
+                canvasCam.targetTexture = rt;
+                canvasCam.enabled = true;
+                hitObj.target.GetComponent<MeshRenderer>().material.mainTexture = rt;
+            }
+
             MeshCollider meshCollider = hitObj.target.GetComponent<Collider>() as MeshCollider;
             if (meshCollider == null || meshCollider.sharedMesh == null)
                 return false;
