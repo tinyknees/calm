@@ -36,7 +36,8 @@ public class PaintObject : MonoBehaviour
 
     private Color[] brushColors = new Color[3];
     int colorIndex = 0;
-    
+    private const float BRUSH_DISTANCE = 0.15f;
+
 
     // Unity lifecycle method
     void Awake()
@@ -44,7 +45,8 @@ public class PaintObject : MonoBehaviour
         laserPointer = GetComponent<LaserPointer>();
         controllerEvents = GetComponent<ControllerEvents>();
 
-        laserPointerDefaultColor = laserPointer.color;
+        laserPointerDefaultColor = Color.clear;
+
         brushCursor.GetComponent<SpriteRenderer>().sprite = cursorPaint;
         brushColors[0] = Color.red;
         brushColors[1] = Color.blue;
@@ -77,17 +79,16 @@ public class PaintObject : MonoBehaviour
     // Unity lifecycle method
     void Update()
     {
-        UpdateBrushCursor();
-        if (hitTarget && triggerPressed)
+        if (hitTarget && hitObj.distance < BRUSH_DISTANCE)
         {
             DoPaint();
+            //UpdateBrushCursor();
         }
     }
 
     //Event Handler
     private void HandleTriggerPressed(object sender, ControllerEvents.ControllerInteractionEventArgs e)
     {
-        laserPointer.enabled = true;
         triggerPressed = true;
         laserPointer.PointerIn -= HandlePointerIn;
         laserPointer.PointerOut -= HandlePointerOut;
@@ -96,7 +97,6 @@ public class PaintObject : MonoBehaviour
     //Event Handler
     private void HandlerTriggerReleased(object sender, ControllerEvents.ControllerInteractionEventArgs e)
     {
-        //laserPointer.enabled = false;
         triggerPressed = false;
         laserPointer.PointerIn += HandlePointerIn;
         laserPointer.PointerOut += HandlePointerOut;
@@ -105,7 +105,7 @@ public class PaintObject : MonoBehaviour
     //Event Handler
     private void HandlePointerIn(object sender, LaserPointer.PointerEventArgs e)
     {
-        laserPointer.pointerModel.GetComponent<MeshRenderer>().material.color = Color.red;
+        laserPointer.pointerModel.GetComponent<MeshRenderer>().material.color = Color.clear;
         hitTarget = true;
         hitObj = e;
         laserPointer.PointerUpdate += HandlePointerUpdate;
@@ -147,7 +147,7 @@ public class PaintObject : MonoBehaviour
         }
         brushColor = brushColors[colorIndex];
         controllerEvents.gameObject.GetComponentInChildren<Renderer>().material.color = brushColors[colorIndex];
-        brushCursor.GetComponent<SpriteRenderer>().material.color = brushColors[colorIndex];
+        //brushCursor.GetComponent<SpriteRenderer>().material.color = brushColors[colorIndex];
     }
 
     void DoPaint()
