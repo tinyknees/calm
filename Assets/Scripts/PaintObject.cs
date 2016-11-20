@@ -37,6 +37,8 @@ public class PaintObject : MonoBehaviour
     private Color[] brushColors = new Color[3];
     int colorIndex = 0;
     private const float BRUSH_DISTANCE = 0.2f;
+    private LaserPointer.PointerEventArgs invHitObj;
+    private bool invHitTarget;
 
 
     // Unity lifecycle method
@@ -63,6 +65,8 @@ public class PaintObject : MonoBehaviour
         controllerEvents.TriggerReleased += HandlerTriggerReleased;
         laserPointer.PointerIn += HandlePointerIn;
         laserPointer.PointerOut += HandlePointerOut;
+        laserPointer.InvPointerIn += HandleInvPointerIn;
+        laserPointer.InvPointerOut += HandleInvPointerOut;
         controllerEvents.SwipedRight += HandleSwipedRight;
         controllerEvents.SwipedLeft += HandleSwipedLeft;
     }
@@ -74,6 +78,8 @@ public class PaintObject : MonoBehaviour
         controllerEvents.TriggerReleased -= HandlerTriggerReleased;
         laserPointer.PointerIn -= HandlePointerIn;
         laserPointer.PointerOut -= HandlePointerOut;
+        laserPointer.InvPointerIn -= HandleInvPointerIn;
+        laserPointer.InvPointerOut -= HandleInvPointerOut;
     }
 
     // Unity lifecycle method
@@ -81,7 +87,13 @@ public class PaintObject : MonoBehaviour
     {
         if (hitTarget && hitObj.distance < BRUSH_DISTANCE)
         {
-            DoPaint();
+            DoPaint(brushColor, hitObj);
+            //UpdateBrushCursor();
+        }
+        if (invHitTarget && invHitObj.distance < BRUSH_DISTANCE)
+        {
+            Debug.Log("object: " + invHitObj + "; dist:" + invHitObj.distance);
+            DoPaint(Color.white, invHitObj);
             //UpdateBrushCursor();
         }
     }
@@ -92,6 +104,8 @@ public class PaintObject : MonoBehaviour
         triggerPressed = true;
         laserPointer.PointerIn -= HandlePointerIn;
         laserPointer.PointerOut -= HandlePointerOut;
+        laserPointer.InvPointerIn -= HandleInvPointerIn;
+        laserPointer.InvPointerOut -= HandleInvPointerOut;
     }
 
     //Event Handler
@@ -100,6 +114,8 @@ public class PaintObject : MonoBehaviour
         triggerPressed = false;
         laserPointer.PointerIn += HandlePointerIn;
         laserPointer.PointerOut += HandlePointerOut;
+        laserPointer.InvPointerIn += HandleInvPointerIn;
+        laserPointer.InvPointerOut += HandleInvPointerOut;
     }
 
     //Event Handler
@@ -123,6 +139,24 @@ public class PaintObject : MonoBehaviour
     {
         hitObj = e;
     }
+
+    private void HandleInvPointerIn(object sender, LaserPointer.PointerEventArgs e)
+    {
+        invHitTarget = true;
+        invHitObj = e;
+        laserPointer.InvPointerUpdate += HandleInvPointerUpdate;
+    }
+    private void HandleInvPointerOut(object sender, LaserPointer.PointerEventArgs e)
+    {
+        invHitTarget = false;
+        laserPointer.InvPointerUpdate -= HandleInvPointerUpdate;
+    }
+
+    private void HandleInvPointerUpdate(object sender, LaserPointer.PointerEventArgs e)
+    {
+        invHitObj = e;
+    }
+
 
     private void HandleSwipedLeft(object sender, ControllerEvents.ControllerInteractionEventArgs e)
     {
@@ -150,17 +184,17 @@ public class PaintObject : MonoBehaviour
         //brushCursor.GetComponent<SpriteRenderer>().material.color = brushColors[colorIndex];
     }
 
-    void DoPaint()
+    void DoPaint(Color bcolor, LaserPointer.PointerEventArgs hit)
     {
         if (saving)
             return;
         Vector3 uvWorldPosition = Vector3.zero;
-        if (HitTestUVPosition(ref uvWorldPosition))
+        if (HitTestUVPosition(ref uvWorldPosition, hit))
         {
             GameObject brushObj;
 
             brushObj = (GameObject)Instantiate(Resources.Load("TexturePainter-Instances/BrushEntity")); //Paint a brush
-            brushObj.GetComponent<SpriteRenderer>().color = brushColor; //Set the brush color
+            brushObj.GetComponent<SpriteRenderer>().color = bcolor; //Set the brush color
 
             brushColor.a = brushSize * 2.0f; // Brushes have alpha to have a merging effect when painted over.
             brushObj.transform.parent = brushContainer.transform; //Add the brush to our container to be wiped later
@@ -182,7 +216,7 @@ public class PaintObject : MonoBehaviour
     void UpdateBrushCursor()
     {
         Vector3 uvWorldPosition = Vector3.zero;
-        if (HitTestUVPosition(ref uvWorldPosition) && !saving)
+        if (HitTestUVPosition(ref uvWorldPosition, hitObj) && !saving)
         {
             brushCursor.SetActive(true);
             brushCursor.transform.position = uvWorldPosition + brushContainer.transform.position;
@@ -195,13 +229,13 @@ public class PaintObject : MonoBehaviour
 
 
     //Returns the position on the texuremap according to a hit in the mesh collider
-    bool HitTestUVPosition(ref Vector3 uvWorldPosition)
+    bool HitTestUVPosition(ref Vector3 uvWorldPosition, LaserPointer.PointerEventArgs hit)
     {
-        if (hitObj.target != null)
-        {
+        if (hit.target != null)
+        { 
             // use appropriate camera and brush container for the object we are looking at
-            canvasCam = hitObj.target.FindChild("PaintCanvas").GetComponentInChildren<Camera>();
-            brushContainer = hitObj.target.transform.FindChild("PaintCanvas").FindChild("BrushContainer").gameObject;
+            canvasCam = hit.target.FindChild("PaintCanvas").GetComponentInChildren<Camera>();
+            brushContainer = hit.target.transform.FindChild("PaintCanvas").FindChild("BrushContainer").gameObject;
 
             // set up textures if none already
             if (canvasCam.targetTexture == null)
@@ -211,13 +245,13 @@ public class PaintObject : MonoBehaviour
                 rt.Create();
                 canvasCam.targetTexture = rt;
                 canvasCam.enabled = true;
-                hitObj.target.GetComponent<MeshRenderer>().material.mainTexture = rt;
+                hit.target.GetComponent<MeshRenderer>().material.mainTexture = rt;
             }
 
-            MeshCollider meshCollider = hitObj.target.GetComponent<Collider>() as MeshCollider;
+            MeshCollider meshCollider = hit.target.GetComponent<Collider>() as MeshCollider;
             if (meshCollider == null || meshCollider.sharedMesh == null)
                 return false;
-            Vector2 pixelUV = new Vector2(hitObj.textureCoord.x, hitObj.textureCoord.y);
+            Vector2 pixelUV = new Vector2(hit.textureCoord.x, hit.textureCoord.y);
             uvWorldPosition.x = pixelUV.x - canvasCam.orthographicSize;//To center the UV on X
             uvWorldPosition.y = pixelUV.y - canvasCam.orthographicSize;//To center the UV on Y
             uvWorldPosition.z = 0.0f;
