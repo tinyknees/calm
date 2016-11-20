@@ -36,7 +36,7 @@ public class PaintObject : MonoBehaviour
 
     private Color[] brushColors = new Color[3];
     int colorIndex = 0;
-    private const float BRUSH_DISTANCE = 0.15f;
+    private const float BRUSH_DISTANCE = 0.2f;
 
 
     // Unity lifecycle method
@@ -105,7 +105,7 @@ public class PaintObject : MonoBehaviour
     //Event Handler
     private void HandlePointerIn(object sender, LaserPointer.PointerEventArgs e)
     {
-        laserPointer.pointerModel.GetComponent<MeshRenderer>().material.color = Color.clear;
+        //laserPointer.pointerModel.GetComponent<MeshRenderer>().enabled = false;
         hitTarget = true;
         hitObj = e;
         laserPointer.PointerUpdate += HandlePointerUpdate;
