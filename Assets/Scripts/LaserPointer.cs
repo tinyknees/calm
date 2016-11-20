@@ -22,12 +22,18 @@ public class LaserPointer : MonoBehaviour
     public event PointerEventHandler PointerIn;
     public event PointerEventHandler PointerOut;
     public event PointerEventHandler PointerUpdate;
+    public event PointerEventHandler InvPointerIn;
+    public event PointerEventHandler InvPointerOut;
+    public event PointerEventHandler InvPointerUpdate;
 
 
     // Unity Events add a little overhead but listeners can be assigned via Unity editor
     public PointerEvent unityPointerIn = new PointerEvent();
     public PointerEvent unityPointerOut = new PointerEvent();
     public PointerEvent unityPointerUpdate = new PointerEvent();
+    public PointerEvent unityInvPointerIn = new PointerEvent();
+    public PointerEvent unityInvPointerOut = new PointerEvent();
+    public PointerEvent unityInvPointerUpdate = new PointerEvent();
 
     // Member Variables
     public Color color = new Color(0.0F, 1.0F, .01F);
@@ -43,6 +49,10 @@ public class LaserPointer : MonoBehaviour
     private SteamVR_TrackedController controller;
     private Vector2 prevTextureCoord;
     private float prevDistance;
+    private Transform previousInvContact;
+    private float prevInvDistance;
+    private Vector2 prevInvTextureCoord;
+    private float invdist;
 
     // Unity lifecycle method
     public void Awake()
@@ -136,8 +146,12 @@ public class LaserPointer : MonoBehaviour
         float dist = 100f;
 
         Ray raycast = new Ray(transform.position, transform.forward);
+        Ray invraycast = new Ray(transform.position, -transform.forward);
         RaycastHit hitInfo;
+        RaycastHit invHitInfo;
         bool hasTarget = Physics.Raycast(raycast, out hitInfo);
+        bool invTarget = Physics.Raycast(invraycast, out invHitInfo);
+
         // Pointer moved off collider
         if (previousContact && previousContact != hitInfo.transform)
         {
@@ -154,6 +168,21 @@ public class LaserPointer : MonoBehaviour
             previousContact = null;
         }
 
+        // Pointer moved off collider
+        if (previousInvContact && previousInvContact != invHitInfo.transform)
+        {
+            PointerEventArgs argsOut = new PointerEventArgs();
+            if (controller != null)
+            {
+                argsOut.controllerIndex = controller.controllerIndex;
+            }
+            argsOut.distance = 0f;
+            argsOut.flags = 0;
+            argsOut.target = previousInvContact;
+            argsOut.textureCoord = invHitInfo.textureCoord;
+            OnInvPointerOut(argsOut);
+            previousInvContact = null;
+        }
         // Point moved onto new collider
         if (hasTarget && previousContact != hitInfo.transform)
         {
@@ -172,6 +201,24 @@ public class LaserPointer : MonoBehaviour
             previousContact = hitInfo.transform;
         }
 
+        if (invTarget && previousInvContact != invHitInfo.transform)
+        {
+            PointerEventArgs argsIn = new PointerEventArgs();
+            if (controller != null)
+            {
+                argsIn.controllerIndex = controller.controllerIndex;
+            }
+            argsIn.distance = invHitInfo.distance;
+            argsIn.flags = 0;
+            argsIn.target = invHitInfo.transform;
+            argsIn.textureCoord = invHitInfo.textureCoord;
+            OnInvPointerIn(argsIn);
+            prevInvDistance = invHitInfo.distance;
+            prevInvTextureCoord = invHitInfo.textureCoord;
+            previousInvContact = invHitInfo.transform;
+        }
+
+
         // Different hit coordinate or distance but same contact
         if (hasTarget &&
             (hitInfo.distance != prevDistance || hitInfo.textureCoord != prevTextureCoord) &&
@@ -189,6 +236,22 @@ public class LaserPointer : MonoBehaviour
             OnPointerUpdate(argsUpdate);
         }
 
+        if (invTarget &&
+    (invHitInfo.distance != prevInvDistance || invHitInfo.textureCoord != prevInvTextureCoord) &&
+    previousInvContact == invHitInfo.transform)
+        {
+            PointerEventArgs argsUpdate = new PointerEventArgs();
+            if (controller != null)
+            {
+                argsUpdate.controllerIndex = controller.controllerIndex;
+            }
+            argsUpdate.distance = invHitInfo.distance;
+            argsUpdate.flags = 0;
+            argsUpdate.target = invHitInfo.transform;
+            argsUpdate.textureCoord = invHitInfo.textureCoord;
+            OnInvPointerUpdate(argsUpdate);
+        }
+
         if (!hasTarget)
         {
             previousContact = null;
@@ -196,6 +259,14 @@ public class LaserPointer : MonoBehaviour
         else if (hitInfo.distance < 100f)
         {
             dist = hitInfo.distance;
+        }
+        if (!invTarget)
+        {
+            previousInvContact = null;
+        }
+        else if (invHitInfo.distance < 100f)
+        {
+            invdist = invHitInfo.distance;
         }
 
         pointerModel.transform.localPosition = new Vector3(0f, 0f, dist / 2f);
@@ -234,4 +305,32 @@ public class LaserPointer : MonoBehaviour
         }
         unityPointerUpdate.Invoke(e);
     }
+
+    public virtual void OnInvPointerIn(PointerEventArgs e)
+    {
+        if (InvPointerIn != null)
+        {
+            InvPointerIn(this, e);
+        }
+        unityInvPointerIn.Invoke(e);
+    }
+
+    public virtual void OnInvPointerOut(PointerEventArgs e)
+    {
+        if (InvPointerOut != null)
+        {
+            InvPointerOut(this, e);
+        }
+        unityInvPointerOut.Invoke(e);
+    }
+
+    public virtual void OnInvPointerUpdate(PointerEventArgs e)
+    {
+        if (InvPointerUpdate != null)
+        {
+            InvPointerUpdate(this, e);
+        }
+        unityInvPointerUpdate.Invoke(e);
+    }
+
 }
