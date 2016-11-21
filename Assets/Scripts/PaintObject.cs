@@ -23,9 +23,12 @@ public class PaintObject : MonoBehaviour
     public GameObject brushCursor; //The cursor that overlaps the model
     public Camera sceneCamera;  //The camera that looks at the model
     public Sprite cursorPaint; // Cursor for the differen functions 
-    public Material baseMaterial; // The material of our base texture (Where we will save the painted texture)
+    private Material baseMaterial; // The material of our base texture (Where we will save the painted texture)
 
-    private float brushSize = 0.5f; //The size of our brush
+    public float brushSize = 0.2f; //The size of our brush
+    public float brushDistance = 0.05f; // min distance before painting starts
+    public bool cursorActive = false;
+
     private Color brushColor; //The selected color
     private int brushCounter = 0, MAX_BRUSH_COUNT = 1000; //To avoid having millions of brushes
     private bool saving = false; //Flag to check if we are saving the texture
@@ -36,9 +39,9 @@ public class PaintObject : MonoBehaviour
 
     private Color[] brushColors = new Color[3];
     int colorIndex = 0;
-    private const float BRUSH_DISTANCE = 0.2f;
     private LaserPointer.PointerEventArgs invHitObj;
     private bool invHitTarget;
+    private Transform savObj;
 
 
     // Unity lifecycle method
@@ -56,6 +59,7 @@ public class PaintObject : MonoBehaviour
         brushColor = brushColors[0];
 
         brushCursor.transform.localScale *= brushSize;
+        ChangeBrushColor();
     }
 
     // Unity lifecycle method
@@ -85,16 +89,23 @@ public class PaintObject : MonoBehaviour
     // Unity lifecycle method
     void Update()
     {
-        if (hitTarget && hitObj.distance < BRUSH_DISTANCE)
+        if (hitTarget && hitObj.distance < brushDistance)
         {
             DoPaint(brushColor, hitObj);
-            //UpdateBrushCursor();
+            UpdateBrushCursor();
         }
-        if (invHitTarget && invHitObj.distance < BRUSH_DISTANCE)
+        else if (invHitTarget && invHitObj.distance < brushDistance + 0.145)
         {
-            Debug.Log("object: " + invHitObj + "; dist:" + invHitObj.distance);
             DoPaint(Color.white, invHitObj);
             //UpdateBrushCursor();
+        }
+        else
+        {
+            AudioSource audio = controllerEvents.transform.GetComponent<AudioSource>();
+            if (audio.isPlaying)
+            {
+                audio.Stop();
+            }
         }
     }
 
@@ -133,6 +144,9 @@ public class PaintObject : MonoBehaviour
         laserPointer.pointerModel.GetComponent<MeshRenderer>().material.color = laserPointerDefaultColor;
         hitTarget = false;
         laserPointer.PointerUpdate -= HandlePointerUpdate;
+        brushCursor.SetActive(false);
+        saving = true;
+        Invoke("SaveTexture", 0.1f);
     }
 
     private void HandlePointerUpdate(object sender, LaserPointer.PointerEventArgs e)
@@ -181,7 +195,7 @@ public class PaintObject : MonoBehaviour
         }
         brushColor = brushColors[colorIndex];
         controllerEvents.gameObject.GetComponentInChildren<Renderer>().material.color = brushColors[colorIndex];
-        //brushCursor.GetComponent<SpriteRenderer>().material.color = brushColors[colorIndex];
+        brushCursor.GetComponent<SpriteRenderer>().material.color = brushColors[colorIndex];
     }
 
     void DoPaint(Color bcolor, LaserPointer.PointerEventArgs hit)
@@ -189,17 +203,44 @@ public class PaintObject : MonoBehaviour
         if (saving)
             return;
         Vector3 uvWorldPosition = Vector3.zero;
+        AudioSource audio = controllerEvents.transform.GetComponent<AudioSource>();
+        if (!audio.isPlaying)
+        {
+            audio.Play();
+        }
         if (HitTestUVPosition(ref uvWorldPosition, hit))
         {
             GameObject brushObj;
 
             brushObj = (GameObject)Instantiate(Resources.Load("TexturePainter-Instances/BrushEntity")); //Paint a brush
             brushObj.GetComponent<SpriteRenderer>().color = bcolor; //Set the brush color
-
-            brushColor.a = brushSize * 2.0f; // Brushes have alpha to have a merging effect when painted over.
+            if (hit.angle < 130)
+            {
+                brushSize = 0.25f;
+                brushColor.a = brushSize * 2.0f; // Brushes have alpha to have a merging effect when painted over.
+            }
+            else if (hit.angle < 140)
+            {
+                brushSize = 0.2f;
+                brushColor.a = brushSize * 2.0f; // Brushes have alpha to have a merging effect when painted over.
+            }
+            else if (hit.angle < 150)
+            {
+                brushSize = 0.10f;
+                brushColor.a = 0.6f; // Brushes have alpha to have a merging effect when painted over.
+            }
+            else
+            {
+                brushSize = 0.05f;
+                brushColor.a = 1f; // Brushes have alpha to have a merging effect when painted over.
+            }
             brushObj.transform.parent = brushContainer.transform; //Add the brush to our container to be wiped later
             brushObj.transform.localPosition = uvWorldPosition; //The position of the brush (in the UVMap)
             brushObj.transform.localScale = Vector3.one * brushSize;//The size of the brush
+        }
+        if (savObj != hit.target)
+        {
+            savObj = hit.target;
         }
         brushCounter++; //Add to the max brushes
         if (brushCounter >= MAX_BRUSH_COUNT)
@@ -207,7 +248,6 @@ public class PaintObject : MonoBehaviour
             brushCursor.SetActive(false);
             saving = true;
             Invoke("SaveTexture", 0.1f);
-
         }
     }
 
@@ -215,15 +255,19 @@ public class PaintObject : MonoBehaviour
     //To update at realtime the painting cursor on the mesh
     void UpdateBrushCursor()
     {
-        Vector3 uvWorldPosition = Vector3.zero;
-        if (HitTestUVPosition(ref uvWorldPosition, hitObj) && !saving)
+        if (cursorActive)
         {
-            brushCursor.SetActive(true);
-            brushCursor.transform.position = uvWorldPosition + brushContainer.transform.position;
-        }
-        else
-        {
-            brushCursor.SetActive(false);
+            Vector3 uvWorldPosition = Vector3.zero;
+            if (HitTestUVPosition(ref uvWorldPosition, hitObj) && !saving)
+            {
+
+                brushCursor.SetActive(true);
+                brushCursor.transform.position = uvWorldPosition + brushContainer.transform.position;
+            }
+            else
+            {
+                brushCursor.SetActive(false);
+            }
         }
     }
 
@@ -268,18 +312,43 @@ public class PaintObject : MonoBehaviour
     //Sets the base material with a our canvas texture, then removes all our brushes
     void SaveTexture()
     {
-        //brushCounter = 0;
-        //System.DateTime date = System.DateTime.Now;
-        //RenderTexture.active = canvasTexture;
-        //Texture2D tex = new Texture2D(canvasTexture.width, canvasTexture.height, TextureFormat.RGB24, false);
-        //tex.ReadPixels(new Rect(0, 0, canvasTexture.width, canvasTexture.height), 0, 0);
-        //tex.Apply();
-        //RenderTexture.active = null;
-        //baseMaterial.mainTexture = tex; //Put the painted texture as the base
-        //foreach (Transform child in brushContainer.transform)
-        //{//Clear brushes
-        //    Destroy(child.gameObject);
-        //}
+       if (brushCounter > 0)
+       {
+            System.DateTime date = System.DateTime.Now;
+            brushCounter = 0;
+
+            if (savObj != null)
+            {
+                // use appropriate camera and brush container for the object we are looking at
+                canvasCam = savObj.FindChild("PaintCanvas").GetComponentInChildren<Camera>();
+                brushContainer = savObj.transform.FindChild("PaintCanvas").FindChild("BrushContainer").gameObject;
+
+                // set up textures if none already
+                if (canvasCam.targetTexture == null)
+                {
+                    RenderTexture rt = new RenderTexture(1024, 1024, 32, RenderTextureFormat.ARGB32);
+                    rt.name = "PaintTexture";
+                    rt.Create();
+                    canvasCam.targetTexture = rt;
+                    canvasCam.enabled = true;
+                    savObj.GetComponent<MeshRenderer>().material.mainTexture = rt;
+                }
+
+            }
+
+            RenderTexture canvas = canvasCam.targetTexture;
+            RenderTexture.active = canvas;
+            Texture2D tex = new Texture2D(canvas.width, canvas.height, TextureFormat.RGB24, false);
+            tex.ReadPixels(new Rect(0, 0, canvas.width, canvas.height), 0, 0);
+            tex.Apply();
+            RenderTexture.active = null;
+            baseMaterial = savObj.FindChild("PaintCanvas").FindChild("CanvasBase").transform.GetComponent<MeshRenderer>().material;
+            baseMaterial.mainTexture = tex; //Put the painted texture as the base
+            foreach (Transform child in brushContainer.transform)
+            {//Clear brushes
+                Destroy(child.gameObject);
+            }
+        }
         ////StartCoroutine ("SaveTextureToFile"); //Do you want to save the texture? This is your method!
         Invoke("ShowCursor", 0.1f);
     }
@@ -289,6 +358,7 @@ public class PaintObject : MonoBehaviour
     void ShowCursor()
     {
         saving = false;
+        brushCursor.SetActive(true);
     }
 
     ////////////////// PUBLIC METHODS //////////////////
