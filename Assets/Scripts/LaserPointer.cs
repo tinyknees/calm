@@ -11,6 +11,7 @@ public class LaserPointer : MonoBehaviour
         public float distance;
         public Transform target;
         public Vector2 textureCoord;
+        public float angle;
     }
 
     public delegate void PointerEventHandler(object sender, PointerEventArgs e);
@@ -164,6 +165,7 @@ public class LaserPointer : MonoBehaviour
             argsOut.flags = 0;
             argsOut.target = previousContact;
             argsOut.textureCoord = hitInfo.textureCoord;
+            argsOut.angle = 0f;
             OnPointerOut(argsOut);
             previousContact = null;
         }
@@ -180,6 +182,7 @@ public class LaserPointer : MonoBehaviour
             argsOut.flags = 0;
             argsOut.target = previousInvContact;
             argsOut.textureCoord = invHitInfo.textureCoord;
+            argsOut.angle = 0f;
             OnInvPointerOut(argsOut);
             previousInvContact = null;
         }
@@ -195,10 +198,11 @@ public class LaserPointer : MonoBehaviour
             argsIn.flags = 0;
             argsIn.target = hitInfo.transform;
             argsIn.textureCoord = hitInfo.textureCoord;
+            argsIn.angle = Vector3.Angle(hitInfo.point - this.transform.position, hitInfo.normal);
             OnPointerIn(argsIn);
             prevDistance = hitInfo.distance;
             prevTextureCoord = hitInfo.textureCoord;
-            previousContact = hitInfo.transform;
+            previousContact = hitInfo.transform; 
         }
 
         if (invTarget && previousInvContact != invHitInfo.transform)
@@ -212,6 +216,7 @@ public class LaserPointer : MonoBehaviour
             argsIn.flags = 0;
             argsIn.target = invHitInfo.transform;
             argsIn.textureCoord = invHitInfo.textureCoord;
+            argsIn.angle = Vector3.Angle(hitInfo.point - this.transform.position, hitInfo.normal);
             OnInvPointerIn(argsIn);
             prevInvDistance = invHitInfo.distance;
             prevInvTextureCoord = invHitInfo.textureCoord;
@@ -233,6 +238,7 @@ public class LaserPointer : MonoBehaviour
             argsUpdate.flags = 0;
             argsUpdate.target = hitInfo.transform;
             argsUpdate.textureCoord = hitInfo.textureCoord;
+            argsUpdate.angle = Vector3.Angle(hitInfo.point - this.transform.position, hitInfo.normal);
             OnPointerUpdate(argsUpdate);
         }
 
@@ -249,6 +255,7 @@ public class LaserPointer : MonoBehaviour
             argsUpdate.flags = 0;
             argsUpdate.target = invHitInfo.transform;
             argsUpdate.textureCoord = invHitInfo.textureCoord;
+            argsUpdate.angle = Vector3.Angle(hitInfo.point - this.transform.position, hitInfo.normal);
             OnInvPointerUpdate(argsUpdate);
         }
 

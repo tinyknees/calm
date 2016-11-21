@@ -1,17 +1,17 @@
 fileFormatVersion: 2
-guid: f1ce9b39d6bc3e644b8fd971cc6392c3
-timeCreated: 1479324878
+guid: 231d6343c26cecc48b379aae9710ec0c
+timeCreated: 1479324865
 licenseType: Free
 ModelImporter:
   serializedVersion: 19
   fileIDToRecycleName:
     100000: //RootNode
-    100002: pasted__pCylinder2_group1
+    100002: tree3
     400000: //RootNode
-    400002: pasted__pCylinder2_group1
-    2300000: pasted__pCylinder2_group1
-    3300000: pasted__pCylinder2_group1
-    4300000: pasted__pCylinder2_group1
+    400002: tree3
+    2300000: tree3
+    3300000: tree3
+    4300000: tree3
   materials:
     importMaterials: 1
     materialName: 0
