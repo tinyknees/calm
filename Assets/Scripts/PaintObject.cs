@@ -8,6 +8,8 @@ using System;
 [RequireComponent(typeof(LaserPointer))]
 public class PaintObject : MonoBehaviour
 {
+
+    public Color[] brushColors = new Color[5];
     private Color laserPointerDefaultColor; // default laser pointer color
 
     // Flags for state
@@ -37,7 +39,6 @@ public class PaintObject : MonoBehaviour
     private Camera canvasCam; // The camera that looks at the canvas
     private RenderTexture canvasTexture; // Render Texture that looks at our Base Texture and the painted brushes
 
-    private Color[] brushColors = new Color[3];
     int colorIndex = 0;
     private LaserPointer.PointerEventArgs invHitObj;
     private bool invHitTarget;
@@ -53,10 +54,7 @@ public class PaintObject : MonoBehaviour
         laserPointerDefaultColor = Color.clear;
 
         brushCursor.GetComponent<SpriteRenderer>().sprite = cursorPaint;
-        brushColors[0] = Color.red;
-        brushColors[1] = Color.blue;
-        brushColors[2] = Color.yellow;
-        brushColor = brushColors[0];
+        brushColor = brushColors[colorIndex];
 
         brushCursor.transform.localScale *= brushSize;
         ChangeBrushColor();
@@ -84,6 +82,8 @@ public class PaintObject : MonoBehaviour
         laserPointer.PointerOut -= HandlePointerOut;
         laserPointer.InvPointerIn -= HandleInvPointerIn;
         laserPointer.InvPointerOut -= HandleInvPointerOut;
+        controllerEvents.SwipedRight -= HandleSwipedRight;
+        controllerEvents.SwipedLeft -= HandleSwipedLeft;
     }
 
     // Unity lifecycle method
