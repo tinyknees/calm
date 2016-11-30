@@ -40,6 +40,10 @@ public class ControllerEvents : MonoBehaviour
     // Unity Events add a little overhead but listeners can be assigned via Unity editor
     public ControllerEvent unityTriggerPressed = new ControllerEvent();
     public ControllerEvent unityTriggerReleased = new ControllerEvent();
+    public ControllerEvent unitySwipedLeft = new ControllerEvent();
+    public ControllerEvent unitySwipedRight = new ControllerEvent();
+    public ControllerEvent unitySwipedUp = new ControllerEvent();
+    public ControllerEvent unitySwipedDown = new ControllerEvent();
 
     // Member Variables
     [HideInInspector]
@@ -156,11 +160,13 @@ public class ControllerEvents : MonoBehaviour
             {
                 if (SwipedRight != null)
                     SwipedRight(this, e);
+                unitySwipedRight.Invoke(e);
             }
             else if ((180.0f - angleOfSwipe) < mAngleRange)
             {
                 if (SwipedLeft != null)
                     SwipedLeft(this, e);
+                unitySwipedLeft.Invoke(e);
             }
             else
             {
@@ -171,11 +177,13 @@ public class ControllerEvents : MonoBehaviour
                 {
                     if (SwipedUp != null)
                         SwipedUp(this, e);
+                    unitySwipedUp.Invoke(e);
                 }
                 else if ((180.0f - angleOfSwipe) < mAngleRange)
                 {
                     if (SwipedDown != null)
                         SwipedDown(this, e);
+                    unitySwipedUp.Invoke(e);
                 }
             }
         }
