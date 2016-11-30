@@ -1,17 +1,17 @@
 fileFormatVersion: 2
-guid: 458ca5f65d70ae1468ca2ed348c2c290
-timeCreated: 1480456346
+guid: 1b939217d16f25e4180310bc0f1dd1e9
+timeCreated: 1480527118
 licenseType: Free
 ModelImporter:
   serializedVersion: 19
   fileIDToRecycleName:
-    100000: //RootNode
-    100002: bubbletree_02
-    400000: //RootNode
-    400002: bubbletree_02
-    2300000: bubbletree_02
-    3300000: bubbletree_02
-    4300000: bubbletree_02
+    100000: bubbletree
+    100002: //RootNode
+    400000: bubbletree
+    400002: //RootNode
+    2300000: bubbletree
+    3300000: bubbletree
+    4300000: bubbletree
   materials:
     importMaterials: 1
     materialName: 0
