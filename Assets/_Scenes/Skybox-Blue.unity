@@ -356,35 +356,6 @@ Transform:
   m_Father: {fileID: 1178962788}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 50, y: -30, z: 0}
---- !u!21 &594187626
-Material:
-  serializedVersion: 6
-  m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
-  m_Name: Sprites/Default
-  m_Shader: {fileID: 10753, guid: 0000000000000000f000000000000000, type: 0}
-  m_ShaderKeywords: 
-  m_LightmapFlags: 5
-  m_CustomRenderQueue: -1
-  stringTagMap: {}
-  m_SavedProperties:
-    serializedVersion: 2
-    m_TexEnvs:
-    - first:
-        name: _MainTex
-      second:
-        m_Texture: {fileID: 0}
-        m_Scale: {x: 1, y: 1}
-        m_Offset: {x: 0, y: 0}
-    m_Floats:
-    - first:
-        name: PixelSnap
-      second: 0
-    m_Colors:
-    - first:
-        name: _Color
-      second: {r: 1, g: 1, b: 1, a: 1}
 --- !u!1 &646313614 stripped
 GameObject:
   m_PrefabParentObject: {fileID: 100000, guid: 32d5655b7a167cd47b3f2cbd52182874, type: 3}
@@ -407,67 +378,7 @@ MeshCollider:
 Transform:
   m_PrefabParentObject: {fileID: 439042, guid: 4d293c8e162f3874b982baadd71153d2, type: 2}
   m_PrefabInternal: {fileID: 1619739765}
---- !u!1 &812460924
-GameObject:
-  m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
-  serializedVersion: 5
-  m_Component:
-  - component: {fileID: 812460925}
-  m_Layer: 0
-  m_Name: BrushContainer
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &812460925
-Transform:
-  m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
-  m_GameObject: {fileID: 812460924}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_Children: []
-  m_Father: {fileID: 1438953548}
-  m_RootOrder: 1
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!1 &815269854 stripped
-GameObject:
-  m_PrefabParentObject: {fileID: 189822, guid: 4d293c8e162f3874b982baadd71153d2, type: 2}
-  m_PrefabInternal: {fileID: 1619739765}
---- !u!114 &815269856
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
-  m_GameObject: {fileID: 815269854}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 6bca9ccf900ccc84c887d783321d27e2, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _head: {fileID: 1262904436}
-  _ears: {fileID: 690491620}
-  wireframe: 0
-  flip: {fileID: 0}
---- !u!114 &815269857
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
-  m_GameObject: {fileID: 815269854}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 2e514d131e23cb54bac50b517b4dff60, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_DoubleClickTime: 0.3
-  m_SwipeWidth: 0.3
---- !u!43 &927635890
+--- !u!43 &709766305
 Mesh:
   m_ObjectHideFlags: 0
   m_PrefabParentObject: {fileID: 0}
@@ -595,6 +506,66 @@ Mesh:
   m_BakedConvexCollisionMesh: 
   m_BakedTriangleCollisionMesh: 
   m_MeshOptimized: 0
+--- !u!1 &812460924
+GameObject:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  serializedVersion: 5
+  m_Component:
+  - component: {fileID: 812460925}
+  m_Layer: 0
+  m_Name: BrushContainer
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &812460925
+Transform:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 812460924}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 1438953548}
+  m_RootOrder: 1
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &815269854 stripped
+GameObject:
+  m_PrefabParentObject: {fileID: 189822, guid: 4d293c8e162f3874b982baadd71153d2, type: 2}
+  m_PrefabInternal: {fileID: 1619739765}
+--- !u!114 &815269856
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 815269854}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6bca9ccf900ccc84c887d783321d27e2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _head: {fileID: 1262904436}
+  _ears: {fileID: 690491620}
+  wireframe: 0
+  flip: {fileID: 0}
+--- !u!114 &815269857
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 815269854}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2e514d131e23cb54bac50b517b4dff60, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_DoubleClickTime: 0.3
+  m_SwipeWidth: 0.3
 --- !u!1 &948753501
 GameObject:
   m_ObjectHideFlags: 0
@@ -920,6 +891,26 @@ MonoBehaviour:
       m_Calls: []
     m_TypeName: ControllerEvents+ControllerEvent, Assembly-CSharp, Version=0.0.0.0,
       Culture=neutral, PublicKeyToken=null
+  unitySwipedLeft:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: ControllerEvents+ControllerEvent, Assembly-CSharp, Version=0.0.0.0,
+      Culture=neutral, PublicKeyToken=null
+  unitySwipedRight:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: ControllerEvents+ControllerEvent, Assembly-CSharp, Version=0.0.0.0,
+      Culture=neutral, PublicKeyToken=null
+  unitySwipedUp:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: ControllerEvents+ControllerEvent, Assembly-CSharp, Version=0.0.0.0,
+      Culture=neutral, PublicKeyToken=null
+  unitySwipedDown:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: ControllerEvents+ControllerEvent, Assembly-CSharp, Version=0.0.0.0,
+      Culture=neutral, PublicKeyToken=null
   triggerPressed: 0
 --- !u!114 &1300356230
 MonoBehaviour:
@@ -947,6 +938,21 @@ MonoBehaviour:
       m_Calls: []
     m_TypeName: LaserPointer+PointerEvent, Assembly-CSharp, Version=0.0.0.0, Culture=neutral,
       PublicKeyToken=null
+  unityInvPointerIn:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: LaserPointer+PointerEvent, Assembly-CSharp, Version=0.0.0.0, Culture=neutral,
+      PublicKeyToken=null
+  unityInvPointerOut:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: LaserPointer+PointerEvent, Assembly-CSharp, Version=0.0.0.0, Culture=neutral,
+      PublicKeyToken=null
+  unityInvPointerUpdate:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: LaserPointer+PointerEvent, Assembly-CSharp, Version=0.0.0.0, Culture=neutral,
+      PublicKeyToken=null
   color: {r: 0, g: 1, b: 0.01, a: 1}
   thickness: 0.002
   thicknessPressed: 0.01
@@ -964,15 +970,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 20d8c9097d2f7154dba4462f6905c7f6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  brushColors: []
   brushCursor: {fileID: 1252057407}
-  brushContainer: {fileID: 812460924}
   sceneCamera: {fileID: 1619739766}
-  canvasCam: {fileID: 1404607367}
   cursorPaint: {fileID: 21300000, guid: 2ad8e55b008da9a4f9203826e67bc99c, type: 3}
-  cursorDecal: {fileID: 0}
-  canvasTexture: {fileID: 8400000, guid: 1dd5c06a4ccfb6e4c8067820f3f0e29b, type: 2}
-  baseMaterial: {fileID: 2100000, guid: 2d1ecbf1e18fa4c4e8113b71c877679d, type: 2}
-  controller: {fileID: 0}
+  brushSize: 0.2
+  brushDistance: 0.05
+  cursorActive: 0
 --- !u!4 &1349481183 stripped
 Transform:
   m_PrefabParentObject: {fileID: 400002, guid: d5e40969d7935cd4b9e8d3c77a2b5b29, type: 3}
@@ -1238,11 +1242,11 @@ Prefab:
     - target: {fileID: 3380982, guid: 4d293c8e162f3874b982baadd71153d2, type: 2}
       propertyPath: m_Mesh
       value: 
-      objectReference: {fileID: 927635890}
+      objectReference: {fileID: 709766305}
     - target: {fileID: 2348914, guid: 4d293c8e162f3874b982baadd71153d2, type: 2}
       propertyPath: m_Materials.Array.data[0]
       value: 
-      objectReference: {fileID: 594187626}
+      objectReference: {fileID: 1844594670}
     - target: {fileID: 2082592, guid: 4d293c8e162f3874b982baadd71153d2, type: 2}
       propertyPath: near clip plane
       value: 0.3
@@ -1261,6 +1265,35 @@ Camera:
   m_PrefabParentObject: {fileID: 2082592, guid: 4d293c8e162f3874b982baadd71153d2,
     type: 2}
   m_PrefabInternal: {fileID: 1619739765}
+--- !u!21 &1844594670
+Material:
+  serializedVersion: 6
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_Name: Sprites/Default
+  m_Shader: {fileID: 10753, guid: 0000000000000000f000000000000000, type: 0}
+  m_ShaderKeywords: 
+  m_LightmapFlags: 5
+  m_CustomRenderQueue: -1
+  stringTagMap: {}
+  m_SavedProperties:
+    serializedVersion: 2
+    m_TexEnvs:
+    - first:
+        name: _MainTex
+      second:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    m_Floats:
+    - first:
+        name: PixelSnap
+      second: 0
+    m_Colors:
+    - first:
+        name: _Color
+      second: {r: 1, g: 1, b: 1, a: 1}
 --- !u!1 &1937728300 stripped
 GameObject:
   m_PrefabParentObject: {fileID: 100002, guid: 231d6343c26cecc48b379aae9710ec0c, type: 3}
@@ -1304,6 +1337,26 @@ MonoBehaviour:
     m_TypeName: ControllerEvents+ControllerEvent, Assembly-CSharp, Version=0.0.0.0,
       Culture=neutral, PublicKeyToken=null
   unityTriggerReleased:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: ControllerEvents+ControllerEvent, Assembly-CSharp, Version=0.0.0.0,
+      Culture=neutral, PublicKeyToken=null
+  unitySwipedLeft:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: ControllerEvents+ControllerEvent, Assembly-CSharp, Version=0.0.0.0,
+      Culture=neutral, PublicKeyToken=null
+  unitySwipedRight:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: ControllerEvents+ControllerEvent, Assembly-CSharp, Version=0.0.0.0,
+      Culture=neutral, PublicKeyToken=null
+  unitySwipedUp:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: ControllerEvents+ControllerEvent, Assembly-CSharp, Version=0.0.0.0,
+      Culture=neutral, PublicKeyToken=null
+  unitySwipedDown:
     m_PersistentCalls:
       m_Calls: []
     m_TypeName: ControllerEvents+ControllerEvent, Assembly-CSharp, Version=0.0.0.0,
