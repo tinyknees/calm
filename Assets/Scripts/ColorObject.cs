@@ -285,29 +285,40 @@ public class ColorObject : MonoBehaviour
     {
         // check that a target was hit and that it's marked as something we can color
         if ((hit.target != null) && (hit.target.GetComponent<Colorable>() != null))
-        { 
-            // use appropriate camera and brush container for the object we are looking at
-            canvasCam = hit.target.FindChild("PaintCanvas").GetComponentInChildren<Camera>();
-            brushContainer = hit.target.transform.FindChild("PaintCanvas").FindChild("BrushContainer").gameObject;
+        {
 
-            // set up textures if none already
-            if (canvasCam.targetTexture == null)
+            // look through object for all paint canvases
+            var canvases = hit.target.GetComponentsInChildren<Transform>();
+
+            foreach(Transform canvas in canvases)
             {
-                RenderTexture rt = new RenderTexture(1024, 1024, 32, RenderTextureFormat.ARGB32);
-                rt.name = "PaintTexture";
-                rt.Create();
-                canvasCam.targetTexture = rt;
-                canvasCam.enabled = true;
-                hit.target.GetComponent<MeshRenderer>().material.mainTexture = rt;
+                if (canvas.name == "PaintCanvas")
+                {
+                    // use appropriate camera and brush container for the object we are looking at
+                    canvasCam = canvas.GetComponentInChildren<Camera>();
+                    brushContainer = canvas.FindChild("BrushContainer").gameObject;
+
+                    // set up textures if none already
+                    if (canvasCam.targetTexture == null)
+                    {
+                        RenderTexture rt = new RenderTexture(1024, 1024, 32, RenderTextureFormat.ARGB32);
+                        rt.name = "PaintTexture";
+                        rt.Create();
+                        canvasCam.targetTexture = rt;
+                        canvasCam.enabled = true;
+                        hit.target.GetComponent<MeshRenderer>().material.mainTexture = rt;
+                    }
+
+                    MeshCollider meshCollider = hit.target.GetComponent<Collider>() as MeshCollider;
+                    if (meshCollider == null || meshCollider.sharedMesh == null)
+                        return false;
+                    Vector2 pixelUV = new Vector2(hit.textureCoord.x, hit.textureCoord.y);
+                    uvWorldPosition.x = pixelUV.x - canvasCam.orthographicSize;//To center the UV on X
+                    uvWorldPosition.y = pixelUV.y - canvasCam.orthographicSize;//To center the UV on Y
+                    uvWorldPosition.z = 0.0f;
+                }
             }
 
-            MeshCollider meshCollider = hit.target.GetComponent<Collider>() as MeshCollider;
-            if (meshCollider == null || meshCollider.sharedMesh == null)
-                return false;
-            Vector2 pixelUV = new Vector2(hit.textureCoord.x, hit.textureCoord.y);
-            uvWorldPosition.x = pixelUV.x - canvasCam.orthographicSize;//To center the UV on X
-            uvWorldPosition.y = pixelUV.y - canvasCam.orthographicSize;//To center the UV on Y
-            uvWorldPosition.z = 0.0f;
             return true;
         }
         else

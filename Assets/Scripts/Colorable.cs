@@ -11,11 +11,10 @@ public class Colorable : MonoBehaviour {
 	// Add UV canvas, camera for render texture, and a brush container to ever model with a mesh renderer
 	void Start () {
 
-		
 	}
-	
+
 	// Update is called once per frame
 	void Update () {
-		
+
 	}
 }
