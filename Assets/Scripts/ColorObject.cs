@@ -6,7 +6,7 @@ using System;
 /// </summary>
 [RequireComponent(typeof(ControllerEvents))]
 [RequireComponent(typeof(LaserPointer))]
-public class PaintObject : MonoBehaviour
+public class ColorObject : MonoBehaviour
 {
 
     public Color[] brushColors = new Color[5];
@@ -91,12 +91,12 @@ public class PaintObject : MonoBehaviour
     {
         if (hitTarget && hitObj.distance < brushDistance)
         {
-            DoPaint(brushColor, hitObj);
+            DoColor(brushColor, hitObj);
             UpdateBrushCursor();
         }
         else if (invHitTarget && invHitObj.distance < brushDistance + 0.145)
         {
-            DoPaint(Color.white, invHitObj);
+            DoColor(Color.white, invHitObj);
             //UpdateBrushCursor();
         }
         else
@@ -198,10 +198,12 @@ public class PaintObject : MonoBehaviour
         brushCursor.GetComponent<SpriteRenderer>().material.color = brushColors[colorIndex];
     }
 
-    void DoPaint(Color bcolor, LaserPointer.PointerEventArgs hit)
+    void DoColor(Color bcolor, LaserPointer.PointerEventArgs hit)
     {
+        // While saving brush strokes onto the texture, don't allow coloring
         if (saving)
             return;
+
         Vector3 uvWorldPosition = Vector3.zero;
         AudioSource audio = controllerEvents.transform.GetComponent<AudioSource>();
         if (!audio.isPlaying)
@@ -212,8 +214,10 @@ public class PaintObject : MonoBehaviour
         {
             GameObject brushObj;
 
-            brushObj = (GameObject)Instantiate(Resources.Load("TexturePainter-Instances/BrushEntity")); //Paint a brush
+            brushObj = (GameObject)Instantiate(Resources.Load("BrushEntity")); //Paint a brush
             brushObj.GetComponent<SpriteRenderer>().color = bcolor; //Set the brush color
+
+            //TODO: Replace this with public properties and assignable brushes
             if (hit.angle < 130)
             {
                 brushSize = 0.25f;
@@ -234,17 +238,22 @@ public class PaintObject : MonoBehaviour
                 brushSize = 0.05f;
                 brushColor.a = 1f; // Brushes have alpha to have a merging effect when painted over.
             }
-            brushObj.transform.parent = brushContainer.transform; //Add the brush to our container to be wiped later
+            brushObj.transform.parent = brushContainer.transform; //Add the brushstroke to our container to be wiped later
             brushObj.transform.localPosition = uvWorldPosition; //The position of the brush (in the UVMap)
             brushObj.transform.localScale = Vector3.one * brushSize;//The size of the brush
         }
+
+        // Keep track of the last painted object to remember which canvas to save
         if (savObj != hit.target)
         {
             savObj = hit.target;
         }
+
         brushCounter++; //Add to the max brushes
+
+        //If we reach the max brushes available, flatten the texture and clear the brushes
         if (brushCounter >= MAX_BRUSH_COUNT)
-        { //If we reach the max brushes available, flatten the texture and clear the brushes
+        { 
             brushCursor.SetActive(false);
             saving = true;
             Invoke("SaveTexture", 0.1f);
@@ -252,7 +261,7 @@ public class PaintObject : MonoBehaviour
     }
 
 
-    //To update at realtime the painting cursor on the mesh
+    //To update at realtime the painting cursor on the mesh, off by default but good for debugging
     void UpdateBrushCursor()
     {
         if (cursorActive)
@@ -260,7 +269,6 @@ public class PaintObject : MonoBehaviour
             Vector3 uvWorldPosition = Vector3.zero;
             if (HitTestUVPosition(ref uvWorldPosition, hitObj) && !saving)
             {
-
                 brushCursor.SetActive(true);
                 brushCursor.transform.position = uvWorldPosition + brushContainer.transform.position;
             }
@@ -275,7 +283,8 @@ public class PaintObject : MonoBehaviour
     //Returns the position on the texuremap according to a hit in the mesh collider
     bool HitTestUVPosition(ref Vector3 uvWorldPosition, LaserPointer.PointerEventArgs hit)
     {
-        if (hit.target != null)
+        // check that a target was hit and that it's marked as something we can color
+        if ((hit.target != null) && (hit.target.GetComponent<Colorable>() != null))
         { 
             // use appropriate camera and brush container for the object we are looking at
             canvasCam = hit.target.FindChild("PaintCanvas").GetComponentInChildren<Camera>();
