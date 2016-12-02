@@ -50,7 +50,7 @@ public class ColorObject : MonoBehaviour
     {
         laserPointer = GetComponent<LaserPointer>();
         controllerEvents = GetComponent<ControllerEvents>();
-
+        
         laserPointerDefaultColor = Color.clear;
 
         brushCursor.GetComponent<SpriteRenderer>().sprite = cursorPaint;
@@ -97,10 +97,10 @@ public class ColorObject : MonoBehaviour
         else if (invHitTarget && invHitObj.distance < brushDistance + 0.145)
         {
             DoColor(Color.white, invHitObj);
-            //UpdateBrushCursor();
         }
         else
         {
+            // not coloring, stop sounds if any coloring sound is playing
             AudioSource audio = controllerEvents.transform.GetComponent<AudioSource>();
             if (audio.isPlaying)
             {
@@ -117,6 +117,7 @@ public class ColorObject : MonoBehaviour
         laserPointer.PointerOut -= HandlePointerOut;
         laserPointer.InvPointerIn -= HandleInvPointerIn;
         laserPointer.InvPointerOut -= HandleInvPointerOut;
+        activeController = e;
     }
 
     //Event Handler
@@ -127,6 +128,7 @@ public class ColorObject : MonoBehaviour
         laserPointer.PointerOut += HandlePointerOut;
         laserPointer.InvPointerIn += HandleInvPointerIn;
         laserPointer.InvPointerOut += HandleInvPointerOut;
+        activeController = e;
     }
 
     //Event Handler
@@ -176,12 +178,14 @@ public class ColorObject : MonoBehaviour
     {
         colorIndex--;
         ChangeBrushColor();
+        activeController = e;
     }
 
     private void HandleSwipedRight(object sender, ControllerEvents.ControllerInteractionEventArgs e)
     {
         colorIndex++;
         ChangeBrushColor();
+        activeController = e;
     }
 
     void ChangeBrushColor()
@@ -205,17 +209,21 @@ public class ColorObject : MonoBehaviour
             return;
 
         Vector3 uvWorldPosition = Vector3.zero;
-        AudioSource audio = controllerEvents.transform.GetComponent<AudioSource>();
-        if (!audio.isPlaying)
-        {
-            audio.Play();
-        }
+
         if (HitTestUVPosition(ref uvWorldPosition, hit))
         {
             GameObject brushObj;
 
             brushObj = (GameObject)Instantiate(Resources.Load("BrushEntity")); //Paint a brush
             brushObj.GetComponent<SpriteRenderer>().color = bcolor; //Set the brush color
+
+            AudioSource audio = controllerEvents.transform.GetComponent<AudioSource>();
+            if (!audio.isPlaying)
+            {
+                audio.Play();
+            }
+
+            SteamVR_Controller.Input((int)hit.controllerIndex).TriggerHapticPulse(100);
 
             //TODO: Replace this with public properties and assignable brushes
             if (hit.angle < 130)
@@ -241,22 +249,22 @@ public class ColorObject : MonoBehaviour
             brushObj.transform.parent = brushContainer.transform; //Add the brushstroke to our container to be wiped later
             brushObj.transform.localPosition = uvWorldPosition; //The position of the brush (in the UVMap)
             brushObj.transform.localScale = Vector3.one * brushSize;//The size of the brush
-        }
 
-        // Keep track of the last painted object to remember which canvas to save
-        if (savObj != hit.target)
-        {
-            savObj = hit.target;
-        }
+            // Keep track of the last painted object to remember which canvas to save
+            if (savObj != hit.target)
+            {
+                savObj = hit.target;
+            }
 
-        brushCounter++; //Add to the max brushes
+            brushCounter++; //Add to the max brushes
 
-        //If we reach the max brushes available, flatten the texture and clear the brushes
-        if (brushCounter >= MAX_BRUSH_COUNT)
-        { 
-            brushCursor.SetActive(false);
-            saving = true;
-            Invoke("SaveTexture", 0.1f);
+            //If we reach the max brushes available, flatten the texture and clear the brushes
+            if (brushCounter >= MAX_BRUSH_COUNT)
+            {
+                brushCursor.SetActive(false);
+                saving = true;
+                Invoke("SaveTexture", 0.1f);
+            }
         }
     }
 
@@ -288,7 +296,7 @@ public class ColorObject : MonoBehaviour
         {
 
             // look through object for all paint canvases
-            var canvases = hit.target.GetComponentsInChildren<Transform>();
+            Transform[] canvases = hit.target.GetComponentsInChildren<Transform>();
 
             foreach(Transform canvas in canvases)
             {

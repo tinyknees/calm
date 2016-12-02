@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using UnityEngine.Events;
 
+[RequireComponent(typeof(SteamVR_TrackedObject))]
 public class LaserPointer : MonoBehaviour
 {
     // Event Declaration Code
@@ -47,18 +48,17 @@ public class LaserPointer : MonoBehaviour
 
     protected Transform previousContact = null;
 
-    private SteamVR_TrackedController controller;
+    private SteamVR_TrackedObject controller;
     private Vector2 prevTextureCoord;
     private float prevDistance;
     private Transform previousInvContact;
     private float prevInvDistance;
     private Vector2 prevInvTextureCoord;
-    private float invdist;
 
     // Unity lifecycle method
     public void Awake()
     {
-        controller = GetComponent<SteamVR_TrackedController>();
+        controller = GetComponent<SteamVR_TrackedObject>();
 
         // Make sure the Laser Pointer has a Parent
         if (parent == null)
@@ -145,6 +145,7 @@ public class LaserPointer : MonoBehaviour
     void Update()
     {
         float dist = 100f;
+        float invdist = 100f;
 
         Ray raycast = new Ray(transform.position, transform.forward);
         Ray invraycast = new Ray(transform.position, -transform.forward);
@@ -159,7 +160,7 @@ public class LaserPointer : MonoBehaviour
             PointerEventArgs argsOut = new PointerEventArgs();
             if (controller != null)
             {
-                argsOut.controllerIndex = controller.controllerIndex;
+                argsOut.controllerIndex = (uint)controller.index;
             }
             argsOut.distance = 0f;
             argsOut.flags = 0;
@@ -176,7 +177,7 @@ public class LaserPointer : MonoBehaviour
             PointerEventArgs argsOut = new PointerEventArgs();
             if (controller != null)
             {
-                argsOut.controllerIndex = controller.controllerIndex;
+                argsOut.controllerIndex = (uint)controller.index;
             }
             argsOut.distance = 0f;
             argsOut.flags = 0;
@@ -192,7 +193,7 @@ public class LaserPointer : MonoBehaviour
             PointerEventArgs argsIn = new PointerEventArgs();
             if (controller != null)
             {
-                argsIn.controllerIndex = controller.controllerIndex;
+                argsIn.controllerIndex = (uint)controller.index;
             }
             argsIn.distance = hitInfo.distance;
             argsIn.flags = 0;
@@ -210,7 +211,7 @@ public class LaserPointer : MonoBehaviour
             PointerEventArgs argsIn = new PointerEventArgs();
             if (controller != null)
             {
-                argsIn.controllerIndex = controller.controllerIndex;
+                argsIn.controllerIndex = (uint)controller.index;
             }
             argsIn.distance = invHitInfo.distance;
             argsIn.flags = 0;
@@ -232,7 +233,7 @@ public class LaserPointer : MonoBehaviour
             PointerEventArgs argsUpdate = new PointerEventArgs();
             if (controller != null)
             {
-                argsUpdate.controllerIndex = controller.controllerIndex;
+                argsUpdate.controllerIndex = (uint)controller.index;
             }
             argsUpdate.distance = hitInfo.distance;
             argsUpdate.flags = 0;
@@ -249,7 +250,7 @@ public class LaserPointer : MonoBehaviour
             PointerEventArgs argsUpdate = new PointerEventArgs();
             if (controller != null)
             {
-                argsUpdate.controllerIndex = controller.controllerIndex;
+                argsUpdate.controllerIndex = (uint)controller.index;
             }
             argsUpdate.distance = invHitInfo.distance;
             argsUpdate.flags = 0;
@@ -278,9 +279,9 @@ public class LaserPointer : MonoBehaviour
 
         pointerModel.transform.localPosition = new Vector3(0f, 0f, dist / 2f);
 
-        float currentThickness = controller != null && controller.triggerPressed
-            ? thicknessPressed : thickness;
-        pointerModel.transform.localScale = new Vector3(currentThickness, currentThickness, dist);
+        //float currentThickness = controller != null && device.GetPressDown(SteamVR_Controller.ButtonMask.Trigger)
+        //    ? thicknessPressed : thickness;
+        //pointerModel.transform.localScale = new Vector3(currentThickness, currentThickness, dist);
     }
 
     // Event publisher
