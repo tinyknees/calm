@@ -36,6 +36,11 @@ public class ControllerEvents : MonoBehaviour
     public event ControllerInteractionEventHandler SwipedRight;
     public event ControllerInteractionEventHandler SwipedUp;
     public event ControllerInteractionEventHandler SwipedDown;
+    public event ControllerInteractionEventHandler TouchpadUpPressed;
+    public event ControllerInteractionEventHandler TouchpadDownPressed;
+    public event ControllerInteractionEventHandler TouchpadRightPressed;
+    public event ControllerInteractionEventHandler TouchpadLeftPressed;
+    public event ControllerInteractionEventHandler TouchpadReleased;
 
     // Unity Events add a little overhead but listeners can be assigned via Unity editor
     public ControllerEvent unityTriggerPressed = new ControllerEvent();
@@ -44,10 +49,16 @@ public class ControllerEvents : MonoBehaviour
     public ControllerEvent unitySwipedRight = new ControllerEvent();
     public ControllerEvent unitySwipedUp = new ControllerEvent();
     public ControllerEvent unitySwipedDown = new ControllerEvent();
+    public ControllerEvent unityTouchpadUpPressed = new ControllerEvent();
+    public ControllerEvent unityTouchpadDownPressed = new ControllerEvent();
+    public ControllerEvent unityTouchpadRightPressed = new ControllerEvent();
+    public ControllerEvent unityTouchpadLeftPressed = new ControllerEvent();
+    public ControllerEvent unityTouchpadReleased = new ControllerEvent();
 
     // Member Variables
     [HideInInspector]
     public bool triggerPressed = false;
+    public bool touchpadPressed = false;
 
     private uint controllerIndex;
     private SteamVR_TrackedObject trackedObj;
@@ -74,13 +85,42 @@ public class ControllerEvents : MonoBehaviour
         {
             OnTriggerReleased(SetButtonEvent(ref triggerPressed, false));
         }
+        else if (device.GetPressDown(SteamVR_Controller.ButtonMask.Touchpad))
+        {
+            Vector2 touchpad = (device.GetAxis(Valve.VR.EVRButtonId.k_EButton_Axis0));
+
+            if (touchpad.y > 0.7f)
+            {
+                OnTouchpadUpPressed(SetButtonEvent(ref touchpadPressed, true));
+            }
+
+            else if (touchpad.y < -0.7f)
+            {
+                OnTouchpadDownPressed(SetButtonEvent(ref touchpadPressed, true));
+            }
+
+            if (touchpad.x > 0.7f)
+            {
+                OnTouchpadRightPressed(SetButtonEvent(ref touchpadPressed, true));
+            }
+
+            else if (touchpad.x < -0.7f)
+            {
+                OnTouchpadLeftPressed(SetButtonEvent(ref touchpadPressed, true));
+            }
+        }
+        else if (device.GetPressUp(SteamVR_Controller.ButtonMask.Touchpad))
+        {
+            OnTouchpadReleased(SetButtonEvent(ref touchpadPressed, false));
+        }
+
         if (device.GetTouchDown(Valve.VR.EVRButtonId.k_EButton_Axis0))
         {
-            OnTouchPadPressed(SetButtonEvent(ref trackingSwipe, true));
+            OnTouchpadTouched(SetButtonEvent(ref trackingSwipe, true));
         }
         else if (device.GetTouchUp(Valve.VR.EVRButtonId.k_EButton_Axis0))
         {
-            OnTouchPadReleased(SetButtonEvent(ref trackingSwipe, false));
+            OnTouchpadTouchReleased(SetButtonEvent(ref trackingSwipe, false));
         }
 
         if (trackingSwipe)
@@ -100,7 +140,7 @@ public class ControllerEvents : MonoBehaviour
         return e;
     }
 
-    // Event publisher
+    // Trigger pull events
     public virtual void OnTriggerPressed(ControllerInteractionEventArgs e)
     {
         if (TriggerPressed != null)
@@ -110,7 +150,6 @@ public class ControllerEvents : MonoBehaviour
         unityTriggerPressed.Invoke(e);
     }
 
-    // Event publisher
     public virtual void OnTriggerReleased(ControllerInteractionEventArgs e)
     {
         if (TriggerReleased != null)
@@ -120,14 +159,56 @@ public class ControllerEvents : MonoBehaviour
         unityTriggerReleased.Invoke(e);
     }
 
-    public virtual void OnTouchPadPressed(ControllerInteractionEventArgs e)
+    // Touchpad Press Down Events
+    public virtual void OnTouchpadUpPressed(ControllerInteractionEventArgs e)
+    {
+        if (TouchpadUpPressed != null)
+        {
+            TouchpadUpPressed(this, e);
+        }
+        unityTouchpadUpPressed.Invoke(e);
+    }
+    public virtual void OnTouchpadDownPressed(ControllerInteractionEventArgs e)
+    {
+        if (TouchpadDownPressed != null)
+        {
+            TouchpadDownPressed(this, e);
+        }
+        unityTouchpadDownPressed.Invoke(e);
+    }
+    public virtual void OnTouchpadRightPressed(ControllerInteractionEventArgs e)
+    {
+        if (TouchpadRightPressed != null)
+        {
+            TouchpadRightPressed(this, e);
+        }
+        unityTouchpadRightPressed.Invoke(e);
+    }
+    public virtual void OnTouchpadLeftPressed(ControllerInteractionEventArgs e)
+    {
+        if (TouchpadLeftPressed != null)
+        {
+            TouchpadLeftPressed(this, e);
+        }
+        unityTouchpadLeftPressed.Invoke(e);
+    }
+    public virtual void OnTouchpadReleased(ControllerInteractionEventArgs e)
+    {
+        if (TouchpadReleased != null)
+        {
+            TouchpadReleased(this, e);
+        }
+        unityTouchpadReleased.Invoke(e);
+    }
+
+    public virtual void OnTouchpadTouched(ControllerInteractionEventArgs e)
     {
         mStartPosition = new Vector2(device.GetAxis(Valve.VR.EVRButtonId.k_EButton_Axis0).x,
     device.GetAxis(Valve.VR.EVRButtonId.k_EButton_Axis0).y);
         mSwipeStartTime = Time.time;
     }
 
-    public virtual void OnTouchPadReleased(ControllerInteractionEventArgs e)
+    public virtual void OnTouchpadTouchReleased(ControllerInteractionEventArgs e)
     {
         // The angle range for detecting swipe
         const float mAngleRange = 30;
