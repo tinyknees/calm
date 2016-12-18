@@ -115,7 +115,7 @@ Material:
       second: {r: 0.20784315, g: 0.9960785, b: 0.86274517, a: 0.9}
     - first:
         name: PaintUv
-      second: {r: 0.7361899, g: 0.6055111, b: 0, a: 0}
+      second: {r: 0.6458887, g: 0.22314057, b: 0, a: 0}
     - first:
         name: _Color
       second: {r: 0.20784315, g: 0.9960785, b: 0.86274517, a: 0.3}
