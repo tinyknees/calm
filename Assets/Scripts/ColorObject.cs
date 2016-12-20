@@ -55,21 +55,27 @@ public class ColorObject : MonoBehaviour
 
         foreach (Colorable co in colorableObjects)
         {
-            if ((co.transform.GetComponent<MeshCollider>()) &&
+            if ((co.transform.GetComponent<Collider>()) &&
                 (!co.transform.Find("PaintCanvas")))
             {
+                if (co.paintcanvas == null) { co.paintcanvas = new GameObject(); }
                 co.paintcanvas.name = "PaintCanvas";
                 co.paintcanvas.transform.SetParent(co.transform);
-                co.paintcanvas.transform.localPosition = new Vector3(0, -10 * i, 0);
+                co.paintcanvas.transform.localPosition = new Vector3(0, -10 * (i+1), 0);
+                co.paintcanvas.transform.localRotation = Quaternion.identity;
 
+                if (co.brushcontainer == null) { co.brushcontainer = new GameObject(); }
                 co.brushcontainer.name = "BrushContainer";
                 co.brushcontainer.transform.SetParent(co.paintcanvas.transform);
                 co.brushcontainer.transform.localPosition = Vector3.zero;
+                co.brushcontainer.transform.localRotation = Quaternion.identity;
 
+                if (co.canvascam == null) { co.canvascam = new GameObject(); }
                 co.canvascam.name = "CanvasCamera";
                 co.canvascam.transform.SetParent(co.paintcanvas.transform);
                 co.canvascam.AddComponent<Camera>();
                 co.canvascam.transform.localPosition = new Vector3(0, 0, -2);
+                co.canvascam.transform.localRotation = Quaternion.identity;
 
                 Camera canvascamera = co.canvascam.GetComponent<Camera>();
                 canvascamera.nearClipPlane = 0.3f;
@@ -79,6 +85,7 @@ public class ColorObject : MonoBehaviour
                 canvascamera.orthographic = true;
                 canvascamera.orthographicSize = 0.5f;
 
+                if (co.canvasbase == null) { co.canvasbase = new GameObject(); }
                 co.canvasbase.name = "CanvasBase";
                 co.canvasbase.transform.SetParent(co.paintcanvas.transform);
                 co.canvasbase.AddComponent<MeshCollider>();
@@ -88,6 +95,7 @@ public class ColorObject : MonoBehaviour
                 co.canvasbase.GetComponent<MeshFilter>().mesh = quad.GetComponent<MeshFilter>().mesh;
                 GameObject.Destroy(quad);
                 co.canvasbase.transform.localPosition = Vector3.zero;
+                co.canvasbase.transform.localRotation = Quaternion.identity;
 
                 Material material = new Material(Shader.Find("Unlit/Texture"));
                 material.name = "BaseMaterial";

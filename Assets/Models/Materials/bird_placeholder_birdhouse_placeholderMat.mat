@@ -6,21 +6,15 @@ Material:
   m_ObjectHideFlags: 0
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
-  m_Name: New Material
-  m_Shader: {fileID: 104, guid: 0000000000000000f000000000000000, type: 0}
-  m_ShaderKeywords: _EMISSION
-  m_LightmapFlags: 1
+  m_Name: bird_placeholder_birdhouse_placeholderMat
+  m_Shader: {fileID: 46, guid: 0000000000000000f000000000000000, type: 0}
+  m_ShaderKeywords: 
+  m_LightmapFlags: 5
   m_CustomRenderQueue: -1
   stringTagMap: {}
   m_SavedProperties:
     serializedVersion: 2
     m_TexEnvs:
-    - first:
-        name: _BackTex
-      second:
-        m_Texture: {fileID: 2800000, guid: 37582c61aa8caca488ea42ba38d950b1, type: 3}
-        m_Scale: {x: 1, y: 1}
-        m_Offset: {x: 0, y: 0}
     - first:
         name: _BumpMap
       second:
@@ -46,27 +40,9 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - first:
-        name: _DownTex
-      second:
-        m_Texture: {fileID: 2800000, guid: 2f4b7586047cff14a92b18c8372dc3c2, type: 3}
-        m_Scale: {x: 1, y: 1}
-        m_Offset: {x: 0, y: 0}
-    - first:
         name: _EmissionMap
       second:
         m_Texture: {fileID: 0}
-        m_Scale: {x: 1, y: 1}
-        m_Offset: {x: 0, y: 0}
-    - first:
-        name: _FrontTex
-      second:
-        m_Texture: {fileID: 2800000, guid: ba32b681f8020534596d6ad2b33dc745, type: 3}
-        m_Scale: {x: 1, y: 1}
-        m_Offset: {x: 0, y: 0}
-    - first:
-        name: _LeftTex
-      second:
-        m_Texture: {fileID: 2800000, guid: 5f0da6ec4dd0ab043b3841d7af79894b, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - first:
@@ -93,18 +69,6 @@ Material:
         m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
-    - first:
-        name: _RightTex
-      second:
-        m_Texture: {fileID: 2800000, guid: 24aafdaa5d7102c4293ff8de2dddf760, type: 3}
-        m_Scale: {x: 1, y: 1}
-        m_Offset: {x: 0, y: 0}
-    - first:
-        name: _UpTex
-      second:
-        m_Texture: {fileID: 2800000, guid: 95dd515503c5fee409f44f48b7d489fc, type: 3}
-        m_Scale: {x: 1, y: 1}
-        m_Offset: {x: 0, y: 0}
     m_Floats:
     - first:
         name: _BumpScale
@@ -118,9 +82,6 @@ Material:
     - first:
         name: _DstBlend
       second: 0
-    - first:
-        name: _Exposure
-      second: 1.09
     - first:
         name: _GlossMapScale
       second: 1
@@ -143,9 +104,6 @@ Material:
         name: _Parallax
       second: 0.02
     - first:
-        name: _Rotation
-      second: 27.954205
-    - first:
         name: _SmoothnessTextureChannel
       second: 0
     - first:
@@ -163,10 +121,7 @@ Material:
     m_Colors:
     - first:
         name: _Color
-      second: {r: 1, g: 1, b: 1, a: 1}
+      second: {r: 0.8, g: 0.8, b: 0.8, a: 1}
     - first:
         name: _EmissionColor
       second: {r: 0, g: 0, b: 0, a: 1}
-    - first:
-        name: _Tint
-      second: {r: 0.16619807, g: 0.42647052, b: 0.3618512, a: 0.5}
