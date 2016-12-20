@@ -16,10 +16,13 @@ public class ColorObject : MonoBehaviour
     private LaserPointer laserPointer; // references the laser coming from controller
     private ControllerEvents controllerEvents; // the controller where event happened
     private LaserPointer.PointerEventArgs hitObj; // shortcut to the object the laser collided with
+    private LaserPointer.PointerEventArgs invHitObj; // shortcut to the object the eraser (laser back) collided with
     private ControllerEvents.ControllerInteractionEventArgs activeController;
 
     private bool triggerPressed = false; // is the trigger being held
     private bool hitTarget = false; // has the controller laser intersected with an object
+    private bool invHitTarget;
+    private Transform savObj;
 
     // Painting specific globals
     public GameObject brushCursor; //The cursor that overlaps the model
@@ -40,17 +43,66 @@ public class ColorObject : MonoBehaviour
     private RenderTexture canvasTexture; // Render Texture that looks at our Base Texture and the painted brushes
 
     int colorIndex = 0;
-    private LaserPointer.PointerEventArgs invHitObj;
-    private bool invHitTarget;
-    private Transform savObj;
 
+    private Colorable[] colorableObjects;
+
+    void Init()
+    {
+        // go through all colorable objects and create canvases for them
+        colorableObjects = FindObjectsOfType<Colorable>();
+
+        uint i = 0;
+
+        foreach (Colorable co in colorableObjects)
+        {
+            if ((co.transform.GetComponent<MeshCollider>()) &&
+                (!co.transform.Find("PaintCanvas")))
+            {
+                co.paintcanvas.name = "PaintCanvas";
+                co.paintcanvas.transform.SetParent(co.transform);
+                co.paintcanvas.transform.localPosition = new Vector3(0, -10 * i, 0);
+
+                co.brushcontainer.name = "BrushContainer";
+                co.brushcontainer.transform.SetParent(co.paintcanvas.transform);
+                co.brushcontainer.transform.localPosition = Vector3.zero;
+
+                co.canvascam.name = "CanvasCamera";
+                co.canvascam.transform.SetParent(co.paintcanvas.transform);
+                co.canvascam.AddComponent<Camera>();
+                co.canvascam.transform.localPosition = new Vector3(0, 0, -2);
+
+                Camera canvascamera = co.canvascam.GetComponent<Camera>();
+                canvascamera.nearClipPlane = 0.3f;
+                canvascamera.farClipPlane = 5;
+                canvascamera.clearFlags = CameraClearFlags.Depth;
+                canvascamera.enabled = false;
+                canvascamera.orthographic = true;
+                canvascamera.orthographicSize = 0.5f;
+
+                co.canvasbase.name = "CanvasBase";
+                co.canvasbase.transform.SetParent(co.paintcanvas.transform);
+                co.canvasbase.AddComponent<MeshCollider>();
+                co.canvasbase.AddComponent<MeshRenderer>();
+                co.canvasbase.AddComponent<MeshFilter>();
+                GameObject quad = GameObject.CreatePrimitive(PrimitiveType.Quad);
+                co.canvasbase.GetComponent<MeshFilter>().mesh = quad.GetComponent<MeshFilter>().mesh;
+                GameObject.Destroy(quad);
+                co.canvasbase.transform.localPosition = Vector3.zero;
+
+                Material material = new Material(Shader.Find("Unlit/Texture"));
+                material.name = "BaseMaterial";
+                co.canvasbase.GetComponent<MeshRenderer>().material = material;
+            }
+            i++;
+        }
+    }
 
     // Unity lifecycle method
     void Awake()
     {
         laserPointer = GetComponent<LaserPointer>();
         controllerEvents = GetComponent<ControllerEvents>();
-        
+
         laserPointerDefaultColor = Color.clear;
 
         brushCursor.GetComponent<SpriteRenderer>().sprite = cursorPaint;
@@ -71,6 +123,8 @@ public class ColorObject : MonoBehaviour
         laserPointer.InvPointerOut += HandleInvPointerOut;
         controllerEvents.SwipedRight += HandleSwipedRight;
         controllerEvents.SwipedLeft += HandleSwipedLeft;
+
+        Init();
     }
 
     // Unity lifecycle method
