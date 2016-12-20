@@ -144,11 +144,7 @@ Material:
       second: 0.02
     - first:
         name: _Rotation
-<<<<<<< HEAD
-      second: 8.6816225
-=======
-      second: 30.794329
->>>>>>> origin/tinyknees/feature/model-update-05
+      second: 27.954205
     - first:
         name: _SmoothnessTextureChannel
       second: 0
