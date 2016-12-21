@@ -3,15 +3,15 @@
 public class SkyboxRotator : MonoBehaviour
 {
     public float RotationPerSecond = 1;
-    public bool RotateSkybox;
+    private bool _rotate;
 
     protected void Update()
     {
-        if (RotateSkybox) RenderSettings.skybox.SetFloat("_Rotation", Time.time * RotationPerSecond);
+        if (_rotate) RenderSettings.skybox.SetFloat("_Rotation", Time.time * RotationPerSecond);
     }
 
     public void ToggleSkyboxRotation()
     {
-        RotateSkybox = !RotateSkybox;
+        _rotate = !_rotate;
     }
 }
