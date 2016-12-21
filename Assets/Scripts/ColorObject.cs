@@ -16,13 +16,10 @@ public class ColorObject : MonoBehaviour
     private LaserPointer laserPointer; // references the laser coming from controller
     private ControllerEvents controllerEvents; // the controller where event happened
     private LaserPointer.PointerEventArgs hitObj; // shortcut to the object the laser collided with
-    private LaserPointer.PointerEventArgs invHitObj; // shortcut to the object the eraser (laser back) collided with
     private ControllerEvents.ControllerInteractionEventArgs activeController;
 
     private bool triggerPressed = false; // is the trigger being held
     private bool hitTarget = false; // has the controller laser intersected with an object
-    private bool invHitTarget;
-    private Transform savObj;
 
     // Painting specific globals
     public GameObject brushCursor; //The cursor that overlaps the model
@@ -43,6 +40,9 @@ public class ColorObject : MonoBehaviour
     private RenderTexture canvasTexture; // Render Texture that looks at our Base Texture and the painted brushes
 
     int colorIndex = 0;
+    private LaserPointer.PointerEventArgs invHitObj;
+    private bool invHitTarget;
+    private Transform savObj;
 
     private Colorable[] colorableObjects;
 
@@ -55,21 +55,27 @@ public class ColorObject : MonoBehaviour
 
         foreach (Colorable co in colorableObjects)
         {
-            if ((co.transform.GetComponent<MeshCollider>()) &&
+            if ((co.transform.GetComponent<Collider>()) &&
                 (!co.transform.Find("PaintCanvas")))
             {
+                if (co.paintcanvas == null) { co.paintcanvas = new GameObject(); }
                 co.paintcanvas.name = "PaintCanvas";
                 co.paintcanvas.transform.SetParent(co.transform);
-                co.paintcanvas.transform.localPosition = new Vector3(0, -10 * i, 0);
+                co.paintcanvas.transform.localPosition = new Vector3(0, -10 * (i+1), 0);
+//                co.paintcanvas.transform.localRotation = Quaternion.identity;
 
+                if (co.brushcontainer == null) { co.brushcontainer = new GameObject(); }
                 co.brushcontainer.name = "BrushContainer";
                 co.brushcontainer.transform.SetParent(co.paintcanvas.transform);
                 co.brushcontainer.transform.localPosition = Vector3.zero;
+//                co.brushcontainer.transform.localRotation = Quaternion.identity;
 
+                if (co.canvascam == null) { co.canvascam = new GameObject(); }
                 co.canvascam.name = "CanvasCamera";
                 co.canvascam.transform.SetParent(co.paintcanvas.transform);
                 co.canvascam.AddComponent<Camera>();
                 co.canvascam.transform.localPosition = new Vector3(0, 0, -2);
+//                co.canvascam.transform.localRotation = Quaternion.identity;
 
                 Camera canvascamera = co.canvascam.GetComponent<Camera>();
                 canvascamera.nearClipPlane = 0.3f;
@@ -79,6 +85,7 @@ public class ColorObject : MonoBehaviour
                 canvascamera.orthographic = true;
                 canvascamera.orthographicSize = 0.5f;
 
+                if (co.canvasbase == null) { co.canvasbase = new GameObject(); }
                 co.canvasbase.name = "CanvasBase";
                 co.canvasbase.transform.SetParent(co.paintcanvas.transform);
                 co.canvasbase.AddComponent<MeshCollider>();
@@ -88,6 +95,7 @@ public class ColorObject : MonoBehaviour
                 co.canvasbase.GetComponent<MeshFilter>().mesh = quad.GetComponent<MeshFilter>().mesh;
                 GameObject.Destroy(quad);
                 co.canvasbase.transform.localPosition = Vector3.zero;
+//                co.canvasbase.transform.localRotation = Quaternion.identity;
 
                 Material material = new Material(Shader.Find("Unlit/Texture"));
                 material.name = "BaseMaterial";
@@ -102,7 +110,7 @@ public class ColorObject : MonoBehaviour
     {
         laserPointer = GetComponent<LaserPointer>();
         controllerEvents = GetComponent<ControllerEvents>();
-
+        
         laserPointerDefaultColor = Color.clear;
 
         brushCursor.GetComponent<SpriteRenderer>().sprite = cursorPaint;
@@ -110,6 +118,8 @@ public class ColorObject : MonoBehaviour
 
         brushCursor.transform.localScale *= brushSize;
         ChangeBrushColor();
+
+        Init();
     }
 
     // Unity lifecycle method
@@ -123,8 +133,6 @@ public class ColorObject : MonoBehaviour
         laserPointer.InvPointerOut += HandleInvPointerOut;
         controllerEvents.SwipedRight += HandleSwipedRight;
         controllerEvents.SwipedLeft += HandleSwipedLeft;
-
-        Init();
     }
 
     // Unity lifecycle method
@@ -348,38 +356,30 @@ public class ColorObject : MonoBehaviour
         // check that a target was hit and that it's marked as something we can color
         if ((hit.target != null) && (hit.target.GetComponent<Colorable>() != null))
         {
+            Transform canvas = hit.target.FindChild("PaintCanvas");
 
-            // look through object for all paint canvases
-            Transform[] canvases = hit.target.GetComponentsInChildren<Transform>();
+            // use appropriate camera and brush container for the object we are looking at
+            canvasCam = canvas.GetComponentInChildren<Camera>();
+            brushContainer = canvas.FindChild("BrushContainer").gameObject;
 
-            foreach(Transform canvas in canvases)
+            // set up textures if none already
+            if (canvasCam.targetTexture == null)
             {
-                if (canvas.name == "PaintCanvas")
-                {
-                    // use appropriate camera and brush container for the object we are looking at
-                    canvasCam = canvas.GetComponentInChildren<Camera>();
-                    brushContainer = canvas.FindChild("BrushContainer").gameObject;
-
-                    // set up textures if none already
-                    if (canvasCam.targetTexture == null)
-                    {
-                        RenderTexture rt = new RenderTexture(1024, 1024, 32, RenderTextureFormat.ARGB32);
-                        rt.name = "PaintTexture";
-                        rt.Create();
-                        canvasCam.targetTexture = rt;
-                        canvasCam.enabled = true;
-                        hit.target.GetComponent<MeshRenderer>().material.mainTexture = rt;
-                    }
-
-                    MeshCollider meshCollider = hit.target.GetComponent<Collider>() as MeshCollider;
-                    if (meshCollider == null || meshCollider.sharedMesh == null)
-                        return false;
-                    Vector2 pixelUV = new Vector2(hit.textureCoord.x, hit.textureCoord.y);
-                    uvWorldPosition.x = pixelUV.x - canvasCam.orthographicSize;//To center the UV on X
-                    uvWorldPosition.y = pixelUV.y - canvasCam.orthographicSize;//To center the UV on Y
-                    uvWorldPosition.z = 0.0f;
-                }
+                RenderTexture rt = new RenderTexture(1024, 1024, 32, RenderTextureFormat.ARGB32);
+                rt.name = "PaintTexture";
+                rt.Create();
+                canvasCam.targetTexture = rt;
+                canvasCam.enabled = true;
+                hit.target.GetComponent<MeshRenderer>().material.mainTexture = rt;
             }
+
+            MeshCollider meshCollider = hit.target.GetComponent<Collider>() as MeshCollider;
+            if (meshCollider == null || meshCollider.sharedMesh == null)
+                return false;
+            Vector2 pixelUV = new Vector2(hit.textureCoord.x, hit.textureCoord.y);
+            uvWorldPosition.x = pixelUV.x - canvasCam.orthographicSize;//To center the UV on X
+            uvWorldPosition.y = pixelUV.y - canvasCam.orthographicSize;//To center the UV on Y
+            uvWorldPosition.z = 0.0f;
 
             return true;
         }

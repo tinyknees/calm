@@ -67,6 +67,18 @@ ModelImporter:
     4300018: tree_03_bubble_10
     4300020: tree_03_vines
     4300022: trunk_tree_03
+    6400000: tree_03_bubble_01
+    6400002: tree_03_bubble_02
+    6400004: tree_03_bubble_03
+    6400006: tree_03_bubble_04
+    6400008: tree_03_bubble_05
+    6400010: tree_03_bubble_06
+    6400012: tree_03_bubble_07
+    6400014: tree_03_bubble_08
+    6400016: tree_03_bubble_09
+    6400018: tree_03_bubble_10
+    6400020: tree_03_vines
+    6400022: trunk_tree_03
   materials:
     importMaterials: 1
     materialName: 0
@@ -93,7 +105,7 @@ ModelImporter:
     lODScreenPercentages: []
     globalScale: 1
     meshCompression: 0
-    addColliders: 0
+    addColliders: 1
     importBlendShapes: 1
     swapUVChannels: 0
     generateSecondaryUV: 0
