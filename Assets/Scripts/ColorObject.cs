@@ -16,10 +16,13 @@ public class ColorObject : MonoBehaviour
     private LaserPointer laserPointer; // references the laser coming from controller
     private ControllerEvents controllerEvents; // the controller where event happened
     private LaserPointer.PointerEventArgs hitObj; // shortcut to the object the laser collided with
+    private LaserPointer.PointerEventArgs invHitObj; // shortcut to the object the eraser collided with
     private ControllerEvents.ControllerInteractionEventArgs activeController;
 
     private bool triggerPressed = false; // is the trigger being held
     private bool hitTarget = false; // has the controller laser intersected with an object
+    private bool invHitTarget = false;
+
 
     // Painting specific globals
     public GameObject brushCursor; //The cursor that overlaps the model
@@ -35,14 +38,12 @@ public class ColorObject : MonoBehaviour
     private int brushCounter = 0, MAX_BRUSH_COUNT = 1000; //To avoid having millions of brushes
     private bool saving = false; //Flag to check if we are saving the texture
 
+    private Transform savObj;
     private GameObject brushContainer; // Our container for the brushes painted
     private Camera canvasCam; // The camera that looks at the canvas
     private RenderTexture canvasTexture; // Render Texture that looks at our Base Texture and the painted brushes
 
     int colorIndex = 0;
-    private LaserPointer.PointerEventArgs invHitObj;
-    private bool invHitTarget;
-    private Transform savObj;
 
     private Colorable[] colorableObjects;
 
@@ -264,72 +265,6 @@ public class ColorObject : MonoBehaviour
         brushCursor.GetComponent<SpriteRenderer>().material.color = brushColors[colorIndex];
     }
 
-    void DoColor(Color bcolor, LaserPointer.PointerEventArgs hit)
-    {
-        // While saving brush strokes onto the texture, don't allow coloring
-        if (saving)
-            return;
-
-        Vector3 uvWorldPosition = Vector3.zero;
-
-        if (HitTestUVPosition(ref uvWorldPosition, hit))
-        {
-            GameObject brushObj;
-
-            brushObj = (GameObject)Instantiate(Resources.Load("BrushEntity")); //Paint a brush
-            brushObj.GetComponent<SpriteRenderer>().color = bcolor; //Set the brush color
-
-            AudioSource audio = controllerEvents.transform.GetComponent<AudioSource>();
-            if (!audio.isPlaying)
-            {
-                audio.Play();
-            }
-
-            SteamVR_Controller.Input((int)hit.controllerIndex).TriggerHapticPulse(100);
-
-            //TODO: Replace this with public properties and assignable brushes
-            if (hit.angle < 130)
-            {
-                brushSize = 0.25f;
-                brushColor.a = brushSize * 2.0f; // Brushes have alpha to have a merging effect when painted over.
-            }
-            else if (hit.angle < 140)
-            {
-                brushSize = 0.2f;
-                brushColor.a = brushSize * 2.0f; // Brushes have alpha to have a merging effect when painted over.
-            }
-            else if (hit.angle < 150)
-            {
-                brushSize = 0.10f;
-                brushColor.a = 0.6f; // Brushes have alpha to have a merging effect when painted over.
-            }
-            else
-            {
-                brushSize = 0.05f;
-                brushColor.a = 1f; // Brushes have alpha to have a merging effect when painted over.
-            }
-            brushObj.transform.parent = brushContainer.transform; //Add the brushstroke to our container to be wiped later
-            brushObj.transform.localPosition = uvWorldPosition; //The position of the brush (in the UVMap)
-            brushObj.transform.localScale = Vector3.one * brushSize;//The size of the brush
-
-            // Keep track of the last painted object to remember which canvas to save
-            if (savObj != hit.target)
-            {
-                savObj = hit.target;
-            }
-
-            brushCounter++; //Add to the max brushes
-
-            //If we reach the max brushes available, flatten the texture and clear the brushes
-            if (brushCounter >= MAX_BRUSH_COUNT)
-            {
-                brushCursor.SetActive(false);
-                saving = true;
-                Invoke("SaveTexture", 0.1f);
-            }
-        }
-    }
-
 
     //To update at realtime the painting cursor on the mesh, off by default but good for debugging
     void UpdateBrushCursor()
@@ -350,28 +285,74 @@ public class ColorObject : MonoBehaviour
     }
 
 
+    void DoColor(Color bcolor, LaserPointer.PointerEventArgs hit)
+    {
+        // While saving brush strokes onto the texture, don't allow coloring
+        if (saving)
+            return;
+
+        Vector3 uvWorldPosition = Vector3.zero;
+
+        if (HitTestUVPosition(ref uvWorldPosition, hit))
+        {
+            GameObject brushObj;
+
+            brushObj = (GameObject)Instantiate(Resources.Load("BrushEntity")); //Paint a brush
+
+            //TODO: Replace this with public properties and assignable brushes
+            if (hit.angle < 130)
+            {
+                brushSize = 0.25f;
+                bcolor.a = brushSize * 2.0f; // Brushes have alpha to have a merging effect when painted over.
+            }
+            else if (hit.angle < 140)
+            {
+                brushSize = 0.2f;
+                bcolor.a = brushSize * 2.0f; // Brushes have alpha to have a merging effect when painted over.
+            }
+            else if (hit.angle < 150)
+            {
+                brushSize = 0.10f;
+                bcolor.a = 0.6f; // Brushes have alpha to have a merging effect when painted over.
+            }
+            else
+            {
+                brushSize = 0.05f;
+                bcolor.a = 1f; // Brushes have alpha to have a merging effect when painted over.
+            }
+            brushObj.GetComponent<SpriteRenderer>().color = bcolor; //Set the brush color
+
+            AudioSource audio = controllerEvents.transform.GetComponent<AudioSource>();
+            if (!audio.isPlaying)
+            {
+                audio.Play();
+            }
+
+            SteamVR_Controller.Input((int)hit.controllerIndex).TriggerHapticPulse(100);
+
+            brushObj.transform.parent = brushContainer.transform; //Add the brushstroke to our container to be wiped later
+            brushObj.transform.localPosition = uvWorldPosition; //The position of the brush (in the UVMap)
+            brushObj.transform.localScale = Vector3.one * brushSize;//The size of the brush
+
+            brushCounter++; //Add to the max brushes
+
+            //If we reach the max brushes available, flatten the texture and clear the brushes
+            if (brushCounter >= MAX_BRUSH_COUNT)
+            {
+                brushCursor.SetActive(false);
+                saving = true;
+                Invoke("SaveTexture", 0.1f);
+            }
+        }
+    }
+
     //Returns the position on the texuremap according to a hit in the mesh collider
     bool HitTestUVPosition(ref Vector3 uvWorldPosition, LaserPointer.PointerEventArgs hit)
     {
         // check that a target was hit and that it's marked as something we can color
         if ((hit.target != null) && (hit.target.GetComponent<Colorable>() != null))
         {
-            Transform canvas = hit.target.FindChild("PaintCanvas");
-
-            // use appropriate camera and brush container for the object we are looking at
-            canvasCam = canvas.GetComponentInChildren<Camera>();
-            brushContainer = canvas.FindChild("BrushContainer").gameObject;
-
-            // set up textures if none already
-            if (canvasCam.targetTexture == null)
-            {
-                RenderTexture rt = new RenderTexture(1024, 1024, 32, RenderTextureFormat.ARGB32);
-                rt.name = "PaintTexture";
-                rt.Create();
-                canvasCam.targetTexture = rt;
-                canvasCam.enabled = true;
-                hit.target.GetComponent<MeshRenderer>().material.mainTexture = rt;
-            }
+            PickCanvas(hit.target);
 
             MeshCollider meshCollider = hit.target.GetComponent<Collider>() as MeshCollider;
             if (meshCollider == null || meshCollider.sharedMesh == null)
@@ -390,7 +371,6 @@ public class ColorObject : MonoBehaviour
 
     }
 
-
     //Sets the base material with a our canvas texture, then removes all our brushes
     void SaveTexture()
     {
@@ -399,24 +379,7 @@ public class ColorObject : MonoBehaviour
             System.DateTime date = System.DateTime.Now;
             brushCounter = 0;
 
-            if (savObj != null)
-            {
-                // use appropriate camera and brush container for the object we are looking at
-                canvasCam = savObj.FindChild("PaintCanvas").GetComponentInChildren<Camera>();
-                brushContainer = savObj.transform.FindChild("PaintCanvas").FindChild("BrushContainer").gameObject;
-
-                // set up textures if none already
-                if (canvasCam.targetTexture == null)
-                {
-                    RenderTexture rt = new RenderTexture(1024, 1024, 32, RenderTextureFormat.ARGB32);
-                    rt.name = "PaintTexture";
-                    rt.Create();
-                    canvasCam.targetTexture = rt;
-                    canvasCam.enabled = true;
-                    savObj.GetComponent<MeshRenderer>().material.mainTexture = rt;
-                }
-
-            }
+            PickCanvas(savObj);
 
             RenderTexture canvas = canvasCam.targetTexture;
             RenderTexture.active = canvas;
@@ -433,6 +396,31 @@ public class ColorObject : MonoBehaviour
         }
         ////StartCoroutine ("SaveTextureToFile"); //Do you want to save the texture? This is your method!
         Invoke("ShowCursor", 0.1f);
+    }
+
+    void PickCanvas (Transform target)
+    {
+        if (target != null)
+        {
+            if (target != savObj)
+            {
+                canvasCam = target.GetComponentInChildren<Camera>();
+                brushContainer = target.Find("PaintCanvas").Find("BrushContainer").gameObject;
+                savObj = target;
+            }
+
+            // set up textures if none already
+            if (canvasCam.targetTexture == null)
+            {
+                RenderTexture rt = new RenderTexture(1024, 1024, 32, RenderTextureFormat.ARGB32);
+                rt.name = "PaintTexture";
+                rt.Create();
+                canvasCam.targetTexture = rt;
+                canvasCam.enabled = true;
+                target.GetComponent<MeshRenderer>().material.mainTexture = rt;
+            }
+
+        }
     }
 
 
