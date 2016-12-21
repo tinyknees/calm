@@ -107,7 +107,7 @@ public class ColorObject : MonoBehaviour
                 brushObj.GetComponent<SpriteRenderer>().color = defaultColor;
                 brushObj.transform.parent = co.brushcontainer.transform;
                 brushObj.transform.localPosition = Vector3.zero;
-                brushObj.transform.localScale = Vector3.one;
+                brushObj.transform.localScale = Vector3.one * 0.25f;
 
                 RenderTexture canvas = co.canvascam.GetComponent<Camera>().targetTexture;
                 RenderTexture.active = canvas;
@@ -118,8 +118,11 @@ public class ColorObject : MonoBehaviour
                 baseMaterial = co.canvasbase.transform.GetComponent<MeshRenderer>().material;
                 baseMaterial.mainTexture = tex; //Put the painted texture as the base
 
+                Destroy(brushObj);
+
                 co.canvascam.GetComponent<Camera>().enabled = true;
                 co.GetComponent<MeshRenderer>().material.mainTexture = rt;
+                co.canvascam.GetComponent<Camera>().enabled = false;
 
             }
             i++;
@@ -413,6 +416,7 @@ public class ColorObject : MonoBehaviour
             {//Clear brushes
                 Destroy(child.gameObject);
             }
+            canvasCam.enabled = false;
         }
         ////StartCoroutine ("SaveTextureToFile"); //Do you want to save the texture? This is your method!
         Invoke("ShowCursor", 0.1f);
@@ -429,6 +433,7 @@ public class ColorObject : MonoBehaviour
                 savObj = target;
             }
 
+            if (!canvasCam.enabled) { canvasCam.enabled = true; }
             //// set up textures if none already
             //if (canvasCam.targetTexture == null)
             //{
