@@ -17,4 +17,12 @@ public class Colorable : MonoBehaviour {
     public GameObject canvascam;
     [HideInInspector]
     public GameObject canvasbase;
+
+    void Awake()
+    {
+        paintcanvas = new GameObject();
+        brushcontainer = new GameObject();
+        canvascam = new GameObject();
+        canvasbase = new GameObject();
+    }
 }
