@@ -21,6 +21,7 @@ public class Record : MonoBehaviour {
         if (audioContainer == null)
         {
             audioContainer = new GameObject();
+            audioContainer.name = "Recording Container";
         }
         if (audioContainer.GetComponent<AudioSource>() == null)
         {
@@ -52,10 +53,14 @@ public class Record : MonoBehaviour {
             if (startRecording)
             {
                 if (!Microphone.IsRecording(null))
+                {
+                    Debug.Log("Started Recording");
                     audiosource.clip = Microphone.Start(null, true, 60, 44100);
+                }
             }
             else
             {
+                Debug.Log("Stopped Recording");
                 Microphone.End(null);
             }
         }
@@ -64,10 +69,14 @@ public class Record : MonoBehaviour {
             if (startPlaying)
             {
                 if (!audiosource.isPlaying)
+                {
+                    Debug.Log("Started Playing");
                     audiosource.Play();
+                }
             }
             else
             {
+                Debug.Log("Stopped Playing");
                 audiosource.Stop();
             }
         }
