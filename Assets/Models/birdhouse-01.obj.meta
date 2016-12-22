@@ -1,27 +1,27 @@
 fileFormatVersion: 2
 guid: a8dddea948243cd4f86f5ffd278b6612
-timeCreated: 1482353771
+timeCreated: 1482448402
 licenseType: Free
 ModelImporter:
   serializedVersion: 19
   fileIDToRecycleName:
     100000: //RootNode
-    100002: birdhouse_pasted__inside1
-    100004: birdhouse_pasted__outisde
-    100006: pasted__door_frame_birdhouse
+    100002: birdhouse_inside
+    100004: birdhouse_outside
+    100006: frame_birdhouse
     400000: //RootNode
-    400002: birdhouse_pasted__inside1
-    400004: birdhouse_pasted__outisde
-    400006: pasted__door_frame_birdhouse
-    2300000: birdhouse_pasted__inside1
-    2300002: birdhouse_pasted__outisde
-    2300004: pasted__door_frame_birdhouse
-    3300000: birdhouse_pasted__inside1
-    3300002: birdhouse_pasted__outisde
-    3300004: pasted__door_frame_birdhouse
-    4300000: birdhouse_pasted__inside1
-    4300002: birdhouse_pasted__outisde
-    4300004: pasted__door_frame_birdhouse
+    400002: birdhouse_inside
+    400004: birdhouse_outside
+    400006: frame_birdhouse
+    2300000: birdhouse_inside
+    2300002: birdhouse_outside
+    2300004: frame_birdhouse
+    3300000: birdhouse_inside
+    3300002: birdhouse_outside
+    3300004: frame_birdhouse
+    4300000: birdhouse_inside
+    4300002: birdhouse_outside
+    4300004: frame_birdhouse
   materials:
     importMaterials: 1
     materialName: 0
