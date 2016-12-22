@@ -69,6 +69,15 @@ public class ColorObject : MonoBehaviour
                 co.brushcontainer.transform.SetParent(co.paintcanvas.transform);
                 co.brushcontainer.transform.localPosition = Vector3.zero;
 
+                // add quote
+                if (co.name == "trunk_tree_01")
+                {
+                    GameObject quote = co.GetComponentInChildren<SpriteRenderer>().gameObject;
+                    quote.transform.SetParent(co.paintcanvas.transform);
+                    quote.transform.localPosition = new Vector3(-0.1f, -0.1f, -0.01f);
+                    quote.transform.localRotation = Quaternion.identity;
+                }
+
                 if (co.canvascam == null) { co.canvascam = new GameObject(); }
                 co.canvascam.name = "CanvasCamera";
                 co.canvascam.transform.SetParent(co.paintcanvas.transform);

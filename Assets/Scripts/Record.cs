@@ -348,11 +348,15 @@ public class Record : MonoBehaviour {
     private IEnumerator PlayAudio(string downloadUrl)
     {
         var www = new WWW(downloadUrl);
+        while (!www.isDone)
+        {
+            Debug.Log("Downloading");
+        }
 
         yield return www;
         audiosource.clip = www.GetAudioClip(false, false, AudioType.WAV);
-        audiosource.Play();
 
+        audiosource.Play();
     }
 
     //This will be our message listener
