@@ -1,17 +1,17 @@
 fileFormatVersion: 2
-guid: 55c1312d7bf032f488e89d9ecae344b9
-timeCreated: 1482510428
+guid: 050249e6f17cb9d43b08a8d4a7af1417
+timeCreated: 1482873812
 licenseType: Free
 ModelImporter:
   serializedVersion: 19
   fileIDToRecycleName:
-    100000: Moon
-    100002: //RootNode
-    400000: Moon
-    400002: //RootNode
-    2300000: Moon
-    3300000: Moon
-    4300000: Moon
+    100000: //RootNode
+    100002: moon_01
+    400000: //RootNode
+    400002: moon_01
+    2300000: moon_01
+    3300000: moon_01
+    4300000: moon_01
   materials:
     importMaterials: 1
     materialName: 0
