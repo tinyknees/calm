@@ -1,17 +1,17 @@
 fileFormatVersion: 2
-guid: 050249e6f17cb9d43b08a8d4a7af1417
-timeCreated: 1482873812
+guid: a750edb58d8c3f84a8a69b04b50e63d6
+timeCreated: 1482879187
 licenseType: Free
 ModelImporter:
   serializedVersion: 19
   fileIDToRecycleName:
     100000: //RootNode
-    100002: moon_01
+    100002: pSolid3
     400000: //RootNode
-    400002: moon_01
-    2300000: moon_01
-    3300000: moon_01
-    4300000: moon_01
+    400002: pSolid3
+    2300000: pSolid3
+    3300000: pSolid3
+    4300000: pSolid3
   materials:
     importMaterials: 1
     materialName: 0
