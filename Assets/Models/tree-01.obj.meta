@@ -1,72 +1,62 @@
 fileFormatVersion: 2
-guid: 82908534cec3b534a833ff7d31e71448
-timeCreated: 1482263605
+guid: d169dbaa8a194e2469a62e404f2cbf9d
+timeCreated: 1482527047
 licenseType: Free
 ModelImporter:
   serializedVersion: 19
   fileIDToRecycleName:
     100000: //RootNode
-    100002: tree_01_bubble_01
-    100004: tree_01_bubble_02
-    100006: tree_01_bubble_03
-    100008: tree_01_bubble_04
-    100010: tree_01_bubble_05
-    100012: tree_01_bubble_06
-    100014: tree_01_bubble_07
-    100016: tree_01_bubble_08
-    100018: tree_01_vines
-    100020: trunk_tree_01
+    100002: tree_01_Trees_bubble_01
+    100004: tree_01_Trees_bubble_02
+    100006: tree_01_Trees_bubble_03
+    100008: tree_01_Trees_bubble_04
+    100010: tree_01_Trees_bubble_05
+    100012: tree_01_Trees_bubble_06
+    100014: tree_01_Trees_bubble_07
+    100016: tree_01_Trees_bubble_08
+    100018: tree_01_Trees_trunk
+    100020: vines_tree_01_Trees
     400000: //RootNode
-    400002: tree_01_bubble_01
-    400004: tree_01_bubble_02
-    400006: tree_01_bubble_03
-    400008: tree_01_bubble_04
-    400010: tree_01_bubble_05
-    400012: tree_01_bubble_06
-    400014: tree_01_bubble_07
-    400016: tree_01_bubble_08
-    400018: tree_01_vines
-    400020: trunk_tree_01
-    2300000: tree_01_bubble_01
-    2300002: tree_01_bubble_02
-    2300004: tree_01_bubble_03
-    2300006: tree_01_bubble_04
-    2300008: tree_01_bubble_05
-    2300010: tree_01_bubble_06
-    2300012: tree_01_bubble_07
-    2300014: tree_01_bubble_08
-    2300016: tree_01_vines
-    2300018: trunk_tree_01
-    3300000: tree_01_bubble_01
-    3300002: tree_01_bubble_02
-    3300004: tree_01_bubble_03
-    3300006: tree_01_bubble_04
-    3300008: tree_01_bubble_05
-    3300010: tree_01_bubble_06
-    3300012: tree_01_bubble_07
-    3300014: tree_01_bubble_08
-    3300016: tree_01_vines
-    3300018: trunk_tree_01
-    4300000: tree_01_bubble_01
-    4300002: tree_01_bubble_02
-    4300004: tree_01_bubble_03
-    4300006: tree_01_bubble_04
-    4300008: tree_01_bubble_05
-    4300010: tree_01_bubble_06
-    4300012: tree_01_bubble_07
-    4300014: tree_01_bubble_08
-    4300016: tree_01_vines
-    4300018: trunk_tree_01
-    6400000: tree_01_bubble_01
-    6400002: tree_01_bubble_02
-    6400004: tree_01_bubble_03
-    6400006: tree_01_bubble_04
-    6400008: tree_01_bubble_05
-    6400010: tree_01_bubble_06
-    6400012: tree_01_bubble_07
-    6400014: tree_01_bubble_08
-    6400016: tree_01_vines
-    6400018: trunk_tree_01
+    400002: tree_01_Trees_bubble_01
+    400004: tree_01_Trees_bubble_02
+    400006: tree_01_Trees_bubble_03
+    400008: tree_01_Trees_bubble_04
+    400010: tree_01_Trees_bubble_05
+    400012: tree_01_Trees_bubble_06
+    400014: tree_01_Trees_bubble_07
+    400016: tree_01_Trees_bubble_08
+    400018: tree_01_Trees_trunk
+    400020: vines_tree_01_Trees
+    2300000: tree_01_Trees_bubble_01
+    2300002: tree_01_Trees_bubble_02
+    2300004: tree_01_Trees_bubble_03
+    2300006: tree_01_Trees_bubble_04
+    2300008: tree_01_Trees_bubble_05
+    2300010: tree_01_Trees_bubble_06
+    2300012: tree_01_Trees_bubble_07
+    2300014: tree_01_Trees_bubble_08
+    2300016: tree_01_Trees_trunk
+    2300018: vines_tree_01_Trees
+    3300000: tree_01_Trees_bubble_01
+    3300002: tree_01_Trees_bubble_02
+    3300004: tree_01_Trees_bubble_03
+    3300006: tree_01_Trees_bubble_04
+    3300008: tree_01_Trees_bubble_05
+    3300010: tree_01_Trees_bubble_06
+    3300012: tree_01_Trees_bubble_07
+    3300014: tree_01_Trees_bubble_08
+    3300016: tree_01_Trees_trunk
+    3300018: vines_tree_01_Trees
+    4300000: tree_01_Trees_bubble_01
+    4300002: tree_01_Trees_bubble_02
+    4300004: tree_01_Trees_bubble_03
+    4300006: tree_01_Trees_bubble_04
+    4300008: tree_01_Trees_bubble_05
+    4300010: tree_01_Trees_bubble_06
+    4300012: tree_01_Trees_bubble_07
+    4300014: tree_01_Trees_bubble_08
+    4300016: tree_01_Trees_trunk
+    4300018: vines_tree_01_Trees
   materials:
     importMaterials: 1
     materialName: 0
@@ -93,7 +83,7 @@ ModelImporter:
     lODScreenPercentages: []
     globalScale: 1
     meshCompression: 0
-    addColliders: 1
+    addColliders: 0
     importBlendShapes: 1
     swapUVChannels: 0
     generateSecondaryUV: 0
