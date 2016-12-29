@@ -1,32 +1,17 @@
 fileFormatVersion: 2
-guid: 2b990db38ec543342b7915d04ae35ae3
-timeCreated: 1483051494
+guid: 2cea621a5e5a6a54ba67566e8ee189c6
+timeCreated: 1483050903
 licenseType: Free
 ModelImporter:
   serializedVersion: 19
   fileIDToRecycleName:
     100000: //RootNode
-    100002: Birdhouse_frame
-    100004: Birdhouse_outisde
-    100006: Birdhouse_pSolid1
-    100008: inside_Birdhouse
+    100002: vine_vine_02
     400000: //RootNode
-    400002: Birdhouse_frame
-    400004: Birdhouse_outisde
-    400006: Birdhouse_pSolid1
-    400008: inside_Birdhouse
-    2300000: Birdhouse_frame
-    2300002: Birdhouse_outisde
-    2300004: Birdhouse_pSolid1
-    2300006: inside_Birdhouse
-    3300000: Birdhouse_frame
-    3300002: Birdhouse_outisde
-    3300004: Birdhouse_pSolid1
-    3300006: inside_Birdhouse
-    4300000: Birdhouse_frame
-    4300002: Birdhouse_outisde
-    4300004: Birdhouse_pSolid1
-    4300006: inside_Birdhouse
+    400002: vine_vine_02
+    2300000: vine_vine_02
+    3300000: vine_vine_02
+    4300000: vine_vine_02
   materials:
     importMaterials: 1
     materialName: 0
