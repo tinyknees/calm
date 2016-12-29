@@ -1,0 +1,162 @@
+fileFormatVersion: 2
+guid: 5d2356f428c7cd146abd723c348824ab
+timeCreated: 1483050885
+licenseType: Free
+ModelImporter:
+  serializedVersion: 19
+  fileIDToRecycleName:
+    100000: //RootNode
+    100002: vine_01_bubble_01
+    100004: vine_01_bubble_02
+    100006: vine_01_bubble_03
+    100008: vine_01_bubble_04
+    100010: vine_01_bubble_05
+    100012: vine_01_bubble_06
+    100014: vine_01_bubble_07
+    100016: vine_01_bubble_08
+    100018: vine_01_string_01
+    100020: vine_01_string_02
+    100022: vine_01_string_03
+    100024: vine_01_string_04
+    100026: vine_01_string_05
+    100028: vine_01_string_06
+    100030: vine_01_string_07
+    100032: vine_01_string_08
+    100034: vine_vine_01
+    400000: //RootNode
+    400002: vine_01_bubble_01
+    400004: vine_01_bubble_02
+    400006: vine_01_bubble_03
+    400008: vine_01_bubble_04
+    400010: vine_01_bubble_05
+    400012: vine_01_bubble_06
+    400014: vine_01_bubble_07
+    400016: vine_01_bubble_08
+    400018: vine_01_string_01
+    400020: vine_01_string_02
+    400022: vine_01_string_03
+    400024: vine_01_string_04
+    400026: vine_01_string_05
+    400028: vine_01_string_06
+    400030: vine_01_string_07
+    400032: vine_01_string_08
+    400034: vine_vine_01
+    2300000: vine_01_bubble_01
+    2300002: vine_01_bubble_02
+    2300004: vine_01_bubble_03
+    2300006: vine_01_bubble_04
+    2300008: vine_01_bubble_05
+    2300010: vine_01_bubble_06
+    2300012: vine_01_bubble_07
+    2300014: vine_01_bubble_08
+    2300016: vine_01_string_01
+    2300018: vine_01_string_02
+    2300020: vine_01_string_03
+    2300022: vine_01_string_04
+    2300024: vine_01_string_05
+    2300026: vine_01_string_06
+    2300028: vine_01_string_07
+    2300030: vine_01_string_08
+    2300032: vine_vine_01
+    3300000: vine_01_bubble_01
+    3300002: vine_01_bubble_02
+    3300004: vine_01_bubble_03
+    3300006: vine_01_bubble_04
+    3300008: vine_01_bubble_05
+    3300010: vine_01_bubble_06
+    3300012: vine_01_bubble_07
+    3300014: vine_01_bubble_08
+    3300016: vine_01_string_01
+    3300018: vine_01_string_02
+    3300020: vine_01_string_03
+    3300022: vine_01_string_04
+    3300024: vine_01_string_05
+    3300026: vine_01_string_06
+    3300028: vine_01_string_07
+    3300030: vine_01_string_08
+    3300032: vine_vine_01
+    4300000: vine_01_bubble_01
+    4300002: vine_01_bubble_02
+    4300004: vine_01_bubble_03
+    4300006: vine_01_bubble_04
+    4300008: vine_01_bubble_05
+    4300010: vine_01_bubble_06
+    4300012: vine_01_bubble_07
+    4300014: vine_01_bubble_08
+    4300016: vine_01_string_01
+    4300018: vine_01_string_02
+    4300020: vine_01_string_03
+    4300022: vine_01_string_04
+    4300024: vine_01_string_05
+    4300026: vine_01_string_06
+    4300028: vine_01_string_07
+    4300030: vine_01_string_08
+    4300032: vine_vine_01
+  materials:
+    importMaterials: 1
+    materialName: 0
+    materialSearch: 1
+  animations:
+    legacyGenerateAnimations: 4
+    bakeSimulation: 0
+    resampleCurves: 1
+    optimizeGameObjects: 0
+    motionNodeName: 
+    animationImportErrors: 
+    animationImportWarnings: 
+    animationRetargetingWarnings: 
+    animationDoRetargetingWarnings: 0
+    animationCompression: 1
+    animationRotationError: 0.5
+    animationPositionError: 0.5
+    animationScaleError: 0.5
+    animationWrapMode: 0
+    extraExposedTransformPaths: []
+    clipAnimations: []
+    isReadable: 1
+  meshes:
+    lODScreenPercentages: []
+    globalScale: 1
+    meshCompression: 0
+    addColliders: 0
+    importBlendShapes: 1
+    swapUVChannels: 0
+    generateSecondaryUV: 0
+    useFileUnits: 1
+    optimizeMeshForGPU: 1
+    keepQuads: 0
+    weldVertices: 1
+    secondaryUVAngleDistortion: 8
+    secondaryUVAreaDistortion: 15.000001
+    secondaryUVHardAngle: 88
+    secondaryUVPackMargin: 4
+    useFileScale: 1
+  tangentSpace:
+    normalSmoothAngle: 60
+    normalImportMode: 0
+    tangentImportMode: 3
+  importAnimation: 1
+  copyAvatar: 0
+  humanDescription:
+    serializedVersion: 2
+    human: []
+    skeleton: []
+    armTwist: 0.5
+    foreArmTwist: 0.5
+    upperLegTwist: 0.5
+    legTwist: 0.5
+    armStretch: 0.05
+    legStretch: 0.05
+    feetSpacing: 0
+    rootMotionBoneName: 
+    rootMotionBoneRotation: {x: 0, y: 0, z: 0, w: 1}
+    hasTranslationDoF: 0
+    hasExtraRoot: 0
+    skeletonHasParents: 1
+  lastHumanDescriptionAvatarSource: {instanceID: 0}
+  animationType: 0
+  humanoidOversampling: 1
+  additionalBone: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
