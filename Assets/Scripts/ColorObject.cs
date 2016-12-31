@@ -71,12 +71,12 @@ public class ColorObject : MonoBehaviour
                 co.brushcontainer.transform.localPosition = Vector3.zero;
 
                 // add quote
-                if (co.name == "trunk_tree_01")
+                Transform quote = co.transform.FindChild("Quote");
+                if (quote != null)
                 {
-                    GameObject quote = co.GetComponentInChildren<SpriteRenderer>().gameObject;
-                    quote.transform.SetParent(co.paintcanvas.transform);
-                    quote.transform.localPosition = new Vector3(-0.1f, -0.1f, -0.01f);
-                    quote.transform.localRotation = Quaternion.identity;
+                    quote.SetParent(co.paintcanvas.transform);
+                    quote.localPosition = new Vector3(-0.1f, -0.1f, -0.01f);
+                    quote.localRotation = Quaternion.identity;
                 }
 
                 if (co.canvascam == null) { co.canvascam = new GameObject(); }
