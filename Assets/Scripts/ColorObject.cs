@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 using System;
+using System.Linq;
 
 /// <summary>
 /// </summary>
@@ -70,12 +71,12 @@ public class ColorObject : MonoBehaviour
                 co.brushcontainer.transform.localPosition = Vector3.zero;
 
                 // add quote
-                if (co.name == "trunk_tree_01")
+                Transform quote = co.transform.FindChild("Quote");
+                if (quote != null)
                 {
-                    GameObject quote = co.GetComponentInChildren<SpriteRenderer>().gameObject;
-                    quote.transform.SetParent(co.paintcanvas.transform);
-                    quote.transform.localPosition = new Vector3(-0.1f, -0.1f, -0.01f);
-                    quote.transform.localRotation = Quaternion.identity;
+                    quote.SetParent(co.paintcanvas.transform);
+                    quote.localPosition = new Vector3(-0.1f, -0.1f, -0.01f);
+                    quote.localRotation = Quaternion.identity;
                 }
 
                 if (co.canvascam == null) { co.canvascam = new GameObject(); }
@@ -316,6 +317,21 @@ public class ColorObject : MonoBehaviour
         }
     }
 
+    //Show again the user cursor (To avoid saving it to the texture)
+    void ShowCursor()
+    {
+        saving = false;
+        if (cursorActive)
+        {
+            brushCursor.SetActive(true);
+        }
+    }
+
+    void SetBrushSize(float newBrushSize)
+    { //Sets the size of the cursor brush or decal
+        brushSize = newBrushSize;
+        brushCursor.transform.localScale = Vector3.one * brushSize;
+    }
 
     void DoColor(Color bcolor, LaserPointer.PointerEventArgs hit)
     {
@@ -421,6 +437,9 @@ public class ColorObject : MonoBehaviour
             RenderTexture.active = null;
             baseMaterial = savObj.FindChild("PaintCanvas").FindChild("CanvasBase").transform.GetComponent<MeshRenderer>().material;
             baseMaterial.mainTexture = tex; //Put the painted texture as the base
+
+            StartCoroutine("CheckQuote", tex);
+
             foreach (Transform child in brushContainer.transform)
             {//Clear brushes
                 Destroy(child.gameObject);
@@ -429,6 +448,69 @@ public class ColorObject : MonoBehaviour
         }
         ////StartCoroutine ("SaveTextureToFile"); //Do you want to save the texture? This is your method!
         Invoke("ShowCursor", 0.1f);
+    }
+
+    private IEnumerator CheckQuote(Texture2D tex)
+    {
+        if (savObj != null)
+        {
+            // check if there is a quote to check against
+            Transform quote = savObj.FindChild("PaintCanvas").FindChild("Quote");
+
+            if (quote != null)
+            {
+                Transform canvasbase = savObj.FindChild("PaintCanvas").FindChild("CanvasBase").transform;
+
+                Vector2 basesize = canvasbase.GetComponent<Renderer>().bounds.size;
+                Vector2 quotesize = quote.gameObject.GetComponent<Renderer>().bounds.size;
+                Vector2 baseorigin = new Vector2(canvasbase.position.x - basesize.x / 2, canvasbase.position.y - basesize.y / 2);
+                Vector2 quoteorigin = new Vector2(quote.localPosition.x + baseorigin.x + basesize.x / 2 - quotesize.x / 2, quote.localPosition.y + baseorigin.y + basesize.y / 2 - quotesize.y / 2);
+                Vector2 quoteend = new Vector2(quoteorigin.x + quotesize.x, quoteorigin.y + quotesize.y);
+
+                //Debug.Log("quotex: " + quoteorigin.x +
+                //    " \nquotey: " + quoteorigin.y +
+                //    " \nquotex2: " + quoteend.x +
+                //    " \nquotey2: " + quoteend.y +
+                //    " \nbasex: " + baseorigin.x +
+                //    " \nbasey: " + baseorigin.y +
+                //    " \nbasesizex: " + basesize.x +
+                //    " \nbasesizey: " + basesize.y +
+                //    " \nquotesizex: " + quotesize.x +
+                //    " \nquotesizey: " + quotesize.y
+                //    );
+
+                Color32[] colors = tex.GetPixels32();
+                float texsize = (float)Math.Sqrt(colors.Length);
+
+                float ax = (quoteorigin.x - baseorigin.x) / basesize.x * texsize;
+                float ay = (quoteorigin.y - baseorigin.y) / basesize.y * texsize;
+                float bx = (quoteend.x - baseorigin.x) / basesize.x * texsize;
+                float by = (quoteend.y - baseorigin.y) / basesize.y * texsize;
+
+                int index = 0; int x = 0; int y = 0;
+                int colored = 0;
+
+                //Debug.Log("ax: " + Math.Round(ax) + " x: " + x + " bx: " + Math.Round(bx) +
+                //    " \nay: " + Math.Round(ay) + " y: " + y + " by: " + Math.Round(by));
+
+                for (x = (int) Math.Round(ax); x < Math.Round(bx) - 1; x++)
+                {
+                    for (y = (int) Math.Round(ay); y < Math.Round(by) - 1; y++)
+                    {
+                        index = y * (int) texsize + x;
+                        if (colors[index] != defaultColor)
+                        {
+                            colored++;
+                        }
+                    }
+                }
+
+                float percentrevealed = colored / (quotesize.x / basesize.x * quotesize.y / basesize.y * colors.Length) * 100;
+                Debug.Log("% revealed: " + percentrevealed);
+            }
+        }
+
+        yield return null;
     }
 
     void PickCanvas (Transform target)
@@ -443,50 +525,9 @@ public class ColorObject : MonoBehaviour
             }
 
             if (!canvasCam.enabled) { canvasCam.enabled = true; }
-            //// set up textures if none already
-            //if (canvasCam.targetTexture == null)
-            //{
-            //    RenderTexture rt = new RenderTexture(1024, 1024, 32, RenderTextureFormat.ARGB32);
-            //    rt.name = "PaintTexture";
-            //    rt.Create();
-            //    canvasCam.targetTexture = rt;
-
-            //    GameObject brushObj = (GameObject)Instantiate(Resources.Load("BrushEntity"));
-            //    brushObj.GetComponent<SpriteRenderer>().color = brushColor;
-            //    brushObj.transform.parent = brushContainer.transform;
-            //    brushObj.transform.localPosition = Vector3.zero;
-            //    brushObj.transform.localScale = Vector3.one * 3;
-            //    RenderTexture canvas = canvasCam.targetTexture;
-            //    RenderTexture.active = canvas;
-            //    Texture2D tex = new Texture2D(canvas.width, canvas.height, TextureFormat.RGB24, false);
-            //    tex.ReadPixels(new Rect(0, 0, canvas.width, canvas.height), 0, 0);
-            //    tex.Apply();
-            //    RenderTexture.active = null;
-            //    baseMaterial = savObj.FindChild("PaintCanvas").FindChild("CanvasBase").transform.GetComponent<MeshRenderer>().material;
-            //    baseMaterial.mainTexture = tex; //Put the painted texture as the base
-
-
-            //    canvasCam.enabled = true;
-            //    target.GetComponent<MeshRenderer>().material.mainTexture = rt;
-            //}
-
         }
     }
 
-
-    //Show again the user cursor (To avoid saving it to the texture)
-    void ShowCursor()
-    {
-        saving = false;
-        brushCursor.SetActive(true);
-    }
-
-    ////////////////// PUBLIC METHODS //////////////////
-    public void SetBrushSize(float newBrushSize)
-    { //Sets the size of the cursor brush or decal
-        brushSize = newBrushSize;
-        brushCursor.transform.localScale = Vector3.one * brushSize;
-    }
 
     ////////////////// OPTIONAL METHODS //////////////////
 
