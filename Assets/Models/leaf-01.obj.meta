@@ -1,37 +1,17 @@
 fileFormatVersion: 2
-guid: 60becf8707d2bf24a874c44718a1a443
-timeCreated: 1483471595
+guid: 945dd06749f6a9f48a8127a16b5fbe98
+timeCreated: 1483471657
 licenseType: Free
 ModelImporter:
   serializedVersion: 19
   fileIDToRecycleName:
     100000: //RootNode
-    100002: vine_05_Vines_bubble_01
-    100004: vine_05_Vines_bubble_02
-    100006: vine_05_Vines_string_01
-    100008: vine_05_Vines_string_02
-    100010: vine_vine_05_Vines
+    100002: Leaf_01
     400000: //RootNode
-    400002: vine_05_Vines_bubble_01
-    400004: vine_05_Vines_bubble_02
-    400006: vine_05_Vines_string_01
-    400008: vine_05_Vines_string_02
-    400010: vine_vine_05_Vines
-    2300000: vine_05_Vines_bubble_01
-    2300002: vine_05_Vines_bubble_02
-    2300004: vine_05_Vines_string_01
-    2300006: vine_05_Vines_string_02
-    2300008: vine_vine_05_Vines
-    3300000: vine_05_Vines_bubble_01
-    3300002: vine_05_Vines_bubble_02
-    3300004: vine_05_Vines_string_01
-    3300006: vine_05_Vines_string_02
-    3300008: vine_vine_05_Vines
-    4300000: vine_05_Vines_bubble_01
-    4300002: vine_05_Vines_bubble_02
-    4300004: vine_05_Vines_string_01
-    4300006: vine_05_Vines_string_02
-    4300008: vine_vine_05_Vines
+    400002: Leaf_01
+    2300000: Leaf_01
+    3300000: Leaf_01
+    4300000: Leaf_01
   materials:
     importMaterials: 1
     materialName: 0
