@@ -1,0 +1,338 @@
+fileFormatVersion: 2
+guid: 7c92052aeae131a49aa71315c4306bd9
+timeCreated: 1483632016
+licenseType: Free
+ModelImporter:
+  serializedVersion: 19
+  fileIDToRecycleName:
+    100000: bulb_large_04
+    100002: bulb_large_05
+    100004: bulb_large_06
+    100006: bulb_large_07
+    100008: bulb_small_010
+    100010: bulb_small_011
+    100012: bulb_small_06
+    100014: bulb_small_07
+    100016: bulb_small_08
+    100018: bulb_small_09
+    100020: pasted__section_01
+    100022: pasted__section_01 1
+    100024: pasted__section_01 2
+    100026: pasted__section_01 3
+    100028: pasted__section_01 4
+    100030: pasted__section_01 5
+    100032: pasted__section_01 6
+    100034: pasted__section_01 7
+    100036: pasted__section_01 8
+    100038: pasted__section_01 9
+    100040: pasted__section_02
+    100042: pasted__section_02 1
+    100044: pasted__section_02 2
+    100046: pasted__section_02 3
+    100048: pasted__section_02 4
+    100050: pasted__section_02 5
+    100052: pasted__section_02 6
+    100054: pasted__section_02 7
+    100056: pasted__section_02 8
+    100058: pasted__section_02 9
+    100060: pasted__section_03
+    100062: pasted__section_03 1
+    100064: pasted__section_03 2
+    100066: pasted__section_03 3
+    100068: pasted__section_03 4
+    100070: pasted__section_03 5
+    100072: pasted__section_03 6
+    100074: pasted__section_03 7
+    100076: pasted__section_03 8
+    100078: pasted__section_03 9
+    100080: pasted__section_04
+    100082: pasted__section_04 1
+    100084: pasted__section_04 2
+    100086: pasted__section_04 3
+    100088: pasted__section_05
+    100090: pasted__section_05 1
+    100092: pasted__section_05 2
+    100094: pasted__section_05 3
+    100096: //RootNode
+    100098: trunk
+    100100: vines
+    400000: bulb_large_04
+    400002: bulb_large_05
+    400004: bulb_large_06
+    400006: bulb_large_07
+    400008: bulb_small_010
+    400010: bulb_small_011
+    400012: bulb_small_06
+    400014: bulb_small_07
+    400016: bulb_small_08
+    400018: bulb_small_09
+    400020: pasted__section_01
+    400022: pasted__section_01 1
+    400024: pasted__section_01 2
+    400026: pasted__section_01 3
+    400028: pasted__section_01 4
+    400030: pasted__section_01 5
+    400032: pasted__section_01 6
+    400034: pasted__section_01 7
+    400036: pasted__section_01 8
+    400038: pasted__section_01 9
+    400040: pasted__section_02
+    400042: pasted__section_02 1
+    400044: pasted__section_02 2
+    400046: pasted__section_02 3
+    400048: pasted__section_02 4
+    400050: pasted__section_02 5
+    400052: pasted__section_02 6
+    400054: pasted__section_02 7
+    400056: pasted__section_02 8
+    400058: pasted__section_02 9
+    400060: pasted__section_03
+    400062: pasted__section_03 1
+    400064: pasted__section_03 2
+    400066: pasted__section_03 3
+    400068: pasted__section_03 4
+    400070: pasted__section_03 5
+    400072: pasted__section_03 6
+    400074: pasted__section_03 7
+    400076: pasted__section_03 8
+    400078: pasted__section_03 9
+    400080: pasted__section_04
+    400082: pasted__section_04 1
+    400084: pasted__section_04 2
+    400086: pasted__section_04 3
+    400088: pasted__section_05
+    400090: pasted__section_05 1
+    400092: pasted__section_05 2
+    400094: pasted__section_05 3
+    400096: //RootNode
+    400098: trunk
+    400100: vines
+    2300000: pasted__section_01
+    2300002: pasted__section_01 1
+    2300004: pasted__section_01 2
+    2300006: pasted__section_01 3
+    2300008: pasted__section_01 4
+    2300010: pasted__section_01 5
+    2300012: pasted__section_01 6
+    2300014: pasted__section_01 7
+    2300016: pasted__section_01 8
+    2300018: pasted__section_01 9
+    2300020: pasted__section_02
+    2300022: pasted__section_02 1
+    2300024: pasted__section_02 2
+    2300026: pasted__section_02 3
+    2300028: pasted__section_02 4
+    2300030: pasted__section_02 5
+    2300032: pasted__section_02 6
+    2300034: pasted__section_02 7
+    2300036: pasted__section_02 8
+    2300038: pasted__section_02 9
+    2300040: pasted__section_03
+    2300042: pasted__section_03 1
+    2300044: pasted__section_03 2
+    2300046: pasted__section_03 3
+    2300048: pasted__section_03 4
+    2300050: pasted__section_03 5
+    2300052: pasted__section_03 6
+    2300054: pasted__section_03 7
+    2300056: pasted__section_03 8
+    2300058: pasted__section_03 9
+    2300060: pasted__section_04
+    2300062: pasted__section_04 1
+    2300064: pasted__section_04 2
+    2300066: pasted__section_04 3
+    2300068: pasted__section_05
+    2300070: pasted__section_05 1
+    2300072: pasted__section_05 2
+    2300074: pasted__section_05 3
+    2300076: trunk
+    2300078: vines
+    3300000: pasted__section_01
+    3300002: pasted__section_01 1
+    3300004: pasted__section_01 2
+    3300006: pasted__section_01 3
+    3300008: pasted__section_01 4
+    3300010: pasted__section_01 5
+    3300012: pasted__section_01 6
+    3300014: pasted__section_01 7
+    3300016: pasted__section_01 8
+    3300018: pasted__section_01 9
+    3300020: pasted__section_02
+    3300022: pasted__section_02 1
+    3300024: pasted__section_02 2
+    3300026: pasted__section_02 3
+    3300028: pasted__section_02 4
+    3300030: pasted__section_02 5
+    3300032: pasted__section_02 6
+    3300034: pasted__section_02 7
+    3300036: pasted__section_02 8
+    3300038: pasted__section_02 9
+    3300040: pasted__section_03
+    3300042: pasted__section_03 1
+    3300044: pasted__section_03 2
+    3300046: pasted__section_03 3
+    3300048: pasted__section_03 4
+    3300050: pasted__section_03 5
+    3300052: pasted__section_03 6
+    3300054: pasted__section_03 7
+    3300056: pasted__section_03 8
+    3300058: pasted__section_03 9
+    3300060: pasted__section_04
+    3300062: pasted__section_04 1
+    3300064: pasted__section_04 2
+    3300066: pasted__section_04 3
+    3300068: pasted__section_05
+    3300070: pasted__section_05 1
+    3300072: pasted__section_05 2
+    3300074: pasted__section_05 3
+    3300076: trunk
+    3300078: vines
+    4300000: trunk
+    4300002: vines
+    4300004: pasted__section_01
+    4300006: pasted__section_02
+    4300008: pasted__section_03
+    4300010: pasted__section_04
+    4300012: pasted__section_05
+    4300014: pasted__section_01
+    4300016: pasted__section_02
+    4300018: pasted__section_03
+    4300020: pasted__section_04
+    4300022: pasted__section_05
+    4300024: pasted__section_01
+    4300026: pasted__section_02
+    4300028: pasted__section_03
+    4300030: pasted__section_04
+    4300032: pasted__section_05
+    4300034: pasted__section_01
+    4300036: pasted__section_02
+    4300038: pasted__section_03
+    4300040: pasted__section_04
+    4300042: pasted__section_05
+    4300044: pasted__section_01
+    4300046: pasted__section_02
+    4300048: pasted__section_03
+    4300050: pasted__section_01
+    4300052: pasted__section_02
+    4300054: pasted__section_03
+    4300056: pasted__section_01
+    4300058: pasted__section_02
+    4300060: pasted__section_03
+    4300062: pasted__section_01
+    4300064: pasted__section_02
+    4300066: pasted__section_03
+    4300068: pasted__section_01
+    4300070: pasted__section_02
+    4300072: pasted__section_03
+    4300074: pasted__section_01
+    4300076: pasted__section_02
+    4300078: pasted__section_03
+    6400000: pasted__section_01
+    6400002: pasted__section_01 1
+    6400004: pasted__section_01 2
+    6400006: pasted__section_01 3
+    6400008: pasted__section_01 4
+    6400010: pasted__section_01 5
+    6400012: pasted__section_01 6
+    6400014: pasted__section_01 7
+    6400016: pasted__section_01 8
+    6400018: pasted__section_01 9
+    6400020: pasted__section_02
+    6400022: pasted__section_02 1
+    6400024: pasted__section_02 2
+    6400026: pasted__section_02 3
+    6400028: pasted__section_02 4
+    6400030: pasted__section_02 5
+    6400032: pasted__section_02 6
+    6400034: pasted__section_02 7
+    6400036: pasted__section_02 8
+    6400038: pasted__section_02 9
+    6400040: pasted__section_03
+    6400042: pasted__section_03 1
+    6400044: pasted__section_03 2
+    6400046: pasted__section_03 3
+    6400048: pasted__section_03 4
+    6400050: pasted__section_03 5
+    6400052: pasted__section_03 6
+    6400054: pasted__section_03 7
+    6400056: pasted__section_03 8
+    6400058: pasted__section_03 9
+    6400060: pasted__section_04
+    6400062: pasted__section_04 1
+    6400064: pasted__section_04 2
+    6400066: pasted__section_04 3
+    6400068: pasted__section_05
+    6400070: pasted__section_05 1
+    6400072: pasted__section_05 2
+    6400074: pasted__section_05 3
+    6400076: trunk
+    6400078: vines
+    9500000: //RootNode
+  materials:
+    importMaterials: 0
+    materialName: 0
+    materialSearch: 1
+  animations:
+    legacyGenerateAnimations: 4
+    bakeSimulation: 0
+    resampleCurves: 1
+    optimizeGameObjects: 0
+    motionNodeName: 
+    animationImportErrors: 
+    animationImportWarnings: 
+    animationRetargetingWarnings: 
+    animationDoRetargetingWarnings: 0
+    animationCompression: 1
+    animationRotationError: 0.5
+    animationPositionError: 0.5
+    animationScaleError: 0.5
+    animationWrapMode: 0
+    extraExposedTransformPaths: []
+    clipAnimations: []
+    isReadable: 1
+  meshes:
+    lODScreenPercentages: []
+    globalScale: 1
+    meshCompression: 0
+    addColliders: 1
+    importBlendShapes: 1
+    swapUVChannels: 0
+    generateSecondaryUV: 0
+    useFileUnits: 1
+    optimizeMeshForGPU: 1
+    keepQuads: 0
+    weldVertices: 1
+    secondaryUVAngleDistortion: 8
+    secondaryUVAreaDistortion: 15.000001
+    secondaryUVHardAngle: 88
+    secondaryUVPackMargin: 4
+    useFileScale: 1
+  tangentSpace:
+    normalSmoothAngle: 60
+    normalImportMode: 0
+    tangentImportMode: 3
+  importAnimation: 1
+  copyAvatar: 0
+  humanDescription:
+    serializedVersion: 2
+    human: []
+    skeleton: []
+    armTwist: 0.5
+    foreArmTwist: 0.5
+    upperLegTwist: 0.5
+    legTwist: 0.5
+    armStretch: 0.05
+    legStretch: 0.05
+    feetSpacing: 0
+    rootMotionBoneName: 
+    rootMotionBoneRotation: {x: 0, y: 0, z: 0, w: 1}
+    hasTranslationDoF: 0
+    hasExtraRoot: 0
+    skeletonHasParents: 1
+  lastHumanDescriptionAvatarSource: {instanceID: 0}
+  animationType: 2
+  humanoidOversampling: 1
+  additionalBone: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

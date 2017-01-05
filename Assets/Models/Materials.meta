@@ -1,13 +1,7 @@
 fileFormatVersion: 2
-<<<<<<< HEAD
-guid: 49bb7c2872bce4840be1b257b36357f1
+guid: 8b72b74ec2935f44da2f10ed457f6e5c
 folderAsset: yes
-timeCreated: 1482269542
-=======
-guid: 1d32f3f9ac9f0f84eae266ff9ab135cd
-folderAsset: yes
-timeCreated: 1482267369
->>>>>>> origin/tinyknees/feature/model-update-05
+timeCreated: 1483634067
 licenseType: Free
 DefaultImporter:
   userData: 
