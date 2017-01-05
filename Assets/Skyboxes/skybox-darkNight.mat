@@ -144,7 +144,7 @@ Material:
       second: 0.02
     - first:
         name: _Rotation
-      second: 32.322384
+      second: 20.231188
     - first:
         name: _SmoothnessTextureChannel
       second: 0
