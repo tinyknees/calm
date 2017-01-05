@@ -25,15 +25,26 @@ public class ColorObject : MonoBehaviour
     private bool invHitTarget = false;
 
 
+
     // Painting specific globals
     public GameObject brushCursor; //The cursor that overlaps the model
-    public Sprite cursorPaint; // Cursor for the differen functions 
-    public Color defaultColor = Color.black; // Default object color
+    private Color defaultColor = Color.black; // Default object color
     private Material baseMaterial; // The material of our base texture (Where we will save the painted texture)
 
+
     public float brushSize = 0.2f; //The size of our brush
+
+    [Tooltip("Distance to objects before coloring starts.")]
+    [Range(0f, 0.2f)]
     public float brushDistance = 0.05f; // min distance before painting starts
+
+    [Tooltip("Amount of a quote that needs to be revealed before triggering.")]
+    [Range(0f, 100f)]
+    public float quotePercentage = 80;
+
     public bool cursorActive = false;
+    
+    public Sprite cursorPaint; // Cursor for the different functions 
 
     private Color brushColor; //The selected color
     private int brushCounter = 0, MAX_BRUSH_COUNT = 1000; //To avoid having millions of brushes
@@ -70,13 +81,13 @@ public class ColorObject : MonoBehaviour
                 co.brushcontainer.transform.SetParent(co.paintcanvas.transform);
                 co.brushcontainer.transform.localPosition = Vector3.zero;
 
-                // add quote
-                Transform quote = co.transform.FindChild("Quote");
+                // look for quote in the object
+                Quote quote = co.GetComponentInChildren<Quote>();
                 if (quote != null)
                 {
-                    quote.SetParent(co.paintcanvas.transform);
-                    quote.localPosition = new Vector3(-0.1f, -0.1f, -0.01f);
-                    quote.localRotation = Quaternion.identity;
+                    quote.transform.SetParent(co.paintcanvas.transform);
+                    quote.transform.localPosition = new Vector3(-0.1f, -0.1f, -0.01f);
+                    quote.transform.localRotation = Quaternion.identity;
                 }
 
                 if (co.canvascam == null) { co.canvascam = new GameObject(); }
@@ -455,8 +466,7 @@ public class ColorObject : MonoBehaviour
         if (savObj != null)
         {
             // check if there is a quote to check against
-            Transform quote = savObj.FindChild("PaintCanvas").FindChild("Quote");
-
+            Quote quote = savObj.GetComponentInChildren<Quote>();
             if (quote != null)
             {
                 Transform canvasbase = savObj.FindChild("PaintCanvas").FindChild("CanvasBase").transform;
@@ -464,7 +474,7 @@ public class ColorObject : MonoBehaviour
                 Vector2 basesize = canvasbase.GetComponent<Renderer>().bounds.size;
                 Vector2 quotesize = quote.gameObject.GetComponent<Renderer>().bounds.size;
                 Vector2 baseorigin = new Vector2(canvasbase.position.x - basesize.x / 2, canvasbase.position.y - basesize.y / 2);
-                Vector2 quoteorigin = new Vector2(quote.localPosition.x + baseorigin.x + basesize.x / 2 - quotesize.x / 2, quote.localPosition.y + baseorigin.y + basesize.y / 2 - quotesize.y / 2);
+                Vector2 quoteorigin = new Vector2(quote.transform.localPosition.x + baseorigin.x + basesize.x / 2 - quotesize.x / 2, quote.transform.localPosition.y + baseorigin.y + basesize.y / 2 - quotesize.y / 2);
                 Vector2 quoteend = new Vector2(quoteorigin.x + quotesize.x, quoteorigin.y + quotesize.y);
 
                 //Debug.Log("quotex: " + quoteorigin.x +
@@ -493,11 +503,11 @@ public class ColorObject : MonoBehaviour
                 //Debug.Log("ax: " + Math.Round(ax) + " x: " + x + " bx: " + Math.Round(bx) +
                 //    " \nay: " + Math.Round(ay) + " y: " + y + " by: " + Math.Round(by));
 
-                for (x = (int) Math.Round(ax); x < Math.Round(bx) - 1; x++)
+                for (x = (int)Math.Round(ax); x < Math.Round(bx) - 1; x++)
                 {
-                    for (y = (int) Math.Round(ay); y < Math.Round(by) - 1; y++)
+                    for (y = (int)Math.Round(ay); y < Math.Round(by) - 1; y++)
                     {
-                        index = y * (int) texsize + x;
+                        index = y * (int)texsize + x;
                         if (colors[index] != defaultColor)
                         {
                             colored++;
@@ -506,7 +516,18 @@ public class ColorObject : MonoBehaviour
                 }
 
                 float percentrevealed = colored / (quotesize.x / basesize.x * quotesize.y / basesize.y * colors.Length) * 100;
-                Debug.Log("% revealed: " + percentrevealed);
+                Debug.Log(quote.name + ": " + percentrevealed + "% revealed.");
+
+                // start playing sounds and enable recording if sufficient amount revealed
+                if (percentrevealed > quotePercentage)
+                {
+                    if (quote.GetComponent<AudioSource>() != null)
+                    {
+                        quote.GetComponent<AudioSource>().enabled = true;
+                    }
+
+                    gameObject.GetComponent<Record>().recordObject = savObj.parent.gameObject;
+                }
             }
         }
 

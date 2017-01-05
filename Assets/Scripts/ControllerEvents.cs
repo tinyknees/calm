@@ -41,10 +41,14 @@ public class ControllerEvents : MonoBehaviour
     public event ControllerInteractionEventHandler TouchpadRightPressed;
     public event ControllerInteractionEventHandler TouchpadLeftPressed;
     public event ControllerInteractionEventHandler TouchpadReleased;
+    public event ControllerInteractionEventHandler MenuPressed;
+    public event ControllerInteractionEventHandler MenuReleased;
 
     // Unity Events add a little overhead but listeners can be assigned via Unity editor
     public ControllerEvent unityTriggerPressed = new ControllerEvent();
     public ControllerEvent unityTriggerReleased = new ControllerEvent();
+    public ControllerEvent unityMenuPressed = new ControllerEvent();
+    public ControllerEvent unityMenuReleased = new ControllerEvent();
     public ControllerEvent unitySwipedLeft = new ControllerEvent();
     public ControllerEvent unitySwipedRight = new ControllerEvent();
     public ControllerEvent unitySwipedUp = new ControllerEvent();
@@ -59,6 +63,7 @@ public class ControllerEvents : MonoBehaviour
     [HideInInspector]
     public bool triggerPressed = false;
     public bool touchpadPressed = false;
+    public bool menuPressed = false;
 
     private uint controllerIndex;
     private SteamVR_TrackedObject trackedObj;
@@ -113,6 +118,14 @@ public class ControllerEvents : MonoBehaviour
         {
             OnTouchpadReleased(SetButtonEvent(ref touchpadPressed, false));
         }
+        else if (device.GetPressDown(SteamVR_Controller.ButtonMask.ApplicationMenu))
+        {
+            OnMenuPressed(SetButtonEvent(ref menuPressed, true));
+        }
+        else if (device.GetPressUp(SteamVR_Controller.ButtonMask.ApplicationMenu))
+        {
+            OnMenuReleased(SetButtonEvent(ref menuPressed, false));
+        }
 
         if (device.GetTouchDown(Valve.VR.EVRButtonId.k_EButton_Axis0))
         {
@@ -157,6 +170,24 @@ public class ControllerEvents : MonoBehaviour
             TriggerReleased(this, e);
         }
         unityTriggerReleased.Invoke(e);
+    }
+
+    public virtual void OnMenuPressed(ControllerInteractionEventArgs e)
+    {
+        if (MenuPressed != null)
+        {
+            MenuPressed(this, e);
+        }
+        unityMenuPressed.Invoke(e);
+    }
+
+    public virtual void OnMenuReleased(ControllerInteractionEventArgs e)
+    {
+        if (MenuReleased != null)
+        {
+            MenuReleased(this, e);
+        }
+        unityMenuReleased.Invoke(e);
     }
 
     // Touchpad Press Down Events
