@@ -5,6 +5,7 @@ using System.IO;
 using UnityEngine;
 using GameSparks.Api.Requests;
 using GameSparks.Api.Messages;
+using GameSparks.Core;
 
 [RequireComponent(typeof(ControllerEvents))]
 
@@ -16,10 +17,13 @@ public class Record : MonoBehaviour {
     private bool startRecording = false;
     private bool startPlaying = false;
 
+    [HideInInspector]
+    public GameObject recordObject = null;
     private bool touchpadUpPressed = false;
-    private bool touchpadDownPressed = false;
+    private bool menuPressed = false;
     private bool touchpadReleased = false;
 
+    private string playerId;
     private string lastUploadId;
 
     void Awake()
@@ -38,63 +42,77 @@ public class Record : MonoBehaviour {
         audiosource = audioContainer.GetComponent<AudioSource>();
 
         controllerEvents = GetComponent<ControllerEvents>();
+
+        Invoke("InitGS", 3f);
+    }
+
+    void InitGS()
+    {
+        // authenticate
+        new DeviceAuthenticationRequest().Send((response) =>
+        {
+            if (!response.HasErrors)
+            {
+                Debug.Log("Device Authenticated...");
+                playerId = response.UserId;
+            }
+            else
+            {
+                Debug.Log("Error Authenticating Device...");
+            }
+        });
+
+        //download all files
+        new LogEventRequest().SetEventKey("LOAD_AUDIO").Send((response) =>
+        {
+            if (!response.HasErrors)
+            {
+                Debug.Log(response);
+            }
+        });
     }
 
     void OnEnable()
     {
         controllerEvents.TouchpadUpPressed += HandleTouchpadUpPressed;
-        controllerEvents.TouchpadDownPressed += HandleTouchpadDownPressed;
+        controllerEvents.MenuPressed += HandleMenuPressed;
+        controllerEvents.MenuReleased += HandleMenuReleased;
         controllerEvents.TouchpadReleased += HandleTouchpadReleased;
     }
     void OnDisable()
     {
         controllerEvents.TouchpadUpPressed -= HandleTouchpadUpPressed;
-        controllerEvents.TouchpadDownPressed -= HandleTouchpadDownPressed;
+        controllerEvents.MenuPressed -= HandleMenuPressed;
+        controllerEvents.MenuReleased -= HandleMenuReleased;
         controllerEvents.TouchpadReleased -= HandleTouchpadReleased;
     }
 
     // Update is called once per frame
     void Update ()
     {
+        if (startRecording)
+        {
+            startRecording = false;
+            if (!Microphone.IsRecording(null))
+            {
+                Debug.Log("Started Recording for: " + recordObject.name);
+                audiosource.clip = Microphone.Start(null, true, 45, 44100);
+            }
+            else
+            {
+                Debug.Log("Stopped Recording " + audiosource.clip.samples);
+
+                if (audiosource.clip.samples > 0)
+                {
+                    Save("recordingcalm", audiosource.clip);
+                }
+                Microphone.End(null);
+            }
+        }
+
         if (touchpadReleased)
         {
-            if (touchpadDownPressed)
-            {
-                if (startRecording)
-                {
-                    if (!Microphone.IsRecording(null))
-                    {
-                        
-                        new DeviceAuthenticationRequest()
-                            .Send((response) =>
-                        {
-                            if (!response.HasErrors)
-                            {
-                                Debug.Log("Device Authenticated...");
-                            }
-                            else
-                            {
-                                Debug.Log("Error Authenticating Device...");
-                            }
-                        });
-
-                        Debug.Log("Started Recording");
-                        audiosource.clip = Microphone.Start(null, true, 45, 44100);
-                    }
-                    else
-                    {
-                        Debug.Log("Stopped Recording " + audiosource.clip.samples);
-
-                        if (audiosource.clip.samples > 0)
-                        {
-                            Save("recordingcalm", audiosource.clip);
-                        }
-                        Microphone.End(null);
-                    }
-                }
-                touchpadDownPressed = false;
-            }
-            else if (touchpadUpPressed)
+            if (touchpadUpPressed)
             {
                 if (startPlaying)
                 {
@@ -290,7 +308,11 @@ public class Record : MonoBehaviour {
 
     private void UploadAudio(Byte[] data)
     {
-        new GetUploadUrlRequest().Send((response) =>
+        Debug.Log("uploading");
+
+        GSRequestData gsdata = new GSRequestData().AddString("Quote",recordObject.name);
+
+        new GetUploadUrlRequest().SetUploadData(gsdata).Send((response) =>
         {
             //Start coroutine and pass in the upload url
             StartCoroutine(UploadAFile(response.Url, data));
@@ -304,21 +326,9 @@ public class Record : MonoBehaviour {
         Debug.Log("uploadurl " + uploadUrl);
         Debug.Log("data size " + data.Length);
 
-        //int width = Screen.width;
-        //int height = Screen.height;
-        //Texture2D tex = new Texture2D(width, height, TextureFormat.RGB24, false);
-        //tex.ReadPixels(new Rect(0, 0, width, height), 0, 0);
-        //tex.Apply();
-        ////This basically takes a screenshot
-
-        //byte[] bytes = tex.EncodeToPNG(); //Can also encode to jpg, just make sure to change the file extensions down below
-        //Destroy(tex);
-
         // Create a Web Form, this will be our POST method's data
         var form = new WWWForm();
-        form.AddField("somefield", "somedata");
-        form.AddBinaryData("file", data, "hehe.wav", "audio/wav");
-//        form.AddBinaryData("file", bytes, "screenshot.png", "image/png");
+        form.AddBinaryData("file", data, "calm.wav", "audio/wav");
 
         WWW w = new WWW(uploadUrl, form);
         yield return w;
@@ -330,6 +340,13 @@ public class Record : MonoBehaviour {
         else
         {
             Debug.Log(w.text);
+            new LogEventRequest()
+                .SetEventKey("SAVE_AUDIO")
+                .SetEventAttribute("PLAYER", playerId)
+                .SetEventAttribute("UPLOAD_ID", uploadUrl)
+                .Send((response) =>
+                {
+                });
         }
     }
 
@@ -351,6 +368,11 @@ public class Record : MonoBehaviour {
         while (!www.isDone)
         {
             Debug.Log("Downloading");
+
+            new LogEventRequest().SetEventKey("LOAD_AUDIO").Send((response) =>
+            {
+                Debug.Log(response);
+            });
         }
 
         yield return www;
@@ -373,9 +395,17 @@ public class Record : MonoBehaviour {
         touchpadUpPressed = true;
     }
 
-    private void HandleTouchpadDownPressed(object sender, ControllerEvents.ControllerInteractionEventArgs e)
+    private void HandleMenuPressed(object sender, ControllerEvents.ControllerInteractionEventArgs e)
     {
-        touchpadDownPressed = true;
+        Debug.Log("menu pressed");
+    }
+
+    private void HandleMenuReleased(object sender, ControllerEvents.ControllerInteractionEventArgs e)
+    {
+        if (recordObject != null)
+        {
+            startRecording = startRecording ? false : true;
+        }
     }
 
     private void HandleTouchpadReleased(object sender, ControllerEvents.ControllerInteractionEventArgs e)
@@ -385,10 +415,6 @@ public class Record : MonoBehaviour {
         if (touchpadUpPressed)
         {
             startPlaying = startPlaying ? false : true;
-        }
-        else if (touchpadDownPressed)
-        {
-            startRecording = startRecording ? false : true;
         }
     }
 
