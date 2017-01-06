@@ -28,7 +28,8 @@ public class ColorObject : MonoBehaviour
 
     // Painting specific globals
     public GameObject brushCursor; //The cursor that overlaps the model
-    private Color defaultColor = Color.black; // Default object color
+    [Tooltip("Base color of all the colorable objects.")]
+    public Color baseColor = Color.black; // Default object color
     private Material baseMaterial; // The material of our base texture (Where we will save the painted texture)
 
 
@@ -125,7 +126,7 @@ public class ColorObject : MonoBehaviour
                 co.canvascam.GetComponent<Camera>().targetTexture = rt;
 
                 GameObject brushObj = (GameObject)Instantiate(Resources.Load("BrushEntity"));
-                brushObj.GetComponent<SpriteRenderer>().color = defaultColor;
+                brushObj.GetComponent<SpriteRenderer>().color = baseColor;
                 brushObj.transform.parent = co.brushcontainer.transform;
                 brushObj.transform.localPosition = Vector3.zero;
                 brushObj.transform.localScale = Vector3.one * 0.25f;
@@ -203,7 +204,7 @@ public class ColorObject : MonoBehaviour
         }
         else if (invHitTarget && invHitObj.distance < brushDistance + 0.145)
         {
-            DoColor(defaultColor, invHitObj);
+            DoColor(baseColor, invHitObj);
         }
         else
         {
@@ -508,7 +509,9 @@ public class ColorObject : MonoBehaviour
                     for (y = (int)Math.Round(ay); y < Math.Round(by) - 1; y++)
                     {
                         index = y * (int)texsize + x;
-                        if (colors[index] != defaultColor)
+
+                        // test which pixels are no longer the base color i.e., revealed
+                        if (colors[index] != baseColor)
                         {
                             colored++;
                         }
@@ -526,6 +529,7 @@ public class ColorObject : MonoBehaviour
                         quote.GetComponent<AudioSource>().enabled = true;
                     }
 
+                    gameObject.transform.FindChild("Pencil").FindChild("Record").GetComponent<Renderer>().material.color = Color.red;
                     gameObject.GetComponent<Record>().recordObject = savObj.parent.gameObject;
                 }
             }

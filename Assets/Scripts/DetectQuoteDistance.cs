@@ -5,7 +5,9 @@ using UnityEngine;
 public class DetectQuoteDistance : MonoBehaviour {
 
     public GameObject[] Quotes;
-    float Threshold = 2;
+    [Range(0, 3f)]
+    [Tooltip("Distance to objects before coloring starts.")]
+    public float distanceThreshold = 2;
 
 	// Use this for initialization
 	void Start () {
@@ -25,16 +27,31 @@ public class DetectQuoteDistance : MonoBehaviour {
 	// Update is called once per frame
 	void Update () {
         float dist;
+        float nearestDist = 100f;
+        GameObject nearestQuote = null;
+
         int i = 0;
+
         foreach (GameObject quote in Quotes)
         {
-            i++;
-            dist = Vector3.Distance(gameObject.transform.position, quote.transform.position);
-            //Debug.Log("Distance [" + quote.name + "]: " + dist);
-
-            if (dist < Threshold)
+            if (quote != null)
             {
+                i++;
 
+                dist = Vector3.Distance(gameObject.transform.position, quote.transform.position);
+
+                if (nearestQuote == null || nearestDist > dist)
+                {
+                    nearestDist = dist;
+                    nearestQuote = quote;
+                }
+
+                //                Debug.Log("Distance [" + quote.name + "]: " + dist);
+                //Debug.Log("nearest: " + nearestQuote.name);
+                if (dist < distanceThreshold)
+                {
+
+                }
             }
         }
 

@@ -67,7 +67,18 @@ public class Record : MonoBehaviour {
         {
             if (!response.HasErrors)
             {
-                Debug.Log(response);
+                GSData data = response.ScriptData;
+                int i = 0;
+                String uploadId = data.GetString("uploadId" + i);
+                String quoteObject = data.GetString("Quote" + i);
+                while (uploadId != null)
+                {
+                    DownloadAFile(uploadId, quoteObject);
+                    Debug.Log(uploadId + " / " + quoteObject);
+                    i++;
+                    uploadId = data.GetString("uploadId" + i);
+                    quoteObject = data.GetString("Quote" + i);
+                }
             }
         });
     }
@@ -340,45 +351,48 @@ public class Record : MonoBehaviour {
         else
         {
             Debug.Log(w.text);
-            new LogEventRequest()
-                .SetEventKey("SAVE_AUDIO")
-                .SetEventAttribute("PLAYER", playerId)
-                .SetEventAttribute("UPLOAD_ID", uploadUrl)
-                .Send((response) =>
-                {
-                });
         }
     }
 
     //When we want to download our uploaded image
-    private void DownloadAFile()
+    private void DownloadAFile(string uploadId = "", String quoteobject = "")
     {
+        if (uploadId == "")
+        {
+            uploadId = lastUploadId;
+        }
         //Get the url associated with the uploadId
-        new GetUploadedRequest().SetUploadId(lastUploadId).Send((response) =>
+        new GetUploadedRequest().SetUploadId(uploadId).Send((response) =>
         {
             //pass the url to our coroutine that will accept the data
-            StartCoroutine(PlayAudio(response.Url));
+            StartCoroutine(PlayAudio(response.Url, quoteobject));
         });
     }
 
 
-    private IEnumerator PlayAudio(string downloadUrl)
+    private IEnumerator PlayAudio(string downloadUrl, string quoteobject)
     {
         var www = new WWW(downloadUrl);
         while (!www.isDone)
         {
-            Debug.Log("Downloading");
-
-            new LogEventRequest().SetEventKey("LOAD_AUDIO").Send((response) =>
-            {
-                Debug.Log(response);
-            });
+            Debug.Log("Downloading: " + downloadUrl);
+            yield return www;
         }
 
-        yield return www;
-        audiosource.clip = www.GetAudioClip(false, false, AudioType.WAV);
+        Debug.Log(quoteobject);
+        GameObject[] quotes = GameObject.FindGameObjectsWithTag("Quote");
+        foreach (GameObject quote in quotes)
+        {
+            if (quote.name == quoteobject)
+            {
+                AudioSource quoteaudio = quote.AddComponent<AudioSource>();
+                quoteaudio.spatialBlend = 1.0f;
+                quoteaudio.loop = true;
+                quoteaudio.clip = www.GetAudioClip(false, false, AudioType.WAV);
+                quoteaudio.Play();
+            }
+        }
 
-        audiosource.Play();
     }
 
     //This will be our message listener
