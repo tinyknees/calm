@@ -1,20 +1,16 @@
 fileFormatVersion: 2
-guid: bcc82f1c258948d438d62b502172513b
-timeCreated: 1483744639
+guid: 8641760bc32eeaa4780762f9c88de3f6
+timeCreated: 1483744043
 licenseType: Free
 ModelImporter:
   serializedVersion: 19
   fileIDToRecycleName:
-    100000: vine
-    100002: //RootNode
-    100004: vine_04
-    400000: vine
-    400002: //RootNode
-    400004: vine_04
-    2300000: vine
-    3300000: vine
-    4300000: vine
-    6400000: vine
+    100000: //RootNode
+    400000: //RootNode
+    2300000: //RootNode
+    3300000: //RootNode
+    4300000: Leaf_01
+    6400000: //RootNode
     9500000: //RootNode
   materials:
     importMaterials: 0

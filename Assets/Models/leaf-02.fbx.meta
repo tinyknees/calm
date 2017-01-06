@@ -1,16 +1,24 @@
 fileFormatVersion: 2
-guid: eaa4c2fd601e76a4f8ebf574aeadfcd2
-timeCreated: 1483632546
+guid: 2a35ba91de2af10458472d6f265dd7bb
+timeCreated: 1483744048
 licenseType: Free
 ModelImporter:
   serializedVersion: 19
   fileIDToRecycleName:
     100000: //RootNode
+    100002: Leaf_02 1
+    100004: Stem_02
     400000: //RootNode
-    2300000: //RootNode
-    3300000: //RootNode
-    4300000: Leaf_01
-    6400000: //RootNode
+    400002: Leaf_02 1
+    400004: Stem_02
+    2300000: Leaf_02 1
+    2300002: Stem_02
+    3300000: Leaf_02 1
+    3300002: Stem_02
+    4300000: Leaf_02
+    4300002: Stem_02
+    6400000: Leaf_02 1
+    6400002: Stem_02
     9500000: //RootNode
   materials:
     importMaterials: 0
