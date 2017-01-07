@@ -526,53 +526,16 @@ public class ColorObject : MonoBehaviour
                 // start playing sounds and enable recording if sufficient amount revealed
                 if (percentrevealed > quotePercentage)
                 {
-                    foreach (GameObject quoteobject in allQuoteObjects)
-                    {
-                        if (quoteobject.name == savObj.name)
-                        {
-                            AudioSource[] auss = quoteobject.GetComponents<AudioSource>();
-                            foreach (AudioSource aus in auss)
-                            {
-                                aus.outputAudioMixerGroup = null;
-                            }
-                        }
-                    }
-
-                    Material recordermat = gameObject.transform.FindChild("Pencil").FindChild("Record").GetComponent<Renderer>().material;
-                    StartCoroutine(PulseButton(recordermat, Color.red));
-                    gameObject.GetComponent<Record>().recordObject = savObj.gameObject;
+                    quote.revealed = true;
+                }
+                else
+                {
+                    quote.revealed = false;
                 }
             }
         }
 
         yield return null;
-    }
-
-    private IEnumerator PulseButton (Material mat, Color fc)
-    {
-        Color clear = fc;
-        clear.a = 0;
-        float steps = 100;
-        float t = 0;
-        bool pulseup = true;
-
-        while (!Microphone.IsRecording(null))
-        {
-            mat.color = Color.Lerp(fc, Color.blue, t);
-
-            if (pulseup)
-                t = t + 1 / steps;
-            else
-                t = t - 1 / steps;
-
-            if (t > 1)
-                pulseup = false;
-            else if (t < 0)
-                pulseup = true;
-
-            yield return null;
-        }
-        mat.color = fc;
     }
 
     void PickCanvas (Transform target)
