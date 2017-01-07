@@ -1,6 +1,6 @@
 fileFormatVersion: 2
 guid: 7042a2eab7f9e37499ffabd1a8bd301f
-timeCreated: 1483632397
+timeCreated: 1483801713
 licenseType: Free
 ModelImporter:
   serializedVersion: 19
@@ -9,28 +9,28 @@ ModelImporter:
     100002: frame
     100004: inside
     100006: outisde
-    100008: pSolid1
+    100008: top
     400000: //RootNode
     400002: frame
     400004: inside
     400006: outisde
-    400008: pSolid1
+    400008: top
     2300000: frame
     2300002: inside
     2300004: outisde
-    2300006: pSolid1
+    2300006: top
     3300000: frame
     3300002: inside
     3300004: outisde
-    3300006: pSolid1
+    3300006: top
     4300000: inside
     4300002: outisde
     4300004: frame
-    4300006: pSolid1
+    4300006: top
     6400000: frame
     6400002: inside
     6400004: outisde
-    6400006: pSolid1
+    6400006: top
     9500000: //RootNode
   materials:
     importMaterials: 0
