@@ -1,6 +1,6 @@
 fileFormatVersion: 2
-guid: 8083cf4c9f1842d4bbe641a2a449994a
-timeCreated: 1483631878
+guid: 6b615ee5d99a32d45b52976b4e9d7884
+timeCreated: 1483831406
 licenseType: Free
 ModelImporter:
   serializedVersion: 19
@@ -23,6 +23,7 @@ ModelImporter:
     100030: string_08
     100032: vine
     100034: //RootNode
+    100036: vine_01
     400000: bubble_01
     400002: bubble_02
     400004: bubble_03
@@ -41,6 +42,7 @@ ModelImporter:
     400030: string_08
     400032: vine
     400034: //RootNode
+    400036: vine_01
     2300000: bubble_01
     2300002: bubble_02
     2300004: bubble_03
