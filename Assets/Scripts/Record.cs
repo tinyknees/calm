@@ -30,6 +30,10 @@ public class Record : MonoBehaviour {
 
     [HideInInspector]
     public GameObject recordObject = null;
+
+    [Tooltip("Krista: 'Because I'm annoyign'")]
+    public Color recordButtonColor = Color.red;
+
     private bool touchpadUpPressed = false;
     private bool menuPressed = false;
     private bool touchpadReleased = false;
@@ -168,7 +172,7 @@ public class Record : MonoBehaviour {
         if (recordObject != null && on)
         {
             canRecord = true;
-            StartCoroutine("PulseMaterial", Color.red);
+            StartCoroutine("PulseMaterial", recordButtonColor);
             if (firstRecord)
             {
                 recordButton.GetComponent<AudioSource>().Play();
