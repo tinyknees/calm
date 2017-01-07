@@ -1,6 +1,6 @@
 fileFormatVersion: 2
-guid: 24ad420d1a96f134391b6fc535e368a1
-timeCreated: 1483801264
+guid: 6e6b00d3575053445ae2a72e8ae140ed
+timeCreated: 1483803798
 licenseType: Free
 ModelImporter:
   serializedVersion: 19
@@ -183,38 +183,6 @@ ModelImporter:
     4300058: section_01
     4300060: section_02
     4300062: section_03
-    6400000: section_01
-    6400002: section_01 1
-    6400004: section_01 2
-    6400006: section_01 3
-    6400008: section_01 4
-    6400010: section_01 5
-    6400012: section_01 6
-    6400014: section_01 7
-    6400016: section_02
-    6400018: section_02 1
-    6400020: section_02 2
-    6400022: section_02 3
-    6400024: section_02 4
-    6400026: section_02 5
-    6400028: section_02 6
-    6400030: section_02 7
-    6400032: section_03
-    6400034: section_03 1
-    6400036: section_03 2
-    6400038: section_03 3
-    6400040: section_03 4
-    6400042: section_03 5
-    6400044: section_03 6
-    6400046: section_03 7
-    6400048: section_04
-    6400050: section_04 1
-    6400052: section_04 2
-    6400054: section_05
-    6400056: section_05 1
-    6400058: section_05 2
-    6400060: trunk
-    6400062: vines
     9500000: //RootNode
   materials:
     importMaterials: 0
@@ -242,7 +210,7 @@ ModelImporter:
     lODScreenPercentages: []
     globalScale: 1
     meshCompression: 0
-    addColliders: 1
+    addColliders: 0
     importBlendShapes: 1
     swapUVChannels: 0
     generateSecondaryUV: 0
