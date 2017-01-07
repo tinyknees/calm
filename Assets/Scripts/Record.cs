@@ -15,7 +15,9 @@ public class Record : MonoBehaviour {
     private ControllerEvents controllerEvents; // the controller where event happened
     private ControllerEvents.ControllerInteractionEventArgs activeController;
     private AudioSource audiosource;
-    private bool startRecording = false;
+
+    [HideInInspector]
+    public bool startRecording = false;
     private bool startPlaying = false;
 
     [HideInInspector]
@@ -28,6 +30,7 @@ public class Record : MonoBehaviour {
     private string lastUploadId;
 
     private AudioMixer mrmrMixer;
+    private GameObject[] allQuoteObjects;
 
     void Awake()
     {
@@ -48,6 +51,8 @@ public class Record : MonoBehaviour {
         
 
         controllerEvents = GetComponent<ControllerEvents>();
+
+        allQuoteObjects = GameObject.FindGameObjectsWithTag("Quote");
 
         Invoke("InitGS", 3f);
     }
@@ -111,7 +116,7 @@ public class Record : MonoBehaviour {
         {
             startRecording = false;
             if (!Microphone.IsRecording(null))
-            {
+            { 
                 Debug.Log("Started Recording for: " + recordObject.name);
                 audiosource.clip = Microphone.Start(null, true, 45, 44100);
             }

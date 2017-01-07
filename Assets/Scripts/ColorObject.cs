@@ -24,7 +24,7 @@ public class ColorObject : MonoBehaviour
     private bool hitTarget = false; // has the controller laser intersected with an object
     private bool invHitTarget = false;
 
-
+    private GameObject[] allQuoteObjects;
 
     // Painting specific globals
     public GameObject brushCursor; //The cursor that overlaps the model
@@ -149,6 +149,8 @@ public class ColorObject : MonoBehaviour
             }
             i++;
         }
+
+        allQuoteObjects = GameObject.FindGameObjectsWithTag("Quote");
     }
 
     // Unity lifecycle method
@@ -524,18 +526,53 @@ public class ColorObject : MonoBehaviour
                 // start playing sounds and enable recording if sufficient amount revealed
                 if (percentrevealed > quotePercentage)
                 {
-                    if (quote.GetComponent<AudioSource>() != null)
+                    foreach (GameObject quoteobject in allQuoteObjects)
                     {
-                        quote.GetComponent<AudioSource>().enabled = true;
+                        if (quoteobject.name == savObj.name)
+                        {
+                            AudioSource[] auss = quoteobject.GetComponents<AudioSource>();
+                            foreach (AudioSource aus in auss)
+                            {
+                                aus.outputAudioMixerGroup = null;
+                            }
+                        }
                     }
 
-                    gameObject.transform.FindChild("Pencil").FindChild("Record").GetComponent<Renderer>().material.color = Color.red;
-                    gameObject.GetComponent<Record>().recordObject = savObj.parent.gameObject;
+                    Material recordermat = gameObject.transform.FindChild("Pencil").FindChild("Record").GetComponent<Renderer>().material;
+                    StartCoroutine(PulseButton(recordermat, Color.red));
+                    gameObject.GetComponent<Record>().recordObject = savObj.gameObject;
                 }
             }
         }
 
         yield return null;
+    }
+
+    private IEnumerator PulseButton (Material mat, Color fc)
+    {
+        Color clear = fc;
+        clear.a = 0;
+        float steps = 100;
+        float t = 0;
+        bool pulseup = true;
+
+        while (!Microphone.IsRecording(null))
+        {
+            mat.color = Color.Lerp(fc, Color.blue, t);
+
+            if (pulseup)
+                t = t + 1 / steps;
+            else
+                t = t - 1 / steps;
+
+            if (t > 1)
+                pulseup = false;
+            else if (t < 0)
+                pulseup = true;
+
+            yield return null;
+        }
+        mat.color = fc;
     }
 
     void PickCanvas (Transform target)
