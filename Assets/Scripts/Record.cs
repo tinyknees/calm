@@ -14,12 +14,12 @@ public class Record : MonoBehaviour {
     public GameObject audioContainer;
     private ControllerEvents controllerEvents; // the controller where event happened
     private ControllerEvents.ControllerInteractionEventArgs activeController;
-    private AudioSource audiosource;
+    private AudioSource recordsource;
 
-    public Color recorderColor;
+    public Color recorderColor; // default color of the record button when inactive
 
     [HideInInspector]
-    public bool startRecording = false;
+    public bool startRecording = false; // external flag for 
 
     [Range(0, 3f)]
     [Tooltip("Distance to objects before coloring starts.")]
@@ -42,8 +42,9 @@ public class Record : MonoBehaviour {
 
     private Transform recordButton;
     private bool canRecord = false; // are you close enough, quote revealed, have you recorded?
-    private bool firstRecord = true; // show tooltip
+    private bool firstRecord = true; // show tooltip and play sound for first time
 
+    private bool requestedAllAudio = false;
     private int numDownloaded = 0;
     private int totalDownloads = 0;
     private bool playingAudio;
@@ -61,7 +62,7 @@ public class Record : MonoBehaviour {
         {
             audioContainer.AddComponent<AudioSource>();
         }
-        audiosource = audioContainer.GetComponent<AudioSource>();
+        recordsource = audioContainer.GetComponent<AudioSource>();
 
         mrmrMixer = Resources.Load("Mrmrs") as AudioMixer;
         
@@ -91,29 +92,6 @@ public class Record : MonoBehaviour {
                 Debug.Log("Error Authenticating Device...");
             }
         });
-
-        //download all files
-        new LogEventRequest().SetEventKey("LOAD_AUDIO").Send((response) =>
-        {
-            if (!response.HasErrors)
-            {
-                GSData data = response.ScriptData;
-                int i = 0;
-                String uploadId = data.GetString("uploadId" + i);
-                String quoteObject = data.GetString("Quote" + i);
-                while (uploadId != null)
-                {
-                    DownloadAFile(uploadId, quoteObject);
-                    Debug.Log(uploadId + " / " + quoteObject);
-                    i++;
-                    uploadId = data.GetString("uploadId" + i);
-                    quoteObject = data.GetString("Quote" + i);
-                }
-
-                totalDownloads = i;
-
-            }
-        });
     }
 
     void OnEnable()
@@ -134,6 +112,10 @@ public class Record : MonoBehaviour {
     // Update is called once per frame
     void Update ()
     {
+        if (gameObject.activeSelf && !requestedAllAudio)
+        {
+            RequestAllAudio();
+        }
         if (startRecording)
         {
             firstRecord = false;
@@ -144,18 +126,18 @@ public class Record : MonoBehaviour {
                 Debug.Log("Started Recording for: " + recordObject.name);
                 gameObject.GetComponentInChildren<VRTK.VRTK_ControllerTooltips>().appMenuText = "Recording…";
 
-                audiosource.clip = Microphone.Start(null, true, 45, 44100);
+                recordsource.clip = Microphone.Start(null, true, 45, 44100);
             }
             else
             {
-                Debug.Log("Stopped Recording " + audiosource.clip.samples);
+                Debug.Log("Stopped Recording " + recordsource.clip.samples);
 
-                if (audiosource.clip.samples > 0)
+                if (recordsource.clip.samples > 0)
                 {
                     recordObject.GetComponentInChildren<Quote>().recorded = true;
                     toggleRecord(false);
 
-                    Save("recordingcalm", audiosource.clip);
+                    Save("recordingcalm", recordsource.clip);
                 }
                 Microphone.End(null);
             }
@@ -163,27 +145,9 @@ public class Record : MonoBehaviour {
 
         if (touchpadReleased)
         {
-            if (touchpadUpPressed)
-            {
-                if (startPlaying)
-                {
-                    if (!audiosource.isPlaying)
-                    {
-                        Debug.Log("Started Playback");
-                        DownloadAFile();
-//                        audiosource.Play();
-                    }
-                }
-                else
-                {
-                    Debug.Log("Stopped Playback");
-                    audiosource.Stop();
-                }
-                touchpadUpPressed = false;
-            }
-
+            GameObject cv = gameObject.transform.FindChild("ConsoleViewerCanvas").gameObject;
+            cv.SetActive(!cv.activeSelf);
             touchpadReleased = false;
-
         }
 
         CheckQuoteDistance();
@@ -195,6 +159,10 @@ public class Record : MonoBehaviour {
         }
     }
 
+    /// <summary>
+    /// Turns on or off the recording button and ability to record
+    /// </summary>
+    /// <param name="on">true = turn on recording, false = turn off</param>
     private void toggleRecord (bool on)
     {
         if (recordObject != null && on)
@@ -425,6 +393,36 @@ public class Record : MonoBehaviour {
         }
     }
 
+
+    private void RequestAllAudio()
+    {
+        //download all files
+        new LogEventRequest().SetEventKey("LOAD_AUDIO").Send((response) =>
+        {
+            if (!response.HasErrors)
+            {
+                GSData data = response.ScriptData;
+                int i = 0;
+                String uploadId = data.GetString("uploadId" + i);
+                String quoteObject = data.GetString("Quote" + i);
+                while (uploadId != null)
+                {
+                    DownloadAFile(uploadId, quoteObject);
+                    Debug.Log(uploadId + " / " + quoteObject);
+                    i++;
+                    uploadId = data.GetString("uploadId" + i);
+                    quoteObject = data.GetString("Quote" + i);
+                }
+
+                totalDownloads = i;
+
+            }
+        });
+
+        requestedAllAudio = true;
+    }
+
+
     //When we want to download our uploaded image
     private void DownloadAFile(string uploadId = "", String quoteobject = "")
     {
@@ -479,12 +477,14 @@ public class Record : MonoBehaviour {
     }
 
 
+    // Runs through all the downloaded recordings and sequences them to play in a loop per object
     private IEnumerator PlayAudio()
     {
-        Dictionary<string, int> current = new Dictionary<string, int>();
-        playingAudio = true;
+        Dictionary<string, int> current = new Dictionary<string, int>(); // which is the current recording playing for a given object
+        playingAudio = true; // global flag to inform if this coroutine is running
         int i = 0;
 
+        // Initialize and play the first recording for every quote
         foreach (GameObject qc in allQuoteObjects)
         {
             AudioSource aus = qc.GetComponent<AudioSource>();
@@ -495,6 +495,7 @@ public class Record : MonoBehaviour {
             }
         }
 
+        // In case we somehow missed a download, loop will stop to restart later
         while (true && numDownloaded == totalDownloads)
         {
             foreach (GameObject qc in allQuoteObjects)
@@ -516,23 +517,20 @@ public class Record : MonoBehaviour {
         }
     }
 
+    // Check which quote player is nearest and also turn things on or off based on distance
     private void CheckQuoteDistance()
     {
         float dist;
         float nearestDist = 100f;
         GameObject nearestQuote = null;
 
-        int i = 0;
-
         foreach (GameObject qc in allQuoteObjects)
         {
             if (qc != null)
             {
-                i++;
-
                 dist = Vector3.Distance(gameObject.transform.position, qc.transform.position);
 
-                // walked away from last quote playing
+                // walked away from last quote playing so turn murmurs back on and disable recording
                 if (dist >= distanceThreshold && lastNearestQuote == qc)
                 {
                     AudioSource[] auss = qc.GetComponents<AudioSource>();
@@ -544,6 +542,7 @@ public class Record : MonoBehaviour {
                     toggleRecord(false);
                 }
 
+                // set new neearest quote if applicable
                 if (nearestQuote == null || nearestDist > dist)
                 {
                     nearestDist = dist;
@@ -560,6 +559,7 @@ public class Record : MonoBehaviour {
             {
                 if (quote.revealed)
                 {
+                    // turn recording back on if quote hasn't been recorded
                     if (!quote.recorded)
                     {
                         if (!canRecord)
@@ -569,6 +569,7 @@ public class Record : MonoBehaviour {
                         recordObject = nearestQuote;
                     }
 
+                    // make recorded quotes clear as you get close
                     AudioSource[] auss = nearestQuote.GetComponents<AudioSource>();
                     foreach (AudioSource aus in auss)
                     {
@@ -581,6 +582,8 @@ public class Record : MonoBehaviour {
         lastNearestQuote = nearestQuote;
     }
 
+    // Pulses a given material's color from default to parameter
+    // TODO: set as multi-param allowing for steps and to color and use a flag to stop coroutine
     private IEnumerator PulseMaterial(Color fc)
     {
         float steps = 50;
@@ -603,6 +606,10 @@ public class Record : MonoBehaviour {
         recordButton.GetComponent<Renderer>().material.color = fc;
     }
 
+
+    
+    /* EVENT HANDLERS ----------------------------------------------------------------------*/
+
     private void HandleTouchpadUpPressed(object sender, ControllerEvents.ControllerInteractionEventArgs e)
     {
         touchpadUpPressed = true;
@@ -624,12 +631,8 @@ public class Record : MonoBehaviour {
     private void HandleTouchpadReleased(object sender, ControllerEvents.ControllerInteractionEventArgs e)
     {
         touchpadReleased = true;
-
-        if (touchpadUpPressed)
-        {
-            startPlaying = startPlaying ? false : true;
-        }
-    }
+        touchpadUpPressed = false;
+   }
 
 
 }
