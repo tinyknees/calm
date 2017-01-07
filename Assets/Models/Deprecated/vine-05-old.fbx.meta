@@ -1,6 +1,6 @@
 fileFormatVersion: 2
-guid: eb63e8d2b7405454c931d545475798de
-timeCreated: 1483831421
+guid: 4a62484ab14f6c247a91c5d118dfcf0f
+timeCreated: 1483633527
 licenseType: Free
 ModelImporter:
   serializedVersion: 19
@@ -11,14 +11,12 @@ ModelImporter:
     100006: string_02
     100008: vine
     100010: //RootNode
-    100012: vine_05
     400000: bubble_01
     400002: bubble_02
     400004: string_01
     400006: string_02
     400008: vine
     400010: //RootNode
-    400012: vine_05
     2300000: bubble_01
     2300002: bubble_02
     2300004: string_01
@@ -31,9 +29,14 @@ ModelImporter:
     3300008: vine
     4300000: vine
     4300002: bubble_01
-    4300004: bubble_02
-    4300006: string_01
+    4300004: string_01
+    4300006: bubble_02
     4300008: string_02
+    6400000: bubble_01
+    6400002: bubble_02
+    6400004: string_01
+    6400006: string_02
+    6400008: vine
     9500000: //RootNode
   materials:
     importMaterials: 0
@@ -61,7 +64,7 @@ ModelImporter:
     lODScreenPercentages: []
     globalScale: 1
     meshCompression: 0
-    addColliders: 0
+    addColliders: 1
     importBlendShapes: 1
     swapUVChannels: 0
     generateSecondaryUV: 0
