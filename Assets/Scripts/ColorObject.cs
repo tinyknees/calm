@@ -85,8 +85,9 @@ public class ColorObject : MonoBehaviour
                 Quote quote = co.GetComponentInChildren<Quote>();
                 if (quote != null)
                 {
+                    Vector3 quotepos = quote.transform.localPosition;
                     quote.transform.SetParent(co.paintcanvas.transform);
-                    quote.transform.localPosition = new Vector3(0, 0, -0.01f);
+                    quote.transform.localPosition = quotepos;
                     quote.transform.localRotation = Quaternion.identity;
                 }
 
@@ -94,7 +95,7 @@ public class ColorObject : MonoBehaviour
                 co.canvascam.name = "CanvasCamera";
                 co.canvascam.transform.SetParent(co.paintcanvas.transform);
                 co.canvascam.AddComponent<Camera>();
-                co.canvascam.transform.localPosition = new Vector3(0, 0, -1.95f);
+                co.canvascam.transform.localPosition = new Vector3(0, 0, -2f);
 
                 Camera canvascamera = co.canvascam.GetComponent<Camera>();
                 canvascamera.nearClipPlane = 0.3f;
@@ -119,12 +120,12 @@ public class ColorObject : MonoBehaviour
                 material.name = "BaseMaterial";
                 co.canvasbase.GetComponent<MeshRenderer>().material = material;
 
-                GameObject colorbase = GameObject.CreatePrimitive(PrimitiveType.Plane);
-                colorbase.transform.SetParent(co.paintcanvas.transform);
-                colorbase.transform.localPosition = new Vector3(0, 0, -0.01f);
-                colorbase.transform.localRotation = Quaternion.Euler(-90, 0, 0);
-                colorbase.transform.localScale = new Vector3(0.1f, 0.1f, 0.1f);
-                colorbase.GetComponent<Renderer>().material.color = Color.blue;
+                //GameObject colorbase = GameObject.CreatePrimitive(PrimitiveType.Plane);
+                //colorbase.transform.SetParent(co.paintcanvas.transform);
+                //colorbase.transform.localPosition = new Vector3(0, 0, -0.01f);
+                //colorbase.transform.localRotation = Quaternion.Euler(-90, 0, 0);
+                //colorbase.transform.localScale = new Vector3(0.1f, 0.1f, 0.1f);
+                //colorbase.GetComponent<Renderer>().material.color = Color.blue;
 
                 RenderTexture rt = new RenderTexture(1024, 1024, 32, RenderTextureFormat.ARGB32);
                 rt.name = "PaintTexture";
@@ -144,7 +145,7 @@ public class ColorObject : MonoBehaviour
 
                 co.canvascam.GetComponent<Camera>().enabled = false;
 
-                Destroy(colorbase);
+                //Destroy(colorbase);
             }
             i++;
         }
