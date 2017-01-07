@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using UnityEngine;
+using UnityEngine.Audio;
 using GameSparks.Api.Requests;
 using GameSparks.Api.Messages;
 using GameSparks.Core;
@@ -26,6 +27,8 @@ public class Record : MonoBehaviour {
     private string playerId;
     private string lastUploadId;
 
+    private AudioMixer mrmrMixer;
+
     void Awake()
     {
         UploadCompleteMessage.Listener += GetUploadMessage;
@@ -40,6 +43,9 @@ public class Record : MonoBehaviour {
             audioContainer.AddComponent<AudioSource>();
         }
         audiosource = audioContainer.GetComponent<AudioSource>();
+
+        mrmrMixer = Resources.Load("Mrmrs") as AudioMixer;
+        
 
         controllerEvents = GetComponent<ControllerEvents>();
 
@@ -389,6 +395,8 @@ public class Record : MonoBehaviour {
                 quoteaudio.spatialBlend = 1.0f;
                 quoteaudio.loop = true;
                 quoteaudio.clip = www.GetAudioClip(false, false, AudioType.WAV);
+
+                quoteaudio.outputAudioMixerGroup = mrmrMixer.FindMatchingGroups("Mrmrs")[0];
                 quoteaudio.Play();
             }
         }
