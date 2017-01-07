@@ -20,7 +20,6 @@ public class ColorObject : MonoBehaviour
     private LaserPointer.PointerEventArgs invHitObj; // shortcut to the object the eraser collided with
     private ControllerEvents.ControllerInteractionEventArgs activeController;
 
-    private bool triggerPressed = false; // is the trigger being held
     private bool hitTarget = false; // has the controller laser intersected with an object
     private bool invHitTarget = false;
 
@@ -87,7 +86,7 @@ public class ColorObject : MonoBehaviour
                 if (quote != null)
                 {
                     quote.transform.SetParent(co.paintcanvas.transform);
-                    quote.transform.localPosition = new Vector3(-0.1f, -0.1f, -0.01f);
+                    quote.transform.localPosition = new Vector3(0, 0, -0.01f);
                     quote.transform.localRotation = Quaternion.identity;
                 }
 
@@ -95,7 +94,7 @@ public class ColorObject : MonoBehaviour
                 co.canvascam.name = "CanvasCamera";
                 co.canvascam.transform.SetParent(co.paintcanvas.transform);
                 co.canvascam.AddComponent<Camera>();
-                co.canvascam.transform.localPosition = new Vector3(0, 0, -2);
+                co.canvascam.transform.localPosition = new Vector3(0, 0, -1.95f);
 
                 Camera canvascamera = co.canvascam.GetComponent<Camera>();
                 canvascamera.nearClipPlane = 0.3f;
@@ -120,32 +119,32 @@ public class ColorObject : MonoBehaviour
                 material.name = "BaseMaterial";
                 co.canvasbase.GetComponent<MeshRenderer>().material = material;
 
+                GameObject colorbase = GameObject.CreatePrimitive(PrimitiveType.Plane);
+                colorbase.transform.SetParent(co.paintcanvas.transform);
+                colorbase.transform.localPosition = new Vector3(0, 0, -0.01f);
+                colorbase.transform.localRotation = Quaternion.Euler(-90, 0, 0);
+                colorbase.transform.localScale = new Vector3(0.1f, 0.1f, 0.1f);
+                colorbase.GetComponent<Renderer>().material.color = Color.blue;
+
                 RenderTexture rt = new RenderTexture(1024, 1024, 32, RenderTextureFormat.ARGB32);
                 rt.name = "PaintTexture";
                 rt.Create();
                 co.canvascam.GetComponent<Camera>().targetTexture = rt;
-
-                GameObject brushObj = (GameObject)Instantiate(Resources.Load("BrushEntity"));
-                brushObj.GetComponent<SpriteRenderer>().color = baseColor;
-                brushObj.transform.parent = co.brushcontainer.transform;
-                brushObj.transform.localPosition = Vector3.zero;
-                brushObj.transform.localScale = Vector3.one * 0.25f;
-
-                RenderTexture canvas = co.canvascam.GetComponent<Camera>().targetTexture;
-                RenderTexture.active = canvas;
-                Texture2D tex = new Texture2D(canvas.width, canvas.height, TextureFormat.RGB24, false);
-                tex.ReadPixels(new Rect(0, 0, canvas.width, canvas.height), 0, 0);
-                tex.Apply();
-                RenderTexture.active = null;
-                baseMaterial = co.canvasbase.transform.GetComponent<MeshRenderer>().material;
-                baseMaterial.mainTexture = tex; //Put the painted texture as the base
-
-                Destroy(brushObj);
-
                 co.canvascam.GetComponent<Camera>().enabled = true;
+
+                RenderTexture.active = rt;
+                Texture2D tex = new Texture2D(rt.width, rt.height, TextureFormat.RGB24, false);
+                tex.ReadPixels(new Rect(0, 0, rt.width, rt.height), 0, 0);
+                tex.Apply();
+                baseMaterial = co.canvasbase.GetComponent<Renderer>().material;
+                baseMaterial.mainTexture = tex; //Put the painted texture as the base
+                RenderTexture.active = null;
+                
                 co.GetComponent<MeshRenderer>().material.mainTexture = rt;
+
                 co.canvascam.GetComponent<Camera>().enabled = false;
 
+                Destroy(colorbase);
             }
             i++;
         }
@@ -153,7 +152,7 @@ public class ColorObject : MonoBehaviour
         allQuoteObjects = GameObject.FindGameObjectsWithTag("Quote");
     }
 
-    // Unity lifecycle method
+
     void Awake()
     {
         laserPointer = GetComponent<LaserPointer>();
@@ -170,11 +169,9 @@ public class ColorObject : MonoBehaviour
         Init();
     }
 
-    // Unity lifecycle method
+    // Subscribe to event handlers
     void OnEnable()
     {
-        controllerEvents.TriggerPressed += HandleTriggerPressed;
-        controllerEvents.TriggerReleased += HandlerTriggerReleased;
         laserPointer.PointerIn += HandlePointerIn;
         laserPointer.PointerOut += HandlePointerOut;
         laserPointer.InvPointerIn += HandleInvPointerIn;
@@ -183,11 +180,9 @@ public class ColorObject : MonoBehaviour
         controllerEvents.SwipedLeft += HandleSwipedLeft;
     }
 
-    // Unity lifecycle method
+    // Unsubscribe from event handlers
     void OnDisable()
     {
-        controllerEvents.TriggerPressed -= HandleTriggerPressed;
-        controllerEvents.TriggerReleased -= HandlerTriggerReleased;
         laserPointer.PointerIn -= HandlePointerIn;
         laserPointer.PointerOut -= HandlePointerOut;
         laserPointer.InvPointerIn -= HandleInvPointerIn;
@@ -196,7 +191,7 @@ public class ColorObject : MonoBehaviour
         controllerEvents.SwipedLeft -= HandleSwipedLeft;
     }
 
-    // Unity lifecycle method
+
     void Update()
     {
         if (hitTarget && hitObj.distance < brushDistance)
@@ -219,29 +214,10 @@ public class ColorObject : MonoBehaviour
         }
     }
 
-    //Event Handler
-    private void HandleTriggerPressed(object sender, ControllerEvents.ControllerInteractionEventArgs e)
-    {
-        triggerPressed = true;
-        laserPointer.PointerIn -= HandlePointerIn;
-        laserPointer.PointerOut -= HandlePointerOut;
-        laserPointer.InvPointerIn -= HandleInvPointerIn;
-        laserPointer.InvPointerOut -= HandleInvPointerOut;
-        activeController = e;
-    }
 
-    //Event Handler
-    private void HandlerTriggerReleased(object sender, ControllerEvents.ControllerInteractionEventArgs e)
-    {
-        triggerPressed = false;
-        laserPointer.PointerIn += HandlePointerIn;
-        laserPointer.PointerOut += HandlePointerOut;
-        laserPointer.InvPointerIn += HandleInvPointerIn;
-        laserPointer.InvPointerOut += HandleInvPointerOut;
-        activeController = e;
-    }
 
-    //Event Handler
+    /* BUTTON EVENT HANDLERS ----------------------------------------------------------------------*/
+
     private void HandlePointerIn(object sender, LaserPointer.PointerEventArgs e)
     {
         //laserPointer.pointerModel.GetComponent<MeshRenderer>().enabled = false;
@@ -250,7 +226,6 @@ public class ColorObject : MonoBehaviour
         laserPointer.PointerUpdate += HandlePointerUpdate;
     }
 
-    //Event Handler
     private void HandlePointerOut(object sender, LaserPointer.PointerEventArgs e)
     {
         laserPointer.pointerModel.GetComponent<MeshRenderer>().material.color = laserPointerDefaultColor;
@@ -283,7 +258,6 @@ public class ColorObject : MonoBehaviour
         invHitObj = e;
     }
 
-
     private void HandleSwipedLeft(object sender, ControllerEvents.ControllerInteractionEventArgs e)
     {
         colorIndex--;
@@ -297,6 +271,9 @@ public class ColorObject : MonoBehaviour
         ChangeBrushColor();
         activeController = e;
     }
+
+
+    /* COLORING FUNCTIONS ----------------------------------------------------------------------*/
 
     void ChangeBrushColor()
     {
@@ -347,6 +324,11 @@ public class ColorObject : MonoBehaviour
         brushCursor.transform.localScale = Vector3.one * brushSize;
     }
 
+    /// <summary>
+    /// Colors the hit target supplied
+    /// </summary>
+    /// <param name="bcolor">What colour to colour with.</param>
+    /// <param name="hit">A raycast target from laser pointer.</param>
     void DoColor(Color bcolor, LaserPointer.PointerEventArgs hit)
     {
         // While saving brush strokes onto the texture, don't allow coloring
@@ -443,6 +425,7 @@ public class ColorObject : MonoBehaviour
 
             PickCanvas(savObj);
 
+            canvasCam.Render();
             RenderTexture canvas = canvasCam.targetTexture;
             RenderTexture.active = canvas;
             Texture2D tex = new Texture2D(canvas.width, canvas.height, TextureFormat.RGB24, false);
@@ -524,14 +507,7 @@ public class ColorObject : MonoBehaviour
                 Debug.Log(quote.name + ": " + percentrevealed + "% revealed.");
 
                 // start playing sounds and enable recording if sufficient amount revealed
-                if (percentrevealed > quotePercentage)
-                {
-                    quote.revealed = true;
-                }
-                else
-                {
-                    quote.revealed = false;
-                }
+                quote.revealed = (percentrevealed > quotePercentage) ? true : false;
             }
         }
 
