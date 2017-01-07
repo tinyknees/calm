@@ -16,13 +16,18 @@ public class Record : MonoBehaviour {
     private ControllerEvents.ControllerInteractionEventArgs activeController;
     private AudioSource recordsource;
 
-    public Color recorderColor; // default color of the record button when inactive
+    [Tooltip("Default color of the record button when inactive.")]
+    public Color recorderColor; 
+    [Tooltip("Krista: 'Because I'm annoyign'")]
+    public Color recordButtonColor = Color.red;
+    [Tooltip("How many steps to pulse. Higher is slower fade.")]
+    public float pulseSteps = 50f;
 
     [HideInInspector]
     public bool startRecording = false; // external flag for 
 
     [Range(0, 3f)]
-    [Tooltip("Distance to objects before coloring starts.")]
+    [Tooltip("Distance to objects before recording is allowed.")]
     public float distanceThreshold = 1.6f;
 
     private bool startPlaying = false;
@@ -31,8 +36,6 @@ public class Record : MonoBehaviour {
     [HideInInspector]
     public GameObject recordObject = null;
 
-    [Tooltip("Krista: 'Because I'm annoyign'")]
-    public Color recordButtonColor = Color.red;
 
     private bool touchpadUpPressed = false;
     private bool menuPressed = false;
@@ -122,7 +125,6 @@ public class Record : MonoBehaviour {
         }
         if (startRecording)
         {
-            firstRecord = false;
             startRecording = false;
 
             if (!Microphone.IsRecording(null))
@@ -177,6 +179,7 @@ public class Record : MonoBehaviour {
             {
                 recordButton.GetComponent<AudioSource>().Play();
                 gameObject.GetComponentInChildren<VRTK.VRTK_ControllerTooltips>().ToggleTips(true, VRTK.VRTK_ControllerTooltips.TooltipButtons.AppMenuTooltip);
+                firstRecord = false;
             }
         }
         else
@@ -590,7 +593,6 @@ public class Record : MonoBehaviour {
     // TODO: set as multi-param allowing for steps and to color and use a flag to stop coroutine
     private IEnumerator PulseMaterial(Color fc)
     {
-        float steps = 50;
         float t = 0;
         bool pulseup = true;
 
@@ -598,7 +600,7 @@ public class Record : MonoBehaviour {
         {
             recordButton.GetComponent<Renderer>().material.color = Color.Lerp(fc, recorderColor, t);
 
-            t = (pulseup) ? t = t + 1 / steps : t = t - 1 / steps;
+            t = (pulseup) ? t = t + 1 / pulseSteps : t = t - 1 / pulseSteps;
 
             if (t > 1)
                 pulseup = false;
