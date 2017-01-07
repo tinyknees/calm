@@ -16,9 +16,17 @@ public class Record : MonoBehaviour {
     private ControllerEvents.ControllerInteractionEventArgs activeController;
     private AudioSource audiosource;
 
+    public Color recorderColor;
+
     [HideInInspector]
     public bool startRecording = false;
+
+    [Range(0, 3f)]
+    [Tooltip("Distance to objects before coloring starts.")]
+    public float distanceThreshold = 1.6f;
+
     private bool startPlaying = false;
+    private GameObject lastNearestQuote = null;
 
     [HideInInspector]
     public GameObject recordObject = null;
@@ -31,6 +39,14 @@ public class Record : MonoBehaviour {
 
     private AudioMixer mrmrMixer;
     private GameObject[] allQuoteObjects;
+
+    private Transform recordButton;
+    private bool canRecord = false; // are you close enough, quote revealed, have you recorded?
+    private bool firstRecord = true; // show tooltip
+
+    private int numDownloaded = 0;
+    private int totalDownloads = 0;
+    private bool playingAudio;
 
     void Awake()
     {
@@ -53,6 +69,9 @@ public class Record : MonoBehaviour {
         controllerEvents = GetComponent<ControllerEvents>();
 
         allQuoteObjects = GameObject.FindGameObjectsWithTag("Quote");
+
+        recordButton = gameObject.transform.FindChild("Pencil").FindChild("Record");
+        recordButton.GetComponent<Renderer>().material.color = recorderColor;
 
         Invoke("InitGS", 3f);
     }
@@ -90,6 +109,9 @@ public class Record : MonoBehaviour {
                     uploadId = data.GetString("uploadId" + i);
                     quoteObject = data.GetString("Quote" + i);
                 }
+
+                totalDownloads = i;
+
             }
         });
     }
@@ -114,10 +136,14 @@ public class Record : MonoBehaviour {
     {
         if (startRecording)
         {
+            firstRecord = false;
             startRecording = false;
+
             if (!Microphone.IsRecording(null))
             { 
                 Debug.Log("Started Recording for: " + recordObject.name);
+                gameObject.GetComponentInChildren<VRTK.VRTK_ControllerTooltips>().appMenuText = "Recording…";
+
                 audiosource.clip = Microphone.Start(null, true, 45, 44100);
             }
             else
@@ -126,6 +152,9 @@ public class Record : MonoBehaviour {
 
                 if (audiosource.clip.samples > 0)
                 {
+                    recordObject.GetComponentInChildren<Quote>().recorded = true;
+                    toggleRecord(false);
+
                     Save("recordingcalm", audiosource.clip);
                 }
                 Microphone.End(null);
@@ -156,6 +185,35 @@ public class Record : MonoBehaviour {
             touchpadReleased = false;
 
         }
+
+        CheckQuoteDistance();
+
+        if (!playingAudio && numDownloaded == totalDownloads && totalDownloads > 0)
+        {
+            //done downloading, start playing them
+            StartCoroutine(PlayAudio());
+        }
+    }
+
+    private void toggleRecord (bool on)
+    {
+        if (recordObject != null && on)
+        {
+            canRecord = true;
+            StartCoroutine("PulseMaterial", Color.red);
+            if (firstRecord)
+            {
+                recordButton.GetComponent<AudioSource>().Play();
+                gameObject.GetComponentInChildren<VRTK.VRTK_ControllerTooltips>().ToggleTips(true, VRTK.VRTK_ControllerTooltips.TooltipButtons.AppMenuTooltip);
+            }
+        }
+        else
+        {
+            canRecord = false;
+            StopCoroutine("PulseMaterial");
+            recordButton.GetComponent<Renderer>().material.color = recorderColor;
+            gameObject.GetComponentInChildren<VRTK.VRTK_ControllerTooltips>().ToggleTips(false, VRTK.VRTK_ControllerTooltips.TooltipButtons.AppMenuTooltip);
+        }
     }
 
     const int HEADER_SIZE = 44;
@@ -173,6 +231,8 @@ public class Record : MonoBehaviour {
 
         // Make sure directory exists if user is saving to sub dir.
         Directory.CreateDirectory(Path.GetDirectoryName(filepath));
+
+        clip = TrimSilence(clip, 0.01f);
 
         using (var fileStream = CreateEmpty(filepath))
         {
@@ -376,12 +436,12 @@ public class Record : MonoBehaviour {
         new GetUploadedRequest().SetUploadId(uploadId).Send((response) =>
         {
             //pass the url to our coroutine that will accept the data
-            StartCoroutine(PlayAudio(response.Url, quoteobject));
+            StartCoroutine(DownloadAudio(response.Url, quoteobject));
         });
     }
 
 
-    private IEnumerator PlayAudio(string downloadUrl, string quoteobject)
+    private IEnumerator DownloadAudio(string downloadUrl, string quoteobject)
     {
         var www = new WWW(downloadUrl);
         while (!www.isDone)
@@ -390,7 +450,6 @@ public class Record : MonoBehaviour {
             yield return www;
         }
 
-        Debug.Log(quoteobject);
         GameObject[] quotes = GameObject.FindGameObjectsWithTag("Quote");
         foreach (GameObject quote in quotes)
         {
@@ -398,11 +457,13 @@ public class Record : MonoBehaviour {
             {
                 AudioSource quoteaudio = quote.AddComponent<AudioSource>();
                 quoteaudio.spatialBlend = 1.0f;
-                quoteaudio.loop = true;
+                quoteaudio.volume = 0.75f;
+                quoteaudio.rolloffMode = AudioRolloffMode.Linear;
+                quoteaudio.minDistance = 0.3f;
+                quoteaudio.maxDistance = 3.5f;
                 quoteaudio.clip = www.GetAudioClip(false, false, AudioType.WAV);
-
                 quoteaudio.outputAudioMixerGroup = mrmrMixer.FindMatchingGroups("Mrmrs")[0];
-                quoteaudio.Play();
+                numDownloaded++;
             }
         }
 
@@ -417,6 +478,131 @@ public class Record : MonoBehaviour {
         lastUploadId = message.BaseData.GetString("uploadId");
     }
 
+
+    private IEnumerator PlayAudio()
+    {
+        Dictionary<string, int> current = new Dictionary<string, int>();
+        playingAudio = true;
+        int i = 0;
+
+        foreach (GameObject qc in allQuoteObjects)
+        {
+            AudioSource aus = qc.GetComponent<AudioSource>();
+            if (aus != null)
+            {
+                current.Add(qc.name, i);
+                aus.Play();
+            }
+        }
+
+        while (true && numDownloaded == totalDownloads)
+        {
+            foreach (GameObject qc in allQuoteObjects)
+            {
+                i = 0;
+                AudioSource[] auss = qc.GetComponents<AudioSource>();
+                foreach (AudioSource aus in auss)
+                {
+                    if (!aus.isPlaying && current[qc.name] == i)
+                    {
+                        current[qc.name] = (i == auss.Length - 1) ? 0 : i+1;
+                        auss[current[qc.name]].Play();
+                    }
+                    i++;
+                    yield return null;
+                }
+            }
+
+        }
+    }
+
+    private void CheckQuoteDistance()
+    {
+        float dist;
+        float nearestDist = 100f;
+        GameObject nearestQuote = null;
+
+        int i = 0;
+
+        foreach (GameObject qc in allQuoteObjects)
+        {
+            if (qc != null)
+            {
+                i++;
+
+                dist = Vector3.Distance(gameObject.transform.position, qc.transform.position);
+
+                // walked away from last quote playing
+                if (dist >= distanceThreshold && lastNearestQuote == qc)
+                {
+                    AudioSource[] auss = qc.GetComponents<AudioSource>();
+                    foreach (AudioSource aus in auss)
+                    {
+                        aus.outputAudioMixerGroup = mrmrMixer.FindMatchingGroups("Mrmrs")[0];
+                    }
+
+                    toggleRecord(false);
+                }
+
+                if (nearestQuote == null || nearestDist > dist)
+                {
+                    nearestDist = dist;
+                    nearestQuote = qc;
+                }
+            }
+        }
+
+        // if close enough, check if quote is revealed
+        if (nearestDist < distanceThreshold)
+        {
+            Quote quote = nearestQuote.GetComponentInChildren<Quote>();
+            if (quote != null)
+            {
+                if (quote.revealed)
+                {
+                    if (!quote.recorded)
+                    {
+                        if (!canRecord)
+                        {
+                            toggleRecord(true);
+                        }
+                        recordObject = nearestQuote;
+                    }
+
+                    AudioSource[] auss = nearestQuote.GetComponents<AudioSource>();
+                    foreach (AudioSource aus in auss)
+                    {
+                        aus.outputAudioMixerGroup = null;
+                    }
+                }
+            }
+        }
+
+        lastNearestQuote = nearestQuote;
+    }
+
+    private IEnumerator PulseMaterial(Color fc)
+    {
+        float steps = 50;
+        float t = 0;
+        bool pulseup = true;
+
+        while (!Microphone.IsRecording(null))
+        {
+            recordButton.GetComponent<Renderer>().material.color = Color.Lerp(fc, recorderColor, t);
+
+            t = (pulseup) ? t = t + 1 / steps : t = t - 1 / steps;
+
+            if (t > 1)
+                pulseup = false;
+            else if (t < 0)
+                pulseup = true;
+
+            yield return null;
+        }
+        recordButton.GetComponent<Renderer>().material.color = fc;
+    }
+
     private void HandleTouchpadUpPressed(object sender, ControllerEvents.ControllerInteractionEventArgs e)
     {
         touchpadUpPressed = true;
@@ -429,7 +615,7 @@ public class Record : MonoBehaviour {
 
     private void HandleMenuReleased(object sender, ControllerEvents.ControllerInteractionEventArgs e)
     {
-        if (recordObject != null)
+        if (canRecord)
         {
             startRecording = startRecording ? false : true;
         }
