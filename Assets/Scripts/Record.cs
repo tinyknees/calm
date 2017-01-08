@@ -119,24 +119,31 @@ public class Record : MonoBehaviour {
     // Update is called once per frame
     void Update ()
     {
+        // Start downloading audio when we have an active controller to do recordings, etc.
         if (gameObject.activeSelf && !requestedAllAudio)
         {
             RequestAllAudio();
         }
+
         if (startRecording)
         {
             startRecording = false;
 
+
             if (!Microphone.IsRecording(null))
-            { 
+            {
+                recordButton.GetComponent<AudioSource>().clip = (AudioClip)Resources.Load("startrecord");
+                recordButton.GetComponent<AudioSource>().Play();
+
                 Debug.Log("Started Recording for: " + recordObject.name);
-                gameObject.GetComponentInChildren<VRTK.VRTK_ControllerTooltips>().appMenuText = "Recording…";
 
                 recordsource.clip = Microphone.Start(null, true, 45, 44100);
+                StartCoroutine(RecordingCounter());
             }
             else
             {
                 Debug.Log("Stopped Recording " + recordsource.clip.samples);
+                gameObject.GetComponentInChildren<VRTK.VRTK_ControllerTooltips>().appMenuText = "Saving…";
 
                 if (recordsource.clip.samples > 0)
                 {
@@ -165,6 +172,28 @@ public class Record : MonoBehaviour {
         }
     }
 
+    private IEnumerator RecordingCounter ()
+    {
+        float start = Time.time;
+        double timer = 45;
+        String counter = "-00:";
+
+        while (Microphone.IsRecording(null))
+        {
+            timer = Math.Round(45 - (Time.time - start));
+            if (timer < 10)
+            {
+                counter = "-00:0" + timer.ToString();
+            }
+            else
+            {
+                counter = "-00:" + timer.ToString();
+            }
+            gameObject.GetComponentInChildren<VRTK.VRTK_ControllerTooltips>().appMenuText = counter;
+            yield return null;
+        }
+    }
+
     /// <summary>
     /// Turns on or off the recording button and ability to record
     /// </summary>
@@ -177,6 +206,7 @@ public class Record : MonoBehaviour {
             StartCoroutine("PulseMaterial", recordButtonColor);
             if (firstRecord)
             {
+                recordButton.GetComponent<AudioSource>().clip = (AudioClip) Resources.Load("recordprompt");
                 recordButton.GetComponent<AudioSource>().Play();
                 gameObject.GetComponentInChildren<VRTK.VRTK_ControllerTooltips>().ToggleTips(true, VRTK.VRTK_ControllerTooltips.TooltipButtons.AppMenuTooltip);
                 firstRecord = false;
@@ -387,8 +417,13 @@ public class Record : MonoBehaviour {
         var form = new WWWForm();
         form.AddBinaryData("file", data, "calm.wav", "audio/wav");
 
+        gameObject.GetComponentInChildren<VRTK.VRTK_ControllerTooltips>().appMenuText = "Uploading…";
+
         WWW w = new WWW(uploadUrl, form);
-        yield return w;
+        while (!w.isDone)
+        {
+            yield return w;
+        }
 
         if (w.error != null)
         {
@@ -398,6 +433,8 @@ public class Record : MonoBehaviour {
         {
             Debug.Log(w.text);
         }
+        gameObject.GetComponentInChildren<VRTK.VRTK_ControllerTooltips>().ToggleTips(false, VRTK.VRTK_ControllerTooltips.TooltipButtons.AppMenuTooltip);
+
     }
 
 
