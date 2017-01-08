@@ -18,7 +18,7 @@ Material:
     - first:
         name: _BackTex
       second:
-        m_Texture: {fileID: 2800000, guid: 3d3a357efd35eb044bc5958a5d137073, type: 3}
+        m_Texture: {fileID: 2800000, guid: 9bd9328d66d2c3e45a7c03c5a7ac63d6, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - first:
@@ -48,7 +48,7 @@ Material:
     - first:
         name: _DownTex
       second:
-        m_Texture: {fileID: 2800000, guid: 14a9521bf0fdeb94fab83a95087031ed, type: 3}
+        m_Texture: {fileID: 2800000, guid: c31b726d8bab4e84eaabd86d0bf5b822, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - first:
@@ -60,13 +60,13 @@ Material:
     - first:
         name: _FrontTex
       second:
-        m_Texture: {fileID: 2800000, guid: bf197703b2e5fba4a9ea30f7030186a7, type: 3}
+        m_Texture: {fileID: 2800000, guid: 9bd9328d66d2c3e45a7c03c5a7ac63d6, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - first:
         name: _LeftTex
       second:
-        m_Texture: {fileID: 2800000, guid: ffab9278b4aaf6d4d92a40875194d793, type: 3}
+        m_Texture: {fileID: 2800000, guid: 9bd9328d66d2c3e45a7c03c5a7ac63d6, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - first:
@@ -96,13 +96,13 @@ Material:
     - first:
         name: _RightTex
       second:
-        m_Texture: {fileID: 2800000, guid: 6a76c309cf176fa42971c9e2d36c102b, type: 3}
+        m_Texture: {fileID: 2800000, guid: 9bd9328d66d2c3e45a7c03c5a7ac63d6, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - first:
         name: _UpTex
       second:
-        m_Texture: {fileID: 2800000, guid: 0541303f772e49e4da9f1a59088df725, type: 3}
+        m_Texture: {fileID: 2800000, guid: c31b726d8bab4e84eaabd86d0bf5b822, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     m_Floats:
@@ -144,7 +144,7 @@ Material:
       second: 0.02
     - first:
         name: _Rotation
-      second: 69.75843
+      second: 5.2641215
     - first:
         name: _SmoothnessTextureChannel
       second: 0
