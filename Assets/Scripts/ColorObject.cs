@@ -87,6 +87,7 @@ public class ColorObject : MonoBehaviour
                 {
                     Vector3 quotepos = quote.transform.localPosition;
                     quote.transform.SetParent(co.paintcanvas.transform);
+                    quotepos.z = -0.01f;
                     quote.transform.localPosition = quotepos;
                     quote.transform.localRotation = Quaternion.identity;
                 }
@@ -95,7 +96,7 @@ public class ColorObject : MonoBehaviour
                 co.canvascam.name = "CanvasCamera";
                 co.canvascam.transform.SetParent(co.paintcanvas.transform);
                 co.canvascam.AddComponent<Camera>();
-                co.canvascam.transform.localPosition = new Vector3(0, 0, -2f);
+                co.canvascam.transform.localPosition = new Vector3(0, 0, -2);
 
                 Camera canvascamera = co.canvascam.GetComponent<Camera>();
                 canvascamera.nearClipPlane = 0.3f;
@@ -120,39 +121,26 @@ public class ColorObject : MonoBehaviour
                 material.name = "BaseMaterial";
                 co.canvasbase.GetComponent<MeshRenderer>().material = material;
 
-                //GameObject colorbase = GameObject.CreatePrimitive(PrimitiveType.Plane);
-                //colorbase.transform.SetParent(co.paintcanvas.transform);
-                //colorbase.transform.localPosition = new Vector3(0, 0, -0.01f);
-                //colorbase.transform.localRotation = Quaternion.Euler(-90, 0, 0);
-                //colorbase.transform.localScale = new Vector3(0.1f, 0.1f, 0.1f);
-                //colorbase.GetComponent<Renderer>().material.color = Color.blue;
+                Texture2D coltexture = new Texture2D(1, 1, TextureFormat.ARGB32, false);
+                coltexture.SetPixel(1, 1, baseColor);
+                coltexture.Apply();
+                co.canvasbase.GetComponent<MeshRenderer>().material.mainTexture = coltexture;
 
                 RenderTexture rt = new RenderTexture(1024, 1024, 32, RenderTextureFormat.ARGB32);
                 rt.name = "PaintTexture";
                 rt.Create();
                 co.canvascam.GetComponent<Camera>().targetTexture = rt;
+
                 co.canvascam.GetComponent<Camera>().enabled = true;
 
-                RenderTexture.active = rt;
-                Texture2D tex = new Texture2D(rt.width, rt.height, TextureFormat.RGB24, false);
-                tex.ReadPixels(new Rect(0, 0, rt.width, rt.height), 0, 0);
-                tex.Apply();
-                baseMaterial = co.canvasbase.GetComponent<Renderer>().material;
-                baseMaterial.mainTexture = tex; //Put the painted texture as the base
-                RenderTexture.active = null;
-                
                 co.GetComponent<MeshRenderer>().material.mainTexture = rt;
 
-                co.canvascam.GetComponent<Camera>().enabled = false;
-
-                //Destroy(colorbase);
             }
             i++;
         }
 
         allQuoteObjects = GameObject.FindGameObjectsWithTag("Quote");
     }
-
 
     void Awake()
     {
@@ -168,6 +156,28 @@ public class ColorObject : MonoBehaviour
         ChangeBrushColor();
 
         Init();
+
+        Invoke("TurnOff", 3);
+    }
+
+
+    // For some reason, the render cameras aren't fast enough to capture
+    // the render to texture before the cameras turn off so we are waiting
+    // a few secs with all cameras on and turning them off one by one.
+    private void TurnOff ()
+    {
+        StartCoroutine("TurnOffCameras");
+    }
+    private IEnumerator TurnOffCameras()
+    {
+        // go through all colorable objects and create canvases for them
+        colorableObjects = FindObjectsOfType<Colorable>();
+
+        foreach (Colorable co in colorableObjects)
+        {
+            co.GetComponentInChildren<Camera>().enabled = false;
+            yield return null;
+        }
     }
 
     // Subscribe to event handlers
@@ -426,7 +436,6 @@ public class ColorObject : MonoBehaviour
 
             PickCanvas(savObj);
 
-            canvasCam.Render();
             RenderTexture canvas = canvasCam.targetTexture;
             RenderTexture.active = canvas;
             Texture2D tex = new Texture2D(canvas.width, canvas.height, TextureFormat.RGB24, false);
