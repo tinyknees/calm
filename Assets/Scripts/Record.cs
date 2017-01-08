@@ -81,6 +81,8 @@ public class Record : MonoBehaviour {
         recordButton = gameObject.transform.FindChild("Pencil").FindChild("Record");
         recordButton.GetComponent<Renderer>().material.color = recorderColor;
 
+        gameObject.transform.FindChild("ConsoleViewerCanvas").gameObject.SetActive(false);
+
         Invoke("InitGS", 3f);
     }
 
