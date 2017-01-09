@@ -65,7 +65,7 @@ public class SaveLoadScene : MonoBehaviour {
 
     private IEnumerator LoadTexturesFromFile()
     {
-        string fullPath = System.IO.Directory.GetCurrentDirectory() + "\\UserCanvas\\";
+        string fullPath = System.IO.Directory.GetCurrentDirectory() + "\\SavedCanvas\\";
         if (System.IO.Directory.Exists(fullPath))
         {
             System.DateTime date = System.DateTime.Now;
