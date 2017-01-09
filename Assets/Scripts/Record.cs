@@ -180,6 +180,8 @@ public class Record : MonoBehaviour {
         double timer = 45;
         String counter = "-00:";
 
+        gameObject.GetComponentInChildren<VRTK.VRTK_ControllerTooltips>().ToggleTips(true, VRTK.VRTK_ControllerTooltips.TooltipButtons.AppMenuTooltip);
+
         while (Microphone.IsRecording(null))
         {
             timer = Math.Round(45 - (Time.time - start));
