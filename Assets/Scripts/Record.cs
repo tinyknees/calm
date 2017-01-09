@@ -39,6 +39,7 @@ public class Record : MonoBehaviour {
 
     private bool touchpadUpPressed = false;
     private bool touchpadReleased = false;
+    private bool menuReleased = false;
 
     private string playerId;
     private string lastUploadId;
@@ -53,6 +54,9 @@ public class Record : MonoBehaviour {
     private bool requestedAllAudio = false;
     private int numDownloaded = 0;
     private bool playingAudio;
+
+    private Dictionary<string, bool> pingedQuote = new Dictionary<string, bool>();
+
 
     void Awake()
     {
@@ -76,10 +80,18 @@ public class Record : MonoBehaviour {
 
         allQuoteObjects = GameObject.FindGameObjectsWithTag("Quote");
 
+        // set up full dictionary
+        foreach (GameObject qc in allQuoteObjects)
+        {
+            pingedQuote.Add(qc.name, false);
+        }
+
         recordButton = gameObject.transform.FindChild("Pencil").FindChild("Record");
         recordButton.GetComponent<Renderer>().material.color = recorderColor;
 
         gameObject.transform.FindChild("ConsoleViewerCanvas").gameObject.SetActive(false);
+
+
 
         Invoke("InitGS", 3f);
     }
@@ -125,12 +137,11 @@ public class Record : MonoBehaviour {
             RequestAllAudio();
         }
 
-        if (startRecording)
+        if (menuReleased)
         {
-            startRecording = false;
+            menuReleased = false;
 
-
-            if (!Microphone.IsRecording(null))
+            if (startRecording)
             {
                 recordButton.GetComponent<AudioSource>().clip = (AudioClip)Resources.Load("startrecord");
                 recordButton.GetComponent<AudioSource>().Play();
@@ -140,8 +151,9 @@ public class Record : MonoBehaviour {
                 recordsource.clip = Microphone.Start(null, true, 45, 44100);
                 StartCoroutine(RecordingCounter());
             }
-            else
+            else if (Microphone.IsRecording(null)) 
             {
+                startRecording = false;
                 Debug.Log("Stopped Recording " + recordsource.clip.samples);
                 gameObject.GetComponentInChildren<VRTK.VRTK_ControllerTooltips>().appMenuText = "Saving…";
 
@@ -208,12 +220,13 @@ public class Record : MonoBehaviour {
         {
             canRecord = true;
             StartCoroutine("PulseMaterial", recordButtonColor);
-            if (firstRecord)
+            if (!pingedQuote[lastNearestQuote.name])
             {
+                gameObject.GetComponentInChildren<VRTK.VRTK_ControllerTooltips>().appMenuText = "Press to record";
                 recordButton.GetComponent<AudioSource>().clip = (AudioClip) Resources.Load("recordprompt");
                 recordButton.GetComponent<AudioSource>().Play();
                 gameObject.GetComponentInChildren<VRTK.VRTK_ControllerTooltips>().ToggleTips(true, VRTK.VRTK_ControllerTooltips.TooltipButtons.AppMenuTooltip);
-                firstRecord = false;
+                pingedQuote[lastNearestQuote.name] = true;
             }
         }
         else
@@ -608,6 +621,8 @@ public class Record : MonoBehaviour {
             }
         }
 
+        lastNearestQuote = nearestQuote;
+
         // if close enough, check if quote is revealed
         if (nearestDist < distanceThreshold)
         {
@@ -635,8 +650,6 @@ public class Record : MonoBehaviour {
                 }
             }
         }
-
-        lastNearestQuote = nearestQuote;
     }
 
     // Pulses a given material's color from default to parameter
@@ -682,6 +695,7 @@ public class Record : MonoBehaviour {
         {
             startRecording = startRecording ? false : true;
         }
+        menuReleased = true;
     }
 
     private void HandleTouchpadReleased(object sender, ControllerEvents.ControllerInteractionEventArgs e)
