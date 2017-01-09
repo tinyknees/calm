@@ -18,18 +18,17 @@ public class ColorObject : MonoBehaviour
     private ControllerEvents controllerEvents; // the controller where event happened
     private LaserPointer.PointerEventArgs hitObj; // shortcut to the object the laser collided with
     private LaserPointer.PointerEventArgs invHitObj; // shortcut to the object the eraser collided with
-    private ControllerEvents.ControllerInteractionEventArgs activeController;
 
     private bool hitTarget = false; // has the controller laser intersected with an object
     private bool invHitTarget = false;
-
-    private GameObject[] allQuoteObjects;
 
     // Painting specific globals
     public GameObject brushCursor; //The cursor that overlaps the model
     [Tooltip("Base color of all the colorable objects.")]
     public Color baseColor = Color.black; // Default object color
     private Material baseMaterial; // The material of our base texture (Where we will save the painted texture)
+
+    public Shader hackShader;
 
 
     public float brushSize = 0.2f; //The size of our brush
@@ -40,7 +39,6 @@ public class ColorObject : MonoBehaviour
 
     [Tooltip("Amount of a quote that needs to be revealed before triggering.")]
     [Range(0f, 100f)]
-    public float quotePercentage = 80;
 
     public bool cursorActive = false;
     
@@ -121,7 +119,7 @@ public class ColorObject : MonoBehaviour
                 GameObject.Destroy(quad);
                 co.canvasbase.transform.localPosition = Vector3.zero;
 
-                Material material = new Material(Shader.Find("Unlit/Texture"));
+                Material material = new Material(hackShader);
                 material.name = "BaseMaterial";
                 co.canvasbase.GetComponent<MeshRenderer>().material = material;
 
@@ -143,7 +141,6 @@ public class ColorObject : MonoBehaviour
             i++;
         }
 
-        allQuoteObjects = GameObject.FindGameObjectsWithTag("Quote");
     }
 
     void Awake()
@@ -286,14 +283,12 @@ public class ColorObject : MonoBehaviour
     {
         colorIndex--;
         ChangeBrushColor();
-        activeController = e;
     }
 
     private void HandleSwipedRight(object sender, ControllerEvents.ControllerInteractionEventArgs e)
     {
         colorIndex++;
         ChangeBrushColor();
-        activeController = e;
     }
 
 
@@ -557,7 +552,7 @@ public class ColorObject : MonoBehaviour
                 Debug.Log(quote.name + ": " + percentrevealed + "% revealed.");
 
                 // start playing sounds and enable recording if sufficient amount revealed
-                quote.revealed = (percentrevealed > quotePercentage) ? true : false;
+                quote.revealed = (percentrevealed > quote.revealThreshold) ? true : false;
             }
         }
 

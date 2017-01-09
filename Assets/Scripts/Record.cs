@@ -30,7 +30,6 @@ public class Record : MonoBehaviour {
     [Tooltip("Distance to objects before recording is allowed.")]
     public float distanceThreshold = 1.6f;
 
-    private bool startPlaying = false;
     private bool newDownloads = false;
     private GameObject lastNearestQuote = null;
 
@@ -39,7 +38,6 @@ public class Record : MonoBehaviour {
 
 
     private bool touchpadUpPressed = false;
-    private bool menuPressed = false;
     private bool touchpadReleased = false;
 
     private string playerId;
@@ -54,7 +52,6 @@ public class Record : MonoBehaviour {
 
     private bool requestedAllAudio = false;
     private int numDownloaded = 0;
-    private int totalDownloads = 0;
     private bool playingAudio;
 
     void Awake()
@@ -159,11 +156,12 @@ public class Record : MonoBehaviour {
             }
         }
 
-        if (touchpadReleased)
+        if (touchpadReleased && touchpadUpPressed)
         {
             GameObject cv = gameObject.transform.FindChild("ConsoleViewerCanvas").gameObject;
             cv.SetActive(!cv.activeSelf);
             touchpadReleased = false;
+            touchpadUpPressed = false;
         }
 
         CheckQuoteDistance();
@@ -366,7 +364,7 @@ public class Record : MonoBehaviour {
         Byte[] subChunk1 = BitConverter.GetBytes(16);
         fileStream.Write(subChunk1, 0, 4);
 
-        UInt16 two = 2;
+        //UInt16 two = 2;
         UInt16 one = 1;
 
         Byte[] audioFormat = BitConverter.GetBytes(one);
@@ -451,18 +449,19 @@ public class Record : MonoBehaviour {
             {
                 GSData data = response.ScriptData;
                 int i = 0;
-                String uploadId = data.GetString("uploadId" + i);
-                String quoteObject = data.GetString("Quote" + i);
-                while (uploadId != null)
+                if (data != null)
                 {
-                    DownloadAFile(uploadId, quoteObject);
-                    Debug.Log(uploadId + " / " + quoteObject);
-                    i++;
-                    uploadId = data.GetString("uploadId" + i);
-                    quoteObject = data.GetString("Quote" + i);
+                    String uploadId = data.GetString("uploadId" + i);
+                    String quoteObject = data.GetString("Quote" + i);
+                    while (uploadId != null)
+                    {
+                        DownloadAFile(uploadId, quoteObject);
+                        Debug.Log(uploadId + " / " + quoteObject);
+                        i++;
+                        uploadId = data.GetString("uploadId" + i);
+                        quoteObject = data.GetString("Quote" + i);
+                    }
                 }
-
-                totalDownloads = i;
             }
         });
 
@@ -686,7 +685,6 @@ public class Record : MonoBehaviour {
     private void HandleTouchpadReleased(object sender, ControllerEvents.ControllerInteractionEventArgs e)
     {
         touchpadReleased = true;
-        touchpadUpPressed = false;
    }
 
 

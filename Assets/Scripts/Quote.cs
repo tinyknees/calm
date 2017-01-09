@@ -8,4 +8,6 @@ public class Quote : MonoBehaviour {
     public bool revealed = false;
     [HideInInspector]
     public bool recorded = false;
+    [Range(0,100)]
+    public int revealThreshold = 75;
 }
