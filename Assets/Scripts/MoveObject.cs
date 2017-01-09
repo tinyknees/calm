@@ -34,7 +34,7 @@ public class MoveObject : MonoBehaviour
         laserPointer = GetComponent<LaserPointer>();
         controllerEvents = GetComponent<ControllerEvents>();
 
-        laserPointerDefaultColor = laserPointer.color;
+        laserPointerDefaultColor = Color.clear;
     }
 
     // Unity lifecycle method
@@ -58,12 +58,19 @@ public class MoveObject : MonoBehaviour
     // Unity lifecycle method
     void Update()
     {
-        if (hitTarget && triggerPressed)
+        if (hitTarget)
         {
-            if (hitObj.target.FindChild("Capsule") != null)
+            if (hitObj.target.GetComponent<Movable>() != null)
             {
-                DoMove();
-                moved = true;
+                hitObj.target.GetComponent<VRTK.Highlighters.VRTK_OutlineObjectCopyHighlighter>().Highlight(Color.blue);
+            }
+            if (triggerPressed)
+            {
+                if (hitObj.target.GetComponent<Movable>() != null)
+                {
+                    DoMove();
+                    moved = true;
+                }
             }
         }
     }
@@ -86,7 +93,7 @@ public class MoveObject : MonoBehaviour
         if (moved)
         {
             Vector3 moveObjPos = moveObj.position;
-            float sceneCamRef = sceneCamera.transform.position.y - 0.5f;
+            float sceneCamRef = sceneCamera.transform.position.y - 0.1f;
             // lock it down if pulled past a certain point
             if ((moveObjPos.y < sceneCamRef) && !pulledDown)
             {
@@ -141,7 +148,7 @@ public class MoveObject : MonoBehaviour
         float controllerYMove = controllerEvents.gameObject.transform.position.y - lastControllerPos.y;
         if (controllerYMove < 0)
         {
-            moveObjPos.y += controllerYMove * 2.5f;
+            moveObjPos.y += controllerYMove * 5f;
             moveObj.position = moveObjPos;
         }
         lastControllerPos = controllerEvents.gameObject.transform.position;

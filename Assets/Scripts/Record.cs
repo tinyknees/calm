@@ -30,7 +30,7 @@ public class Record : MonoBehaviour {
     [Tooltip("Distance to objects before recording is allowed.")]
     public float distanceThreshold = 1.6f;
 
-    private bool startPlaying = false;
+    private bool newDownloads = false;
     private GameObject lastNearestQuote = null;
 
     [HideInInspector]
@@ -38,7 +38,6 @@ public class Record : MonoBehaviour {
 
 
     private bool touchpadUpPressed = false;
-    private bool menuPressed = false;
     private bool touchpadReleased = false;
 
     private string playerId;
@@ -53,7 +52,6 @@ public class Record : MonoBehaviour {
 
     private bool requestedAllAudio = false;
     private int numDownloaded = 0;
-    private int totalDownloads = 0;
     private bool playingAudio;
 
     void Awake()
@@ -158,18 +156,20 @@ public class Record : MonoBehaviour {
             }
         }
 
-        if (touchpadReleased)
+        if (touchpadReleased && touchpadUpPressed)
         {
             GameObject cv = gameObject.transform.FindChild("ConsoleViewerCanvas").gameObject;
             cv.SetActive(!cv.activeSelf);
             touchpadReleased = false;
+            touchpadUpPressed = false;
         }
 
         CheckQuoteDistance();
 
-        if (!playingAudio && numDownloaded == totalDownloads && totalDownloads > 0)
+        //Debug.Log("numdownloaded: " + numDownloaded + ", total downloads:" + totalDownloads);
+        if (!playingAudio && newDownloads)
         {
-            //done downloading, start playing them
+            newDownloads = false;
             StartCoroutine(PlayAudio());
         }
     }
@@ -179,6 +179,8 @@ public class Record : MonoBehaviour {
         float start = Time.time;
         double timer = 45;
         String counter = "-00:";
+
+        gameObject.GetComponentInChildren<VRTK.VRTK_ControllerTooltips>().ToggleTips(true, VRTK.VRTK_ControllerTooltips.TooltipButtons.AppMenuTooltip);
 
         while (Microphone.IsRecording(null))
         {
@@ -364,7 +366,7 @@ public class Record : MonoBehaviour {
         Byte[] subChunk1 = BitConverter.GetBytes(16);
         fileStream.Write(subChunk1, 0, 4);
 
-        UInt16 two = 2;
+        //UInt16 two = 2;
         UInt16 one = 1;
 
         Byte[] audioFormat = BitConverter.GetBytes(one);
@@ -449,19 +451,19 @@ public class Record : MonoBehaviour {
             {
                 GSData data = response.ScriptData;
                 int i = 0;
-                String uploadId = data.GetString("uploadId" + i);
-                String quoteObject = data.GetString("Quote" + i);
-                while (uploadId != null)
+                if (data != null)
                 {
-                    DownloadAFile(uploadId, quoteObject);
-                    Debug.Log(uploadId + " / " + quoteObject);
-                    i++;
-                    uploadId = data.GetString("uploadId" + i);
-                    quoteObject = data.GetString("Quote" + i);
+                    String uploadId = data.GetString("uploadId" + i);
+                    String quoteObject = data.GetString("Quote" + i);
+                    while (uploadId != null)
+                    {
+                        DownloadAFile(uploadId, quoteObject);
+                        Debug.Log(uploadId + " / " + quoteObject);
+                        i++;
+                        uploadId = data.GetString("uploadId" + i);
+                        quoteObject = data.GetString("Quote" + i);
+                    }
                 }
-
-                totalDownloads = i;
-
             }
         });
 
@@ -508,6 +510,7 @@ public class Record : MonoBehaviour {
                 quoteaudio.clip = www.GetAudioClip(false, false, AudioType.WAV);
                 quoteaudio.outputAudioMixerGroup = mrmrMixer.FindMatchingGroups("Mrmrs")[0];
                 numDownloaded++;
+                newDownloads = true;
             }
         }
 
@@ -530,20 +533,26 @@ public class Record : MonoBehaviour {
         playingAudio = true; // global flag to inform if this coroutine is running
         int i = 0;
 
+        // set up full dictionary
+        foreach (GameObject qc in allQuoteObjects)
+        {
+            current.Add(qc.name, -1);
+        }
+
         // Initialize and play the first recording for every quote
         foreach (GameObject qc in allQuoteObjects)
         {
             AudioSource aus = qc.GetComponent<AudioSource>();
             if (aus != null)
             {
-                current.Add(qc.name, i);
+                current[qc.name] = i;
                 aus.Play();
             }
         }
 
-        // In case we somehow missed a download, loop will stop to restart later
-        while (true && numDownloaded == totalDownloads)
+        while (true && !newDownloads && numDownloaded > 0)
         {
+
             foreach (GameObject qc in allQuoteObjects)
             {
                 i = 0;
@@ -552,6 +561,7 @@ public class Record : MonoBehaviour {
                 {
                     if (!aus.isPlaying && current[qc.name] == i)
                     {
+                        //Debug.Log("playing: " + qc.name + " " + i);
                         current[qc.name] = (i == auss.Length - 1) ? 0 : i+1;
                         auss[current[qc.name]].Play();
                     }
@@ -559,8 +569,9 @@ public class Record : MonoBehaviour {
                     yield return null;
                 }
             }
-
         }
+
+        playingAudio = false;
     }
 
     // Check which quote player is nearest and also turn things on or off based on distance
@@ -676,7 +687,6 @@ public class Record : MonoBehaviour {
     private void HandleTouchpadReleased(object sender, ControllerEvents.ControllerInteractionEventArgs e)
     {
         touchpadReleased = true;
-        touchpadUpPressed = false;
    }
 
 

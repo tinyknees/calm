@@ -1,7 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEditor;
 
 /// <summary>
 /// Add this to any prefab that you want to be able to color.
@@ -17,4 +16,6 @@ public class Colorable : MonoBehaviour {
     public GameObject canvascam;
     [HideInInspector]
     public GameObject canvasbase;
+    [HideInInspector]
+    public bool saved = false;
 }

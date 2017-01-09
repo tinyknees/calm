@@ -220,6 +220,7 @@ MonoBehaviour:
   brushcontainer: {fileID: 0}
   canvascam: {fileID: 0}
   canvasbase: {fileID: 0}
+  saved: 0
 --- !u!1 &33609631
 GameObject:
   m_ObjectHideFlags: 0
@@ -263,6 +264,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   revealed: 0
   recorded: 0
+  revealThreshold: 75
 --- !u!212 &33609634
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -520,6 +522,7 @@ MonoBehaviour:
   brushcontainer: {fileID: 0}
   canvascam: {fileID: 0}
   canvasbase: {fileID: 0}
+  saved: 0
 --- !u!64 &82789320
 MeshCollider:
   m_ObjectHideFlags: 0
@@ -592,6 +595,7 @@ MonoBehaviour:
   brushcontainer: {fileID: 0}
   canvascam: {fileID: 0}
   canvasbase: {fileID: 0}
+  saved: 0
 --- !u!64 &82789323
 MeshCollider:
   m_ObjectHideFlags: 0
@@ -664,6 +668,7 @@ MonoBehaviour:
   brushcontainer: {fileID: 0}
   canvascam: {fileID: 0}
   canvasbase: {fileID: 0}
+  saved: 0
 --- !u!64 &82789326
 MeshCollider:
   m_ObjectHideFlags: 0
@@ -736,6 +741,7 @@ MonoBehaviour:
   brushcontainer: {fileID: 0}
   canvascam: {fileID: 0}
   canvasbase: {fileID: 0}
+  saved: 0
 --- !u!64 &82789329
 MeshCollider:
   m_ObjectHideFlags: 0
@@ -808,6 +814,7 @@ MonoBehaviour:
   brushcontainer: {fileID: 0}
   canvascam: {fileID: 0}
   canvasbase: {fileID: 0}
+  saved: 0
 --- !u!64 &82789332
 MeshCollider:
   m_ObjectHideFlags: 0
@@ -1182,6 +1189,7 @@ MonoBehaviour:
   brushcontainer: {fileID: 0}
   canvascam: {fileID: 0}
   canvasbase: {fileID: 0}
+  saved: 0
 --- !u!64 &135971348
 MeshCollider:
   m_ObjectHideFlags: 0
@@ -1254,6 +1262,7 @@ MonoBehaviour:
   brushcontainer: {fileID: 0}
   canvascam: {fileID: 0}
   canvasbase: {fileID: 0}
+  saved: 0
 --- !u!64 &135971351
 MeshCollider:
   m_ObjectHideFlags: 0
@@ -1326,6 +1335,7 @@ MonoBehaviour:
   brushcontainer: {fileID: 0}
   canvascam: {fileID: 0}
   canvasbase: {fileID: 0}
+  saved: 0
 --- !u!64 &135971354
 MeshCollider:
   m_ObjectHideFlags: 0
@@ -1398,6 +1408,7 @@ MonoBehaviour:
   brushcontainer: {fileID: 0}
   canvascam: {fileID: 0}
   canvasbase: {fileID: 0}
+  saved: 0
 --- !u!64 &135971357
 MeshCollider:
   m_ObjectHideFlags: 0
@@ -1470,6 +1481,7 @@ MonoBehaviour:
   brushcontainer: {fileID: 0}
   canvascam: {fileID: 0}
   canvasbase: {fileID: 0}
+  saved: 0
 --- !u!64 &135971360
 MeshCollider:
   m_ObjectHideFlags: 0
@@ -1542,6 +1554,7 @@ MonoBehaviour:
   brushcontainer: {fileID: 0}
   canvascam: {fileID: 0}
   canvasbase: {fileID: 0}
+  saved: 0
 --- !u!64 &135971363
 MeshCollider:
   m_ObjectHideFlags: 0
@@ -1614,6 +1627,7 @@ MonoBehaviour:
   brushcontainer: {fileID: 0}
   canvascam: {fileID: 0}
   canvasbase: {fileID: 0}
+  saved: 0
 --- !u!64 &135971366
 MeshCollider:
   m_ObjectHideFlags: 0
@@ -1686,6 +1700,7 @@ MonoBehaviour:
   brushcontainer: {fileID: 0}
   canvascam: {fileID: 0}
   canvasbase: {fileID: 0}
+  saved: 0
 --- !u!64 &135971369
 MeshCollider:
   m_ObjectHideFlags: 0
@@ -1709,7 +1724,6 @@ GameObject:
   m_Component:
   - component: {fileID: 139381780}
   - component: {fileID: 139381782}
-  - component: {fileID: 139381781}
   m_Layer: 0
   m_Name: Don't_be_afraid
   m_TagString: Untagged
@@ -1730,19 +1744,6 @@ Transform:
   m_Father: {fileID: 1749543045}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &139381781
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
-  m_GameObject: {fileID: 139381779}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 49d7d02e3a66814419b71bf7517590f9, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  revealed: 0
-  recorded: 0
 --- !u!212 &139381782
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -1821,6 +1822,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   revealed: 0
   recorded: 0
+  revealThreshold: 75
 --- !u!212 &164029125
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -2297,6 +2299,10 @@ Prefab:
       propertyPath: m_Name
       value: Rock 2 Tree 3
       objectReference: {fileID: 0}
+    - target: {fileID: 100000, guid: cc70be152db5ff34bb1d83be44d7bf0d, type: 3}
+      propertyPath: m_TagString
+      value: Quote
+      objectReference: {fileID: 0}
     m_RemovedComponents:
     - {fileID: 9500000, guid: cc70be152db5ff34bb1d83be44d7bf0d, type: 3}
   m_ParentPrefab: {fileID: 100100000, guid: cc70be152db5ff34bb1d83be44d7bf0d, type: 3}
@@ -2367,6 +2373,7 @@ MonoBehaviour:
   brushcontainer: {fileID: 0}
   canvascam: {fileID: 0}
   canvasbase: {fileID: 0}
+  saved: 0
 --- !u!1 &410808754
 GameObject:
   m_ObjectHideFlags: 0
@@ -2601,6 +2608,7 @@ MonoBehaviour:
   brushcontainer: {fileID: 0}
   canvascam: {fileID: 0}
   canvasbase: {fileID: 0}
+  saved: 0
 --- !u!1001 &430280834
 Prefab:
   m_ObjectHideFlags: 0
@@ -2829,6 +2837,7 @@ MonoBehaviour:
   brushcontainer: {fileID: 0}
   canvascam: {fileID: 0}
   canvasbase: {fileID: 0}
+  saved: 0
 --- !u!114 &503961854
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2887,6 +2896,7 @@ MonoBehaviour:
   brushcontainer: {fileID: 0}
   canvascam: {fileID: 0}
   canvasbase: {fileID: 0}
+  saved: 0
 --- !u!114 &503961856
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2945,6 +2955,7 @@ MonoBehaviour:
   brushcontainer: {fileID: 0}
   canvascam: {fileID: 0}
   canvasbase: {fileID: 0}
+  saved: 0
 --- !u!114 &503961858
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3003,6 +3014,7 @@ MonoBehaviour:
   brushcontainer: {fileID: 0}
   canvascam: {fileID: 0}
   canvasbase: {fileID: 0}
+  saved: 0
 --- !u!1001 &531145307
 Prefab:
   m_ObjectHideFlags: 0
@@ -3179,6 +3191,7 @@ MonoBehaviour:
   brushcontainer: {fileID: 0}
   canvascam: {fileID: 0}
   canvasbase: {fileID: 0}
+  saved: 0
 --- !u!4 &690491620
 Transform:
   m_ObjectHideFlags: 0
@@ -3380,6 +3393,7 @@ MonoBehaviour:
   brushcontainer: {fileID: 0}
   canvascam: {fileID: 0}
   canvasbase: {fileID: 0}
+  saved: 0
 --- !u!1001 &773285953
 Prefab:
   m_ObjectHideFlags: 0
@@ -3509,6 +3523,7 @@ MonoBehaviour:
   brushcontainer: {fileID: 0}
   canvascam: {fileID: 0}
   canvasbase: {fileID: 0}
+  saved: 0
 --- !u!1 &815269854
 GameObject:
   m_ObjectHideFlags: 0
@@ -3718,6 +3733,7 @@ MonoBehaviour:
   brushcontainer: {fileID: 0}
   canvascam: {fileID: 0}
   canvasbase: {fileID: 0}
+  saved: 0
 --- !u!224 &842433453 stripped
 RectTransform:
   m_PrefabParentObject: {fileID: 22469982, guid: 6b9dbb125b47726449ffe47a4110f342,
@@ -3901,6 +3917,7 @@ MonoBehaviour:
   brushcontainer: {fileID: 0}
   canvascam: {fileID: 0}
   canvasbase: {fileID: 0}
+  saved: 0
 --- !u!1001 &898284620
 Prefab:
   m_ObjectHideFlags: 0
@@ -4337,6 +4354,7 @@ MonoBehaviour:
   brushcontainer: {fileID: 0}
   canvascam: {fileID: 0}
   canvasbase: {fileID: 0}
+  saved: 0
 --- !u!1001 &1037868011
 Prefab:
   m_ObjectHideFlags: 0
@@ -4611,11 +4629,19 @@ Prefab:
       objectReference: {fileID: 0}
     - target: {fileID: 100096, guid: bd88725969f690a4abee35f00b3e9a1c, type: 3}
       propertyPath: m_TagString
-      value: Quote
+      value: Untagged
       objectReference: {fileID: 0}
     - target: {fileID: 100098, guid: bd88725969f690a4abee35f00b3e9a1c, type: 3}
       propertyPath: m_TagString
-      value: Untagged
+      value: Quote
+      objectReference: {fileID: 0}
+    - target: {fileID: 100002, guid: bd88725969f690a4abee35f00b3e9a1c, type: 3}
+      propertyPath: m_TagString
+      value: Quote
+      objectReference: {fileID: 0}
+    - target: {fileID: 100098, guid: bd88725969f690a4abee35f00b3e9a1c, type: 3}
+      propertyPath: m_Name
+      value: trunk 3
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: bd88725969f690a4abee35f00b3e9a1c, type: 3}
@@ -4842,6 +4868,7 @@ MonoBehaviour:
   brushcontainer: {fileID: 0}
   canvascam: {fileID: 0}
   canvasbase: {fileID: 0}
+  saved: 0
 --- !u!114 &1144705070
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -4900,6 +4927,7 @@ MonoBehaviour:
   brushcontainer: {fileID: 0}
   canvascam: {fileID: 0}
   canvasbase: {fileID: 0}
+  saved: 0
 --- !u!114 &1144705072
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -4958,6 +4986,7 @@ MonoBehaviour:
   brushcontainer: {fileID: 0}
   canvascam: {fileID: 0}
   canvasbase: {fileID: 0}
+  saved: 0
 --- !u!114 &1144705074
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -5016,6 +5045,7 @@ MonoBehaviour:
   brushcontainer: {fileID: 0}
   canvascam: {fileID: 0}
   canvasbase: {fileID: 0}
+  saved: 0
 --- !u!114 &1144705076
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -5074,6 +5104,7 @@ MonoBehaviour:
   brushcontainer: {fileID: 0}
   canvascam: {fileID: 0}
   canvasbase: {fileID: 0}
+  saved: 0
 --- !u!114 &1144705078
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -5132,6 +5163,7 @@ MonoBehaviour:
   brushcontainer: {fileID: 0}
   canvascam: {fileID: 0}
   canvasbase: {fileID: 0}
+  saved: 0
 --- !u!114 &1144705080
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -5190,6 +5222,7 @@ MonoBehaviour:
   brushcontainer: {fileID: 0}
   canvascam: {fileID: 0}
   canvasbase: {fileID: 0}
+  saved: 0
 --- !u!114 &1144705082
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -5248,6 +5281,7 @@ MonoBehaviour:
   brushcontainer: {fileID: 0}
   canvascam: {fileID: 0}
   canvasbase: {fileID: 0}
+  saved: 0
 --- !u!114 &1144705084
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -5306,6 +5340,7 @@ MonoBehaviour:
   brushcontainer: {fileID: 0}
   canvascam: {fileID: 0}
   canvasbase: {fileID: 0}
+  saved: 0
 --- !u!114 &1144705086
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -5364,6 +5399,7 @@ MonoBehaviour:
   brushcontainer: {fileID: 0}
   canvascam: {fileID: 0}
   canvasbase: {fileID: 0}
+  saved: 0
 --- !u!114 &1144705088
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -5422,6 +5458,7 @@ MonoBehaviour:
   brushcontainer: {fileID: 0}
   canvascam: {fileID: 0}
   canvasbase: {fileID: 0}
+  saved: 0
 --- !u!114 &1144705090
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -5480,6 +5517,7 @@ MonoBehaviour:
   brushcontainer: {fileID: 0}
   canvascam: {fileID: 0}
   canvasbase: {fileID: 0}
+  saved: 0
 --- !u!114 &1144705092
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -5538,6 +5576,7 @@ MonoBehaviour:
   brushcontainer: {fileID: 0}
   canvascam: {fileID: 0}
   canvasbase: {fileID: 0}
+  saved: 0
 --- !u!114 &1144705094
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -5596,6 +5635,7 @@ MonoBehaviour:
   brushcontainer: {fileID: 0}
   canvascam: {fileID: 0}
   canvasbase: {fileID: 0}
+  saved: 0
 --- !u!114 &1144705096
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -5654,6 +5694,7 @@ MonoBehaviour:
   brushcontainer: {fileID: 0}
   canvascam: {fileID: 0}
   canvasbase: {fileID: 0}
+  saved: 0
 --- !u!114 &1144705098
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -5712,6 +5753,7 @@ MonoBehaviour:
   brushcontainer: {fileID: 0}
   canvascam: {fileID: 0}
   canvasbase: {fileID: 0}
+  saved: 0
 --- !u!114 &1144705100
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -5770,6 +5812,7 @@ MonoBehaviour:
   brushcontainer: {fileID: 0}
   canvascam: {fileID: 0}
   canvasbase: {fileID: 0}
+  saved: 0
 --- !u!114 &1144705102
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -5828,6 +5871,7 @@ MonoBehaviour:
   brushcontainer: {fileID: 0}
   canvascam: {fileID: 0}
   canvasbase: {fileID: 0}
+  saved: 0
 --- !u!114 &1144705104
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -5886,6 +5930,7 @@ MonoBehaviour:
   brushcontainer: {fileID: 0}
   canvascam: {fileID: 0}
   canvasbase: {fileID: 0}
+  saved: 0
 --- !u!114 &1144705106
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -5944,6 +5989,7 @@ MonoBehaviour:
   brushcontainer: {fileID: 0}
   canvascam: {fileID: 0}
   canvasbase: {fileID: 0}
+  saved: 0
 --- !u!114 &1144705108
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -6002,6 +6048,7 @@ MonoBehaviour:
   brushcontainer: {fileID: 0}
   canvascam: {fileID: 0}
   canvasbase: {fileID: 0}
+  saved: 0
 --- !u!114 &1144705110
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -6060,6 +6107,7 @@ MonoBehaviour:
   brushcontainer: {fileID: 0}
   canvascam: {fileID: 0}
   canvasbase: {fileID: 0}
+  saved: 0
 --- !u!114 &1144705112
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -6118,6 +6166,7 @@ MonoBehaviour:
   brushcontainer: {fileID: 0}
   canvascam: {fileID: 0}
   canvasbase: {fileID: 0}
+  saved: 0
 --- !u!114 &1144705114
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -6176,6 +6225,7 @@ MonoBehaviour:
   brushcontainer: {fileID: 0}
   canvascam: {fileID: 0}
   canvasbase: {fileID: 0}
+  saved: 0
 --- !u!114 &1144705116
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -6234,6 +6284,7 @@ MonoBehaviour:
   brushcontainer: {fileID: 0}
   canvascam: {fileID: 0}
   canvasbase: {fileID: 0}
+  saved: 0
 --- !u!114 &1144705118
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -6292,6 +6343,7 @@ MonoBehaviour:
   brushcontainer: {fileID: 0}
   canvascam: {fileID: 0}
   canvasbase: {fileID: 0}
+  saved: 0
 --- !u!114 &1144705120
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -6350,6 +6402,7 @@ MonoBehaviour:
   brushcontainer: {fileID: 0}
   canvascam: {fileID: 0}
   canvasbase: {fileID: 0}
+  saved: 0
 --- !u!114 &1144705122
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -6408,6 +6461,7 @@ MonoBehaviour:
   brushcontainer: {fileID: 0}
   canvascam: {fileID: 0}
   canvasbase: {fileID: 0}
+  saved: 0
 --- !u!114 &1144705124
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -6466,6 +6520,7 @@ MonoBehaviour:
   brushcontainer: {fileID: 0}
   canvascam: {fileID: 0}
   canvasbase: {fileID: 0}
+  saved: 0
 --- !u!114 &1144705126
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -6524,6 +6579,7 @@ MonoBehaviour:
   brushcontainer: {fileID: 0}
   canvascam: {fileID: 0}
   canvasbase: {fileID: 0}
+  saved: 0
 --- !u!114 &1144705128
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -6582,6 +6638,7 @@ MonoBehaviour:
   brushcontainer: {fileID: 0}
   canvascam: {fileID: 0}
   canvasbase: {fileID: 0}
+  saved: 0
 --- !u!114 &1144705130
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -6640,6 +6697,7 @@ MonoBehaviour:
   brushcontainer: {fileID: 0}
   canvascam: {fileID: 0}
   canvasbase: {fileID: 0}
+  saved: 0
 --- !u!114 &1144705132
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -6698,6 +6756,7 @@ MonoBehaviour:
   brushcontainer: {fileID: 0}
   canvascam: {fileID: 0}
   canvasbase: {fileID: 0}
+  saved: 0
 --- !u!114 &1144705134
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -6756,6 +6815,7 @@ MonoBehaviour:
   brushcontainer: {fileID: 0}
   canvascam: {fileID: 0}
   canvasbase: {fileID: 0}
+  saved: 0
 --- !u!114 &1144705136
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -6814,6 +6874,7 @@ MonoBehaviour:
   brushcontainer: {fileID: 0}
   canvascam: {fileID: 0}
   canvasbase: {fileID: 0}
+  saved: 0
 --- !u!114 &1144705138
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -6872,6 +6933,7 @@ MonoBehaviour:
   brushcontainer: {fileID: 0}
   canvascam: {fileID: 0}
   canvasbase: {fileID: 0}
+  saved: 0
 --- !u!114 &1144705140
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -6930,6 +6992,7 @@ MonoBehaviour:
   brushcontainer: {fileID: 0}
   canvascam: {fileID: 0}
   canvasbase: {fileID: 0}
+  saved: 0
 --- !u!114 &1144705142
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -6988,6 +7051,7 @@ MonoBehaviour:
   brushcontainer: {fileID: 0}
   canvascam: {fileID: 0}
   canvasbase: {fileID: 0}
+  saved: 0
 --- !u!114 &1144705144
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -7046,6 +7110,7 @@ MonoBehaviour:
   brushcontainer: {fileID: 0}
   canvascam: {fileID: 0}
   canvasbase: {fileID: 0}
+  saved: 0
 --- !u!114 &1144705146
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -7104,6 +7169,7 @@ MonoBehaviour:
   brushcontainer: {fileID: 0}
   canvascam: {fileID: 0}
   canvasbase: {fileID: 0}
+  saved: 0
 --- !u!4 &1144705152 stripped
 Transform:
   m_PrefabParentObject: {fileID: 400098, guid: bd88725969f690a4abee35f00b3e9a1c, type: 3}
@@ -7463,6 +7529,35 @@ Transform:
   m_Father: {fileID: 2050855431}
   m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!21 &1286263003
+Material:
+  serializedVersion: 6
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_Name: Sprites/Default
+  m_Shader: {fileID: 10753, guid: 0000000000000000f000000000000000, type: 0}
+  m_ShaderKeywords: 
+  m_LightmapFlags: 5
+  m_CustomRenderQueue: -1
+  stringTagMap: {}
+  m_SavedProperties:
+    serializedVersion: 2
+    m_TexEnvs:
+    - first:
+        name: _MainTex
+      second:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    m_Floats:
+    - first:
+        name: PixelSnap
+      second: 0
+    m_Colors:
+    - first:
+        name: _Color
+      second: {r: 1, g: 1, b: 1, a: 1}
 --- !u!1 &1300356226
 GameObject:
   m_ObjectHideFlags: 0
@@ -7512,10 +7607,9 @@ MonoBehaviour:
   - {r: 0.854902, g: 0.28235295, b: 0.42352945, a: 0}
   - {r: 0.43529415, g: 0.07450981, b: 0.27450982, a: 0}
   brushCursor: {fileID: 1252057407}
-  baseColor: {r: 0, g: 0.047058824, b: 0.13333334, a: 0}
+  baseColor: {r: 0, g: 0.047058824, b: 0.13333334, a: 1}
   brushSize: 0.1
   brushDistance: 0.06
-  quotePercentage: 65
   cursorActive: 0
   cursorPaint: {fileID: 21300000, guid: 2ad8e55b008da9a4f9203826e67bc99c, type: 3}
 --- !u!4 &1300356228
@@ -7975,6 +8069,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   revealed: 0
   recorded: 0
+  revealThreshold: 11
 --- !u!212 &1350099704
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -8083,6 +8178,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   revealed: 0
   recorded: 0
+  revealThreshold: 75
 --- !u!212 &1388901400
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -8281,6 +8377,7 @@ MonoBehaviour:
   brushcontainer: {fileID: 0}
   canvascam: {fileID: 0}
   canvasbase: {fileID: 0}
+  saved: 0
 --- !u!1001 &1544792823
 Prefab:
   m_ObjectHideFlags: 0
@@ -8406,6 +8503,7 @@ MonoBehaviour:
   brushcontainer: {fileID: 0}
   canvascam: {fileID: 0}
   canvasbase: {fileID: 0}
+  saved: 0
 --- !u!1 &1547715266
 GameObject:
   m_ObjectHideFlags: 0
@@ -8449,6 +8547,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   revealed: 0
   recorded: 0
+  revealThreshold: 18
 --- !u!212 &1547715269
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -8893,6 +8992,7 @@ MonoBehaviour:
   brushcontainer: {fileID: 0}
   canvascam: {fileID: 0}
   canvasbase: {fileID: 0}
+  saved: 0
 --- !u!114 &1609757583
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -8951,6 +9051,7 @@ MonoBehaviour:
   brushcontainer: {fileID: 0}
   canvascam: {fileID: 0}
   canvasbase: {fileID: 0}
+  saved: 0
 --- !u!114 &1609757585
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -9009,6 +9110,7 @@ MonoBehaviour:
   brushcontainer: {fileID: 0}
   canvascam: {fileID: 0}
   canvasbase: {fileID: 0}
+  saved: 0
 --- !u!114 &1609757587
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -9067,6 +9169,7 @@ MonoBehaviour:
   brushcontainer: {fileID: 0}
   canvascam: {fileID: 0}
   canvasbase: {fileID: 0}
+  saved: 0
 --- !u!114 &1609757589
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -9125,6 +9228,7 @@ MonoBehaviour:
   brushcontainer: {fileID: 0}
   canvascam: {fileID: 0}
   canvasbase: {fileID: 0}
+  saved: 0
 --- !u!114 &1609757591
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -9183,6 +9287,7 @@ MonoBehaviour:
   brushcontainer: {fileID: 0}
   canvascam: {fileID: 0}
   canvasbase: {fileID: 0}
+  saved: 0
 --- !u!114 &1609757593
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -9241,6 +9346,7 @@ MonoBehaviour:
   brushcontainer: {fileID: 0}
   canvascam: {fileID: 0}
   canvasbase: {fileID: 0}
+  saved: 0
 --- !u!114 &1609757595
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -9299,6 +9405,7 @@ MonoBehaviour:
   brushcontainer: {fileID: 0}
   canvascam: {fileID: 0}
   canvasbase: {fileID: 0}
+  saved: 0
 --- !u!114 &1609757597
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -9357,6 +9464,7 @@ MonoBehaviour:
   brushcontainer: {fileID: 0}
   canvascam: {fileID: 0}
   canvasbase: {fileID: 0}
+  saved: 0
 --- !u!114 &1609757599
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -9415,6 +9523,7 @@ MonoBehaviour:
   brushcontainer: {fileID: 0}
   canvascam: {fileID: 0}
   canvasbase: {fileID: 0}
+  saved: 0
 --- !u!114 &1609757601
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -9473,6 +9582,7 @@ MonoBehaviour:
   brushcontainer: {fileID: 0}
   canvascam: {fileID: 0}
   canvasbase: {fileID: 0}
+  saved: 0
 --- !u!114 &1609757603
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -9531,6 +9641,7 @@ MonoBehaviour:
   brushcontainer: {fileID: 0}
   canvascam: {fileID: 0}
   canvasbase: {fileID: 0}
+  saved: 0
 --- !u!114 &1609757605
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -9589,6 +9700,7 @@ MonoBehaviour:
   brushcontainer: {fileID: 0}
   canvascam: {fileID: 0}
   canvasbase: {fileID: 0}
+  saved: 0
 --- !u!114 &1609757607
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -9647,6 +9759,7 @@ MonoBehaviour:
   brushcontainer: {fileID: 0}
   canvascam: {fileID: 0}
   canvasbase: {fileID: 0}
+  saved: 0
 --- !u!114 &1609757609
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -9705,6 +9818,7 @@ MonoBehaviour:
   brushcontainer: {fileID: 0}
   canvascam: {fileID: 0}
   canvasbase: {fileID: 0}
+  saved: 0
 --- !u!114 &1609757611
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -9763,6 +9877,7 @@ MonoBehaviour:
   brushcontainer: {fileID: 0}
   canvascam: {fileID: 0}
   canvasbase: {fileID: 0}
+  saved: 0
 --- !u!114 &1609757613
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -9821,6 +9936,7 @@ MonoBehaviour:
   brushcontainer: {fileID: 0}
   canvascam: {fileID: 0}
   canvasbase: {fileID: 0}
+  saved: 0
 --- !u!114 &1609757615
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -9879,6 +9995,7 @@ MonoBehaviour:
   brushcontainer: {fileID: 0}
   canvascam: {fileID: 0}
   canvasbase: {fileID: 0}
+  saved: 0
 --- !u!114 &1609757617
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -9937,6 +10054,7 @@ MonoBehaviour:
   brushcontainer: {fileID: 0}
   canvascam: {fileID: 0}
   canvasbase: {fileID: 0}
+  saved: 0
 --- !u!114 &1609757619
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -9995,6 +10113,7 @@ MonoBehaviour:
   brushcontainer: {fileID: 0}
   canvascam: {fileID: 0}
   canvasbase: {fileID: 0}
+  saved: 0
 --- !u!114 &1609757621
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -10053,6 +10172,7 @@ MonoBehaviour:
   brushcontainer: {fileID: 0}
   canvascam: {fileID: 0}
   canvasbase: {fileID: 0}
+  saved: 0
 --- !u!114 &1609757623
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -10111,6 +10231,7 @@ MonoBehaviour:
   brushcontainer: {fileID: 0}
   canvascam: {fileID: 0}
   canvasbase: {fileID: 0}
+  saved: 0
 --- !u!114 &1609757625
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -10169,6 +10290,7 @@ MonoBehaviour:
   brushcontainer: {fileID: 0}
   canvascam: {fileID: 0}
   canvasbase: {fileID: 0}
+  saved: 0
 --- !u!114 &1609757627
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -10227,6 +10349,7 @@ MonoBehaviour:
   brushcontainer: {fileID: 0}
   canvascam: {fileID: 0}
   canvasbase: {fileID: 0}
+  saved: 0
 --- !u!114 &1609757629
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -10285,6 +10408,7 @@ MonoBehaviour:
   brushcontainer: {fileID: 0}
   canvascam: {fileID: 0}
   canvasbase: {fileID: 0}
+  saved: 0
 --- !u!114 &1609757631
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -10343,6 +10467,7 @@ MonoBehaviour:
   brushcontainer: {fileID: 0}
   canvascam: {fileID: 0}
   canvasbase: {fileID: 0}
+  saved: 0
 --- !u!114 &1609757633
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -10401,6 +10526,7 @@ MonoBehaviour:
   brushcontainer: {fileID: 0}
   canvascam: {fileID: 0}
   canvasbase: {fileID: 0}
+  saved: 0
 --- !u!114 &1609757635
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -10459,6 +10585,7 @@ MonoBehaviour:
   brushcontainer: {fileID: 0}
   canvascam: {fileID: 0}
   canvasbase: {fileID: 0}
+  saved: 0
 --- !u!114 &1609757637
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -10517,6 +10644,7 @@ MonoBehaviour:
   brushcontainer: {fileID: 0}
   canvascam: {fileID: 0}
   canvasbase: {fileID: 0}
+  saved: 0
 --- !u!114 &1609757639
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -10575,6 +10703,7 @@ MonoBehaviour:
   brushcontainer: {fileID: 0}
   canvascam: {fileID: 0}
   canvasbase: {fileID: 0}
+  saved: 0
 --- !u!114 &1609757641
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -10633,6 +10762,7 @@ MonoBehaviour:
   brushcontainer: {fileID: 0}
   canvascam: {fileID: 0}
   canvasbase: {fileID: 0}
+  saved: 0
 --- !u!114 &1609757643
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -10691,6 +10821,7 @@ MonoBehaviour:
   brushcontainer: {fileID: 0}
   canvascam: {fileID: 0}
   canvasbase: {fileID: 0}
+  saved: 0
 --- !u!4 &1609757649 stripped
 Transform:
   m_PrefabParentObject: {fileID: 400078, guid: d172ea2bc926937429f776767f42bd03, type: 3}
@@ -10866,6 +10997,7 @@ MonoBehaviour:
   brushcontainer: {fileID: 0}
   canvascam: {fileID: 0}
   canvasbase: {fileID: 0}
+  saved: 0
 --- !u!20 &1619739766
 Camera:
   m_ObjectHideFlags: 0
@@ -11035,6 +11167,7 @@ MonoBehaviour:
   brushcontainer: {fileID: 0}
   canvascam: {fileID: 0}
   canvasbase: {fileID: 0}
+  saved: 0
 --- !u!1001 &1721471685
 Prefab:
   m_ObjectHideFlags: 0
@@ -11160,6 +11293,33 @@ MonoBehaviour:
   brushcontainer: {fileID: 0}
   canvascam: {fileID: 0}
   canvasbase: {fileID: 0}
+  saved: 0
+--- !u!114 &1721471690
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 1721471687}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4e1cbdf40225a96458020a74a0c26e75, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &1721471691
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 1721471687}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c08517e04830d6d44a13c5ea5f574181, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  active: 1
+  thickness: 1
+  customOutlineModel: {fileID: 0}
+  customOutlineModelPath: 
 --- !u!1 &1734947000
 GameObject:
   m_ObjectHideFlags: 0
@@ -11215,7 +11375,7 @@ MeshFilter:
     type: 2}
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 1734947000}
-  m_Mesh: {fileID: 1893370041}
+  m_Mesh: {fileID: 2136771819}
 --- !u!23 &1734947003
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -11230,7 +11390,7 @@ MeshRenderer:
   m_LightProbeUsage: 0
   m_ReflectionProbeUsage: 0
   m_Materials:
-  - {fileID: 1958666015}
+  - {fileID: 1286263003}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -11371,6 +11531,10 @@ Prefab:
     - target: {fileID: 100098, guid: 7c92052aeae131a49aa71315c4306bd9, type: 3}
       propertyPath: m_Name
       value: trunk 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 100004, guid: 7c92052aeae131a49aa71315c4306bd9, type: 3}
+      propertyPath: m_TagString
+      value: Untagged
       objectReference: {fileID: 0}
     m_RemovedComponents:
     - {fileID: 9500000, guid: 7c92052aeae131a49aa71315c4306bd9, type: 3}
@@ -11598,6 +11762,7 @@ MonoBehaviour:
   brushcontainer: {fileID: 0}
   canvascam: {fileID: 0}
   canvasbase: {fileID: 0}
+  saved: 0
 --- !u!114 &1749542851
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -11656,6 +11821,7 @@ MonoBehaviour:
   brushcontainer: {fileID: 0}
   canvascam: {fileID: 0}
   canvasbase: {fileID: 0}
+  saved: 0
 --- !u!114 &1749542853
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -11714,6 +11880,7 @@ MonoBehaviour:
   brushcontainer: {fileID: 0}
   canvascam: {fileID: 0}
   canvasbase: {fileID: 0}
+  saved: 0
 --- !u!114 &1749542855
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -11772,6 +11939,7 @@ MonoBehaviour:
   brushcontainer: {fileID: 0}
   canvascam: {fileID: 0}
   canvasbase: {fileID: 0}
+  saved: 0
 --- !u!114 &1749542857
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -11830,6 +11998,7 @@ MonoBehaviour:
   brushcontainer: {fileID: 0}
   canvascam: {fileID: 0}
   canvasbase: {fileID: 0}
+  saved: 0
 --- !u!114 &1749542859
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -11888,6 +12057,7 @@ MonoBehaviour:
   brushcontainer: {fileID: 0}
   canvascam: {fileID: 0}
   canvasbase: {fileID: 0}
+  saved: 0
 --- !u!114 &1749542861
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -11946,6 +12116,7 @@ MonoBehaviour:
   brushcontainer: {fileID: 0}
   canvascam: {fileID: 0}
   canvasbase: {fileID: 0}
+  saved: 0
 --- !u!114 &1749542863
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -12004,6 +12175,7 @@ MonoBehaviour:
   brushcontainer: {fileID: 0}
   canvascam: {fileID: 0}
   canvasbase: {fileID: 0}
+  saved: 0
 --- !u!114 &1749542865
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -12062,6 +12234,7 @@ MonoBehaviour:
   brushcontainer: {fileID: 0}
   canvascam: {fileID: 0}
   canvasbase: {fileID: 0}
+  saved: 0
 --- !u!114 &1749542867
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -12120,6 +12293,7 @@ MonoBehaviour:
   brushcontainer: {fileID: 0}
   canvascam: {fileID: 0}
   canvasbase: {fileID: 0}
+  saved: 0
 --- !u!114 &1749542869
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -12178,6 +12352,7 @@ MonoBehaviour:
   brushcontainer: {fileID: 0}
   canvascam: {fileID: 0}
   canvasbase: {fileID: 0}
+  saved: 0
 --- !u!114 &1749542871
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -12236,6 +12411,7 @@ MonoBehaviour:
   brushcontainer: {fileID: 0}
   canvascam: {fileID: 0}
   canvasbase: {fileID: 0}
+  saved: 0
 --- !u!114 &1749542873
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -12294,6 +12470,7 @@ MonoBehaviour:
   brushcontainer: {fileID: 0}
   canvascam: {fileID: 0}
   canvasbase: {fileID: 0}
+  saved: 0
 --- !u!114 &1749542875
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -12352,6 +12529,7 @@ MonoBehaviour:
   brushcontainer: {fileID: 0}
   canvascam: {fileID: 0}
   canvasbase: {fileID: 0}
+  saved: 0
 --- !u!114 &1749542877
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -12410,6 +12588,7 @@ MonoBehaviour:
   brushcontainer: {fileID: 0}
   canvascam: {fileID: 0}
   canvasbase: {fileID: 0}
+  saved: 0
 --- !u!114 &1749542879
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -12468,6 +12647,7 @@ MonoBehaviour:
   brushcontainer: {fileID: 0}
   canvascam: {fileID: 0}
   canvasbase: {fileID: 0}
+  saved: 0
 --- !u!114 &1749542881
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -12526,6 +12706,7 @@ MonoBehaviour:
   brushcontainer: {fileID: 0}
   canvascam: {fileID: 0}
   canvasbase: {fileID: 0}
+  saved: 0
 --- !u!114 &1749542883
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -12584,6 +12765,7 @@ MonoBehaviour:
   brushcontainer: {fileID: 0}
   canvascam: {fileID: 0}
   canvasbase: {fileID: 0}
+  saved: 0
 --- !u!114 &1749542885
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -12642,6 +12824,7 @@ MonoBehaviour:
   brushcontainer: {fileID: 0}
   canvascam: {fileID: 0}
   canvasbase: {fileID: 0}
+  saved: 0
 --- !u!114 &1749542887
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -12700,6 +12883,7 @@ MonoBehaviour:
   brushcontainer: {fileID: 0}
   canvascam: {fileID: 0}
   canvasbase: {fileID: 0}
+  saved: 0
 --- !u!114 &1749542889
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -12758,6 +12942,7 @@ MonoBehaviour:
   brushcontainer: {fileID: 0}
   canvascam: {fileID: 0}
   canvasbase: {fileID: 0}
+  saved: 0
 --- !u!114 &1749542891
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -12816,6 +13001,7 @@ MonoBehaviour:
   brushcontainer: {fileID: 0}
   canvascam: {fileID: 0}
   canvasbase: {fileID: 0}
+  saved: 0
 --- !u!114 &1749542893
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -12874,6 +13060,7 @@ MonoBehaviour:
   brushcontainer: {fileID: 0}
   canvascam: {fileID: 0}
   canvasbase: {fileID: 0}
+  saved: 0
 --- !u!114 &1749542895
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -12932,6 +13119,7 @@ MonoBehaviour:
   brushcontainer: {fileID: 0}
   canvascam: {fileID: 0}
   canvasbase: {fileID: 0}
+  saved: 0
 --- !u!114 &1749542897
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -12990,6 +13178,7 @@ MonoBehaviour:
   brushcontainer: {fileID: 0}
   canvascam: {fileID: 0}
   canvasbase: {fileID: 0}
+  saved: 0
 --- !u!114 &1749542899
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -13048,6 +13237,7 @@ MonoBehaviour:
   brushcontainer: {fileID: 0}
   canvascam: {fileID: 0}
   canvasbase: {fileID: 0}
+  saved: 0
 --- !u!114 &1749542901
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -13106,6 +13296,7 @@ MonoBehaviour:
   brushcontainer: {fileID: 0}
   canvascam: {fileID: 0}
   canvasbase: {fileID: 0}
+  saved: 0
 --- !u!114 &1749542903
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -13164,6 +13355,7 @@ MonoBehaviour:
   brushcontainer: {fileID: 0}
   canvascam: {fileID: 0}
   canvasbase: {fileID: 0}
+  saved: 0
 --- !u!114 &1749542905
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -13222,6 +13414,7 @@ MonoBehaviour:
   brushcontainer: {fileID: 0}
   canvascam: {fileID: 0}
   canvasbase: {fileID: 0}
+  saved: 0
 --- !u!114 &1749542907
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -13280,6 +13473,7 @@ MonoBehaviour:
   brushcontainer: {fileID: 0}
   canvascam: {fileID: 0}
   canvasbase: {fileID: 0}
+  saved: 0
 --- !u!114 &1749542909
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -13338,6 +13532,7 @@ MonoBehaviour:
   brushcontainer: {fileID: 0}
   canvascam: {fileID: 0}
   canvasbase: {fileID: 0}
+  saved: 0
 --- !u!114 &1749542911
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -13396,6 +13591,7 @@ MonoBehaviour:
   brushcontainer: {fileID: 0}
   canvascam: {fileID: 0}
   canvasbase: {fileID: 0}
+  saved: 0
 --- !u!114 &1749542913
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -13454,6 +13650,7 @@ MonoBehaviour:
   brushcontainer: {fileID: 0}
   canvascam: {fileID: 0}
   canvasbase: {fileID: 0}
+  saved: 0
 --- !u!114 &1749542915
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -13512,6 +13709,7 @@ MonoBehaviour:
   brushcontainer: {fileID: 0}
   canvascam: {fileID: 0}
   canvasbase: {fileID: 0}
+  saved: 0
 --- !u!114 &1749542917
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -13570,6 +13768,7 @@ MonoBehaviour:
   brushcontainer: {fileID: 0}
   canvascam: {fileID: 0}
   canvasbase: {fileID: 0}
+  saved: 0
 --- !u!114 &1749542919
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -13628,6 +13827,7 @@ MonoBehaviour:
   brushcontainer: {fileID: 0}
   canvascam: {fileID: 0}
   canvasbase: {fileID: 0}
+  saved: 0
 --- !u!114 &1749542921
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -13686,6 +13886,7 @@ MonoBehaviour:
   brushcontainer: {fileID: 0}
   canvascam: {fileID: 0}
   canvasbase: {fileID: 0}
+  saved: 0
 --- !u!114 &1749542923
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -13744,6 +13945,7 @@ MonoBehaviour:
   brushcontainer: {fileID: 0}
   canvascam: {fileID: 0}
   canvasbase: {fileID: 0}
+  saved: 0
 --- !u!114 &1749542925
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -13802,6 +14004,7 @@ MonoBehaviour:
   brushcontainer: {fileID: 0}
   canvascam: {fileID: 0}
   canvasbase: {fileID: 0}
+  saved: 0
 --- !u!114 &1749542927
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -13860,6 +14063,7 @@ MonoBehaviour:
   brushcontainer: {fileID: 0}
   canvascam: {fileID: 0}
   canvasbase: {fileID: 0}
+  saved: 0
 --- !u!4 &1749542933 stripped
 Transform:
   m_PrefabParentObject: {fileID: 400098, guid: 7c92052aeae131a49aa71315c4306bd9, type: 3}
@@ -13989,163 +14193,6 @@ AudioSource:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 0
---- !u!43 &1893370041
-Mesh:
-  m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
-  m_Name: 
-  serializedVersion: 8
-  m_SubMeshes:
-  - serializedVersion: 2
-    firstByte: 0
-    indexCount: 24
-    topology: 0
-    firstVertex: 0
-    vertexCount: 8
-    localAABB:
-      m_Center: {x: 0, y: 0.01, z: 0}
-      m_Extent: {x: 1.65, y: 0, z: 1.275}
-  m_Shapes:
-    vertices: []
-    shapes: []
-    channels: []
-    fullWeights: []
-  m_BindPose: []
-  m_BoneNameHashes: 
-  m_RootBoneNameHash: 0
-  m_MeshCompression: 0
-  m_IsReadable: 1
-  m_KeepVertices: 1
-  m_KeepIndices: 1
-  m_IndexBuffer: 000004000100010004000500010005000200020005000600020006000300030006000700030007000000000007000400
-  m_Skin: []
-  m_VertexData:
-    m_CurrentChannels: 13
-    m_VertexCount: 8
-    m_Channels:
-    - stream: 0
-      offset: 0
-      format: 0
-      dimension: 3
-    - stream: 0
-      offset: 0
-      format: 0
-      dimension: 0
-    - stream: 0
-      offset: 12
-      format: 0
-      dimension: 4
-    - stream: 0
-      offset: 28
-      format: 0
-      dimension: 2
-    - stream: 0
-      offset: 0
-      format: 0
-      dimension: 0
-    - stream: 0
-      offset: 0
-      format: 0
-      dimension: 0
-    - stream: 0
-      offset: 0
-      format: 0
-      dimension: 0
-    - stream: 0
-      offset: 0
-      format: 0
-      dimension: 0
-    m_DataSize: 288
-    _typelessdata: 0000c03f0ad7233c0000903f000000000000803f0000803f0000803f00000000000000000000c03f0ad7233c000090bf000000000000803f0000803f0000803f0000803f000000000000c0bf0ad7233c000090bf000000000000803f0000803f0000803f00000000000000000000c0bf0ad7233c0000903f000000000000803f0000803f0000803f0000803f000000003333d33f0ad7233c3333a33f000000000000803f0000803f00000000000000000000803f3333d33f0ad7233c3333a3bf000000000000803f0000803f000000000000803f0000803f3333d3bf0ad7233c3333a3bf000000000000803f0000803f00000000000000000000803f3333d3bf0ad7233c3333a33f000000000000803f0000803f000000000000803f0000803f
-  m_CompressedMesh:
-    m_Vertices:
-      m_NumItems: 0
-      m_Range: 0
-      m_Start: 0
-      m_Data: 
-      m_BitSize: 0
-    m_UV:
-      m_NumItems: 0
-      m_Range: 0
-      m_Start: 0
-      m_Data: 
-      m_BitSize: 0
-    m_Normals:
-      m_NumItems: 0
-      m_Range: 0
-      m_Start: 0
-      m_Data: 
-      m_BitSize: 0
-    m_Tangents:
-      m_NumItems: 0
-      m_Range: 0
-      m_Start: 0
-      m_Data: 
-      m_BitSize: 0
-    m_Weights:
-      m_NumItems: 0
-      m_Data: 
-      m_BitSize: 0
-    m_NormalSigns:
-      m_NumItems: 0
-      m_Data: 
-      m_BitSize: 0
-    m_TangentSigns:
-      m_NumItems: 0
-      m_Data: 
-      m_BitSize: 0
-    m_FloatColors:
-      m_NumItems: 0
-      m_Range: 0
-      m_Start: 0
-      m_Data: 
-      m_BitSize: 0
-    m_BoneIndices:
-      m_NumItems: 0
-      m_Data: 
-      m_BitSize: 0
-    m_Triangles:
-      m_NumItems: 0
-      m_Data: 
-      m_BitSize: 0
-    m_UVInfo: 0
-  m_LocalAABB:
-    m_Center: {x: 0, y: 0.01, z: 0}
-    m_Extent: {x: 1.65, y: 0, z: 1.275}
-  m_MeshUsageFlags: 0
-  m_BakedConvexCollisionMesh: 
-  m_BakedTriangleCollisionMesh: 
-  m_MeshOptimized: 0
---- !u!21 &1958666015
-Material:
-  serializedVersion: 6
-  m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
-  m_Name: Sprites/Default
-  m_Shader: {fileID: 10753, guid: 0000000000000000f000000000000000, type: 0}
-  m_ShaderKeywords: 
-  m_LightmapFlags: 5
-  m_CustomRenderQueue: -1
-  stringTagMap: {}
-  m_SavedProperties:
-    serializedVersion: 2
-    m_TexEnvs:
-    - first:
-        name: _MainTex
-      second:
-        m_Texture: {fileID: 0}
-        m_Scale: {x: 1, y: 1}
-        m_Offset: {x: 0, y: 0}
-    m_Floats:
-    - first:
-        name: PixelSnap
-      second: 0
-    m_Colors:
-    - first:
-        name: _Color
-      second: {r: 1, g: 1, b: 1, a: 1}
 --- !u!1001 &1967262697
 Prefab:
   m_ObjectHideFlags: 0
@@ -14344,6 +14391,7 @@ MonoBehaviour:
   brushcontainer: {fileID: 0}
   canvascam: {fileID: 0}
   canvasbase: {fileID: 0}
+  saved: 0
 --- !u!64 &1967262706
 MeshCollider:
   m_ObjectHideFlags: 0
@@ -14416,6 +14464,7 @@ MonoBehaviour:
   brushcontainer: {fileID: 0}
   canvascam: {fileID: 0}
   canvasbase: {fileID: 0}
+  saved: 0
 --- !u!64 &1967262709
 MeshCollider:
   m_ObjectHideFlags: 0
@@ -14487,7 +14536,7 @@ Prefab:
       objectReference: {fileID: 0}
     - target: {fileID: 22454212, guid: 910be6460ba00dc4bb13725c3ff972cb, type: 2}
       propertyPath: m_SizeDelta.y
-      value: 16.5
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 22432698, guid: 910be6460ba00dc4bb13725c3ff972cb, type: 2}
       propertyPath: m_SizeDelta.x
@@ -14495,7 +14544,7 @@ Prefab:
       objectReference: {fileID: 0}
     - target: {fileID: 22432698, guid: 910be6460ba00dc4bb13725c3ff972cb, type: 2}
       propertyPath: m_SizeDelta.y
-      value: 16.5
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 22481940, guid: 910be6460ba00dc4bb13725c3ff972cb, type: 2}
       propertyPath: m_SizeDelta.x
@@ -14503,7 +14552,7 @@ Prefab:
       objectReference: {fileID: 0}
     - target: {fileID: 22481940, guid: 910be6460ba00dc4bb13725c3ff972cb, type: 2}
       propertyPath: m_SizeDelta.y
-      value: 16.5
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 22476268, guid: 910be6460ba00dc4bb13725c3ff972cb, type: 2}
       propertyPath: m_SizeDelta.x
@@ -14511,7 +14560,7 @@ Prefab:
       objectReference: {fileID: 0}
     - target: {fileID: 22476268, guid: 910be6460ba00dc4bb13725c3ff972cb, type: 2}
       propertyPath: m_SizeDelta.y
-      value: 16.5
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 22482542, guid: 910be6460ba00dc4bb13725c3ff972cb, type: 2}
       propertyPath: m_SizeDelta.x
@@ -14519,7 +14568,7 @@ Prefab:
       objectReference: {fileID: 0}
     - target: {fileID: 22482542, guid: 910be6460ba00dc4bb13725c3ff972cb, type: 2}
       propertyPath: m_SizeDelta.y
-      value: 16.5
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 22465506, guid: 910be6460ba00dc4bb13725c3ff972cb, type: 2}
       propertyPath: m_SizeDelta.x
@@ -14527,7 +14576,7 @@ Prefab:
       objectReference: {fileID: 0}
     - target: {fileID: 22465506, guid: 910be6460ba00dc4bb13725c3ff972cb, type: 2}
       propertyPath: m_SizeDelta.y
-      value: 16.5
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 22442990, guid: 910be6460ba00dc4bb13725c3ff972cb, type: 2}
       propertyPath: m_SizeDelta.x
@@ -14535,7 +14584,7 @@ Prefab:
       objectReference: {fileID: 0}
     - target: {fileID: 22442990, guid: 910be6460ba00dc4bb13725c3ff972cb, type: 2}
       propertyPath: m_SizeDelta.y
-      value: 16.5
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 22422736, guid: 910be6460ba00dc4bb13725c3ff972cb, type: 2}
       propertyPath: m_SizeDelta.x
@@ -14543,7 +14592,7 @@ Prefab:
       objectReference: {fileID: 0}
     - target: {fileID: 22422736, guid: 910be6460ba00dc4bb13725c3ff972cb, type: 2}
       propertyPath: m_SizeDelta.y
-      value: 16.5
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 11415184, guid: 910be6460ba00dc4bb13725c3ff972cb, type: 2}
       propertyPath: touchpadText
@@ -14595,6 +14644,10 @@ GameObject:
   - component: {fileID: 2070178525}
   - component: {fileID: 2070178524}
   - component: {fileID: 2070178522}
+  - component: {fileID: 2070178533}
+  - component: {fileID: 2070178532}
+  - component: {fileID: 2070178531}
+  - component: {fileID: 2070178530}
   m_Layer: 0
   m_Name: Controller (left)
   m_TagString: Untagged
@@ -14770,6 +14823,155 @@ MonoBehaviour:
   usePressed: 0
   uiClickPressed: 0
   menuPressed: 0
+--- !u!114 &2070178530
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 2070178521}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4636f56499b25af49bf4593b9146d599, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  sceneCamera: {fileID: 1619739766}
+--- !u!114 &2070178531
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 2070178521}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7f1fc4c818007b84b9df1214a7cb735d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  unityPointerIn:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: LaserPointer+PointerEvent, Assembly-CSharp, Version=0.0.0.0, Culture=neutral,
+      PublicKeyToken=null
+  unityPointerOut:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: LaserPointer+PointerEvent, Assembly-CSharp, Version=0.0.0.0, Culture=neutral,
+      PublicKeyToken=null
+  unityPointerUpdate:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: LaserPointer+PointerEvent, Assembly-CSharp, Version=0.0.0.0, Culture=neutral,
+      PublicKeyToken=null
+  unityInvPointerIn:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: LaserPointer+PointerEvent, Assembly-CSharp, Version=0.0.0.0, Culture=neutral,
+      PublicKeyToken=null
+  unityInvPointerOut:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: LaserPointer+PointerEvent, Assembly-CSharp, Version=0.0.0.0, Culture=neutral,
+      PublicKeyToken=null
+  unityInvPointerUpdate:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: LaserPointer+PointerEvent, Assembly-CSharp, Version=0.0.0.0, Culture=neutral,
+      PublicKeyToken=null
+  color: {r: 0, g: 1, b: 0.01, a: 1}
+  thickness: 0
+  thicknessPressed: 0.01
+  parent: {fileID: 0}
+  pointerModel: {fileID: 0}
+  addRigidBody: 0
+--- !u!114 &2070178532
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 2070178521}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 33bbe07e376e83449806447f3ecfda38, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &2070178533
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 2070178521}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b6c5dbf7da6651442bb10ae59d34439a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  unityTriggerPressed:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: ControllerEvents+ControllerEvent, Assembly-CSharp, Version=0.0.0.0,
+      Culture=neutral, PublicKeyToken=null
+  unityTriggerReleased:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: ControllerEvents+ControllerEvent, Assembly-CSharp, Version=0.0.0.0,
+      Culture=neutral, PublicKeyToken=null
+  unityMenuPressed:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: ControllerEvents+ControllerEvent, Assembly-CSharp, Version=0.0.0.0,
+      Culture=neutral, PublicKeyToken=null
+  unityMenuReleased:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: ControllerEvents+ControllerEvent, Assembly-CSharp, Version=0.0.0.0,
+      Culture=neutral, PublicKeyToken=null
+  unitySwipedLeft:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: ControllerEvents+ControllerEvent, Assembly-CSharp, Version=0.0.0.0,
+      Culture=neutral, PublicKeyToken=null
+  unitySwipedRight:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: ControllerEvents+ControllerEvent, Assembly-CSharp, Version=0.0.0.0,
+      Culture=neutral, PublicKeyToken=null
+  unitySwipedUp:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: ControllerEvents+ControllerEvent, Assembly-CSharp, Version=0.0.0.0,
+      Culture=neutral, PublicKeyToken=null
+  unitySwipedDown:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: ControllerEvents+ControllerEvent, Assembly-CSharp, Version=0.0.0.0,
+      Culture=neutral, PublicKeyToken=null
+  unityTouchpadUpPressed:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: ControllerEvents+ControllerEvent, Assembly-CSharp, Version=0.0.0.0,
+      Culture=neutral, PublicKeyToken=null
+  unityTouchpadDownPressed:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: ControllerEvents+ControllerEvent, Assembly-CSharp, Version=0.0.0.0,
+      Culture=neutral, PublicKeyToken=null
+  unityTouchpadRightPressed:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: ControllerEvents+ControllerEvent, Assembly-CSharp, Version=0.0.0.0,
+      Culture=neutral, PublicKeyToken=null
+  unityTouchpadLeftPressed:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: ControllerEvents+ControllerEvent, Assembly-CSharp, Version=0.0.0.0,
+      Culture=neutral, PublicKeyToken=null
+  unityTouchpadReleased:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: ControllerEvents+ControllerEvent, Assembly-CSharp, Version=0.0.0.0,
+      Culture=neutral, PublicKeyToken=null
+  triggerPressed: 0
+  touchpadPressed: 0
+  menuPressed: 0
 --- !u!1001 &2128265937
 Prefab:
   m_ObjectHideFlags: 0
@@ -14895,3 +15097,132 @@ MonoBehaviour:
   brushcontainer: {fileID: 0}
   canvascam: {fileID: 0}
   canvasbase: {fileID: 0}
+  saved: 0
+--- !u!43 &2136771819
+Mesh:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_Name: 
+  serializedVersion: 8
+  m_SubMeshes:
+  - serializedVersion: 2
+    firstByte: 0
+    indexCount: 24
+    topology: 0
+    firstVertex: 0
+    vertexCount: 8
+    localAABB:
+      m_Center: {x: 0, y: 0.01, z: 0}
+      m_Extent: {x: 1.65, y: 0, z: 1.275}
+  m_Shapes:
+    vertices: []
+    shapes: []
+    channels: []
+    fullWeights: []
+  m_BindPose: []
+  m_BoneNameHashes: 
+  m_RootBoneNameHash: 0
+  m_MeshCompression: 0
+  m_IsReadable: 1
+  m_KeepVertices: 1
+  m_KeepIndices: 1
+  m_IndexBuffer: 000004000100010004000500010005000200020005000600020006000300030006000700030007000000000007000400
+  m_Skin: []
+  m_VertexData:
+    m_CurrentChannels: 13
+    m_VertexCount: 8
+    m_Channels:
+    - stream: 0
+      offset: 0
+      format: 0
+      dimension: 3
+    - stream: 0
+      offset: 0
+      format: 0
+      dimension: 0
+    - stream: 0
+      offset: 12
+      format: 0
+      dimension: 4
+    - stream: 0
+      offset: 28
+      format: 0
+      dimension: 2
+    - stream: 0
+      offset: 0
+      format: 0
+      dimension: 0
+    - stream: 0
+      offset: 0
+      format: 0
+      dimension: 0
+    - stream: 0
+      offset: 0
+      format: 0
+      dimension: 0
+    - stream: 0
+      offset: 0
+      format: 0
+      dimension: 0
+    m_DataSize: 288
+    _typelessdata: 0000c03f0ad7233c0000903f000000000000803f0000803f0000803f00000000000000000000c03f0ad7233c000090bf000000000000803f0000803f0000803f0000803f000000000000c0bf0ad7233c000090bf000000000000803f0000803f0000803f00000000000000000000c0bf0ad7233c0000903f000000000000803f0000803f0000803f0000803f000000003333d33f0ad7233c3333a33f000000000000803f0000803f00000000000000000000803f3333d33f0ad7233c3333a3bf000000000000803f0000803f000000000000803f0000803f3333d3bf0ad7233c3333a3bf000000000000803f0000803f00000000000000000000803f3333d3bf0ad7233c3333a33f000000000000803f0000803f000000000000803f0000803f
+  m_CompressedMesh:
+    m_Vertices:
+      m_NumItems: 0
+      m_Range: 0
+      m_Start: 0
+      m_Data: 
+      m_BitSize: 0
+    m_UV:
+      m_NumItems: 0
+      m_Range: 0
+      m_Start: 0
+      m_Data: 
+      m_BitSize: 0
+    m_Normals:
+      m_NumItems: 0
+      m_Range: 0
+      m_Start: 0
+      m_Data: 
+      m_BitSize: 0
+    m_Tangents:
+      m_NumItems: 0
+      m_Range: 0
+      m_Start: 0
+      m_Data: 
+      m_BitSize: 0
+    m_Weights:
+      m_NumItems: 0
+      m_Data: 
+      m_BitSize: 0
+    m_NormalSigns:
+      m_NumItems: 0
+      m_Data: 
+      m_BitSize: 0
+    m_TangentSigns:
+      m_NumItems: 0
+      m_Data: 
+      m_BitSize: 0
+    m_FloatColors:
+      m_NumItems: 0
+      m_Range: 0
+      m_Start: 0
+      m_Data: 
+      m_BitSize: 0
+    m_BoneIndices:
+      m_NumItems: 0
+      m_Data: 
+      m_BitSize: 0
+    m_Triangles:
+      m_NumItems: 0
+      m_Data: 
+      m_BitSize: 0
+    m_UVInfo: 0
+  m_LocalAABB:
+    m_Center: {x: 0, y: 0.01, z: 0}
+    m_Extent: {x: 1.65, y: 0, z: 1.275}
+  m_MeshUsageFlags: 0
+  m_BakedConvexCollisionMesh: 
+  m_BakedTriangleCollisionMesh: 
+  m_MeshOptimized: 0
