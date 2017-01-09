@@ -17,4 +17,6 @@ public class Colorable : MonoBehaviour {
     public GameObject canvascam;
     [HideInInspector]
     public GameObject canvasbase;
+    [HideInInspector]
+    public bool saved = false;
 }

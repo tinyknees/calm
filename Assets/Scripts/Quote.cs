@@ -4,8 +4,8 @@ using UnityEngine;
 
 public class Quote : MonoBehaviour {
 
-//    [HideInInspector]
+    [HideInInspector]
     public bool revealed = false;
-//    [HideInInspector]
+    [HideInInspector]
     public bool recorded = false;
 }

@@ -59,6 +59,8 @@ public class ColorObject : MonoBehaviour
 
     private Colorable[] colorableObjects;
 
+    private bool camerasOff = false;
+
     void Init()
     {
         // go through all colorable objects and create canvases for them
@@ -86,10 +88,12 @@ public class ColorObject : MonoBehaviour
                 if (quote != null)
                 {
                     Vector3 quotepos = quote.transform.localPosition;
+                    Quaternion quoterot = quote.transform.localRotation;
                     quote.transform.SetParent(co.paintcanvas.transform);
                     quotepos.z = -0.01f;
+                    quoterot.eulerAngles = Vector3.zero + new Vector3(0, 0, quoterot.eulerAngles.z);
                     quote.transform.localPosition = quotepos;
-                    quote.transform.localRotation = Quaternion.identity;
+                    quote.transform.localRotation = quoterot;
                 }
 
                 if (co.canvascam == null) { co.canvascam = new GameObject(); }
@@ -160,13 +164,15 @@ public class ColorObject : MonoBehaviour
         Invoke("TurnOff", 3);
     }
 
-
     // For some reason, the render cameras aren't fast enough to capture
     // the render to texture before the cameras turn off so we are waiting
     // a few secs with all cameras on and turning them off one by one.
     private void TurnOff ()
     {
-        StartCoroutine("TurnOffCameras");
+        if (gameObject.activeSelf && !camerasOff)
+        {
+            StartCoroutine("TurnOffCameras");
+        }
     }
     private IEnumerator TurnOffCameras()
     {
@@ -175,9 +181,10 @@ public class ColorObject : MonoBehaviour
 
         foreach (Colorable co in colorableObjects)
         {
-            co.GetComponentInChildren<Camera>().enabled = false;
+            co.canvascam.GetComponent<Camera>().enabled = false;
             yield return null;
         }
+        camerasOff = true;
     }
 
     // Subscribe to event handlers
@@ -205,6 +212,12 @@ public class ColorObject : MonoBehaviour
 
     void Update()
     {
+//        baseColor = new Color(0, 12, 34);
+
+        if (gameObject.activeSelf && !camerasOff)
+        {
+            TurnOff();
+        }
         if (hitTarget && hitObj.distance < brushDistance)
         {
             DoColor(brushColor, hitObj);
@@ -282,6 +295,7 @@ public class ColorObject : MonoBehaviour
         ChangeBrushColor();
         activeController = e;
     }
+
 
 
     /* COLORING FUNCTIONS ----------------------------------------------------------------------*/
@@ -436,6 +450,14 @@ public class ColorObject : MonoBehaviour
 
             PickCanvas(savObj);
 
+            foreach (Colorable co in colorableObjects)
+            {
+                if (co.name == savObj.name)
+                {
+                    co.saved = true;
+                }
+            }
+
             RenderTexture canvas = canvasCam.targetTexture;
             RenderTexture.active = canvas;
             Texture2D tex = new Texture2D(canvas.width, canvas.height, TextureFormat.RGB24, false);
@@ -506,8 +528,26 @@ public class ColorObject : MonoBehaviour
                         index = y * (int)texsize + x;
 
                         // test which pixels are no longer the base color i.e., revealed
+                        //if (!CompareColors(colors[index], baseColor))
+                        //{
+                        //    colored++;
+                        //}
+
+
+
                         if (colors[index] != baseColor)
                         {
+                            //Debug.Log(quote.name + ": " +
+                            //    colors[index].r.ToString("F6") + "," +
+                            //    colors[index].g.ToString("F6") + "," +
+                            //    colors[index].b.ToString("F6") + " " +
+                            //    colors[index].a.ToString("F6") + " " +
+                            //    baseColor.r.ToString("F6") + "," +
+                            //    baseColor.g.ToString("F6") + "," +
+                            //    baseColor.b.ToString("F6") + "," +
+                            //    baseColor.a.ToString("F6")
+                            //    );
+                            //yield return null;
                             colored++;
                         }
                     }
@@ -522,6 +562,29 @@ public class ColorObject : MonoBehaviour
         }
 
         yield return null;
+    }
+
+    /// <summary>
+    /// Compares two colours to check if they're approximately the same colour
+    /// </summary>
+    /// <param name="ac">a color</param>
+    /// <param name="bc">b color</param>
+    /// <returns>true if same, false if not</returns>
+    private bool CompareColors(Color ac, Color bc)
+    {
+        bool r = false;
+        bool g = false;
+        bool b = false;
+        int ct = 1; // color threshold
+
+        if (Math.Round(ac.r) <= Math.Round(bc.r) + ct && Math.Round(ac.r) > Math.Round(bc.r - ct))
+            r = true;
+        if (Math.Round(ac.g) <= Math.Round(bc.g) + ct && Math.Round(ac.g) > Math.Round(bc.g - ct))
+            g = true;
+        if (Math.Round(ac.b) <= Math.Round(bc.b) + ct && Math.Round(ac.b) > Math.Round(bc.b - ct))
+            b = true;
+
+        return (r && g && b) ? true : false;
     }
 
     void PickCanvas (Transform target)
@@ -539,23 +602,5 @@ public class ColorObject : MonoBehaviour
         }
     }
 
-
-    ////////////////// OPTIONAL METHODS //////////////////
-
-#if !UNITY_WEBPLAYER
-    IEnumerator SaveTextureToFile(Texture2D savedTexture)
-    {
-        brushCounter = 0;
-        string fullPath = System.IO.Directory.GetCurrentDirectory() + "\\UserCanvas\\";
-        System.DateTime date = System.DateTime.Now;
-        string fileName = "CanvasTexture.png";
-        if (!System.IO.Directory.Exists(fullPath))
-            System.IO.Directory.CreateDirectory(fullPath);
-        var bytes = savedTexture.EncodeToPNG();
-        System.IO.File.WriteAllBytes(fullPath + fileName, bytes);
-        Debug.Log("<color=orange>Saved Successfully!</color>" + fullPath + fileName);
-        yield return null;
-    }
-#endif
 }
 
