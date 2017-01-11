@@ -47,13 +47,16 @@ public class Record : MonoBehaviour {
     private AudioMixer mrmrMixer;
     private GameObject[] allQuoteObjects;
 
-    private Transform recordButton;
-    private bool canRecord = false; // are you close enough, quote revealed, have you recorded?
-    private bool firstRecord = true; // show tooltip and play sound for first time
+    private Transform recordButton; // Easily access the record button to change its colour
+    private bool canRecord = false; // Are you close enough, quote revealed, have you recorded?
 
     private bool requestedAllAudio = false;
     private int numDownloaded = 0;
-    private bool playingAudio;
+    private bool playingAudio = false;
+    private bool timerUp = false;
+
+    [Range(0,1)]
+    public float defaultQuoteVolume = 0.6f;
 
     private Dictionary<string, bool> pingedQuote = new Dictionary<string, bool>();
 
@@ -137,36 +140,41 @@ public class Record : MonoBehaviour {
             RequestAllAudio();
         }
 
-        if (menuReleased)
+        if (menuReleased && // pressed the button
+            !Microphone.IsRecording(null) && // not recording
+            canRecord // fits criteria to be recording
+            )
         {
             menuReleased = false;
+            StartCoroutine(ChangeVolume(0.2f));
+            recordButton.GetComponent<AudioSource>().clip = (AudioClip)Resources.Load("startrecord");
+            recordButton.GetComponent<AudioSource>().Play();
 
-            if (startRecording)
-            {
-                recordButton.GetComponent<AudioSource>().clip = (AudioClip)Resources.Load("startrecord");
-                recordButton.GetComponent<AudioSource>().Play();
+            Debug.Log("Started Recording for: " + recordObject.name);
 
-                Debug.Log("Started Recording for: " + recordObject.name);
-
-                recordsource.clip = Microphone.Start(null, true, 45, 44100);
-                StartCoroutine(RecordingCounter());
-            }
-            else if (Microphone.IsRecording(null)) 
-            {
-                startRecording = false;
-                Debug.Log("Stopped Recording " + recordsource.clip.samples);
-                gameObject.GetComponentInChildren<VRTK.VRTK_ControllerTooltips>().appMenuText = "Saving…";
-
-                if (recordsource.clip.samples > 0)
-                {
-                    recordObject.GetComponentInChildren<Quote>().recorded = true;
-                    toggleRecord(false);
-
-                    Save("recordingcalm", recordsource.clip);
-                }
-                Microphone.End(null);
-            }
+            recordsource.clip = Microphone.Start(null, true, 45, 44100);
+            StartCoroutine(RecordingCounter());
         }
+        else if (timerUp || // was recording and timer ran out
+            (Microphone.IsRecording(null) && menuReleased) // currently recording and press menu to stop
+            ) 
+        {
+            menuReleased = false;
+            timerUp = false;
+            StartCoroutine(ChangeVolume(defaultQuoteVolume));
+            Debug.Log("Stopped Recording " + recordsource.clip.samples);
+            gameObject.GetComponentInChildren<VRTK.VRTK_ControllerTooltips>().appMenuText = "Saving…";
+
+            if (recordsource.clip.samples > 0)
+            {
+                recordObject.GetComponentInChildren<Quote>().recorded = true;
+                ToggleRecordButton(false);
+
+                Save("tiaf", recordsource.clip);
+            }
+            Microphone.End(null);
+        }
+
 
         if (touchpadReleased && touchpadUpPressed)
         {
@@ -192,9 +200,10 @@ public class Record : MonoBehaviour {
         double timer = 45;
         String counter = "-00:";
 
+        timerUp = false;
         gameObject.GetComponentInChildren<VRTK.VRTK_ControllerTooltips>().ToggleTips(true, VRTK.VRTK_ControllerTooltips.TooltipButtons.AppMenuTooltip);
 
-        while (Microphone.IsRecording(null))
+        while (Microphone.IsRecording(null) && timer > 0)
         {
             timer = Math.Round(45 - (Time.time - start));
             if (timer < 10)
@@ -208,13 +217,16 @@ public class Record : MonoBehaviour {
             gameObject.GetComponentInChildren<VRTK.VRTK_ControllerTooltips>().appMenuText = counter;
             yield return null;
         }
+
+        if (timer <= 0)
+            timerUp = true;
     }
 
     /// <summary>
     /// Turns on or off the recording button and ability to record
     /// </summary>
     /// <param name="on">true = turn on recording, false = turn off</param>
-    private void toggleRecord (bool on)
+    private void ToggleRecordButton (bool on)
     {
         if (recordObject != null && on)
         {
@@ -264,7 +276,7 @@ public class Record : MonoBehaviour {
             WriteHeader(fileStream, clip);
         }
         Debug.Log("filepath: " + filepath);
-        UploadAudio(File.ReadAllBytes(filepath));
+        UploadAudio(filename, File.ReadAllBytes(filepath));
 
         return true; // TODO: return false if there's a failure saving the file
     }
@@ -410,7 +422,7 @@ public class Record : MonoBehaviour {
         //		fileStream.Close();
     }
 
-    private void UploadAudio(Byte[] data)
+    private void UploadAudio(String filename, Byte[] data)
     {
         Debug.Log("uploading");
 
@@ -419,20 +431,20 @@ public class Record : MonoBehaviour {
         new GetUploadUrlRequest().SetUploadData(gsdata).Send((response) =>
         {
             //Start coroutine and pass in the upload url
-            StartCoroutine(UploadAFile(response.Url, data));
+            StartCoroutine(UploadAFile(response.Url, filename, data));
         });
     }
 
 
     //Our coroutine takes the upload url
-    private IEnumerator UploadAFile(string uploadUrl, Byte[] data)
+    private IEnumerator UploadAFile(String uploadUrl, String filename, Byte[] data)
     {
         Debug.Log("uploadurl " + uploadUrl);
         Debug.Log("data size " + data.Length);
 
         // Create a Web Form, this will be our POST method's data
         var form = new WWWForm();
-        form.AddBinaryData("file", data, "calm.wav", "audio/wav");
+        form.AddBinaryData("file", data, filename+".wav", "audio/wav");
 
         gameObject.GetComponentInChildren<VRTK.VRTK_ControllerTooltips>().appMenuText = "Uploading…";
 
@@ -516,7 +528,7 @@ public class Record : MonoBehaviour {
             {
                 AudioSource quoteaudio = quote.AddComponent<AudioSource>();
                 quoteaudio.spatialBlend = 1.0f;
-                quoteaudio.volume = 0.75f;
+                quoteaudio.volume = defaultQuoteVolume;
                 quoteaudio.rolloffMode = AudioRolloffMode.Linear;
                 quoteaudio.minDistance = 0.3f;
                 quoteaudio.maxDistance = 3.5f;
@@ -587,6 +599,22 @@ public class Record : MonoBehaviour {
         playingAudio = false;
     }
 
+    private IEnumerator ChangeVolume(float vol)
+    {
+        foreach (GameObject qc in allQuoteObjects)
+        {
+            AudioSource[] auss = qc.GetComponents<AudioSource>();
+            foreach (AudioSource aus in auss)
+            {
+                if (aus.outputAudioMixerGroup == null && vol == defaultQuoteVolume)
+                    aus.volume = vol * 1.2f;
+                else
+                    aus.volume = vol;
+                yield return null;
+            }
+        }
+    }
+
     // Check which quote player is nearest and also turn things on or off based on distance
     private void CheckQuoteDistance()
     {
@@ -607,9 +635,10 @@ public class Record : MonoBehaviour {
                     foreach (AudioSource aus in auss)
                     {
                         aus.outputAudioMixerGroup = mrmrMixer.FindMatchingGroups("Mrmrs")[0];
+                        aus.volume = defaultQuoteVolume;
                     }
 
-                    toggleRecord(false);
+                    ToggleRecordButton(false);
                 }
 
                 // set new neearest quote if applicable
@@ -636,7 +665,7 @@ public class Record : MonoBehaviour {
                     {
                         if (!canRecord)
                         {
-                            toggleRecord(true);
+                            ToggleRecordButton(true);
                         }
                         recordObject = nearestQuote;
                     }
@@ -645,6 +674,8 @@ public class Record : MonoBehaviour {
                     AudioSource[] auss = nearestQuote.GetComponents<AudioSource>();
                     foreach (AudioSource aus in auss)
                     {
+                        if (!Microphone.IsRecording(null))
+                            aus.volume = defaultQuoteVolume * 1.2f;
                         aus.outputAudioMixerGroup = null;
                     }
                 }
@@ -686,15 +717,10 @@ public class Record : MonoBehaviour {
 
     private void HandleMenuPressed(object sender, ControllerEvents.ControllerInteractionEventArgs e)
     {
-        Debug.Log("menu pressed");
     }
 
     private void HandleMenuReleased(object sender, ControllerEvents.ControllerInteractionEventArgs e)
     {
-        if (canRecord)
-        {
-            startRecording = startRecording ? false : true;
-        }
         menuReleased = true;
     }
 
