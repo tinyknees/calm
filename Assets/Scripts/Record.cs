@@ -41,8 +41,8 @@ public class Record : MonoBehaviour {
     private bool touchpadReleased = false;
     private bool menuReleased = false;
 
-    private string playerId;
-    private string lastUploadId;
+    private string playerId = "";
+    private string lastUploadId = "";
 
     private AudioMixer mrmrMixer;
     private GameObject[] allQuoteObjects;
@@ -94,9 +94,6 @@ public class Record : MonoBehaviour {
 
         gameObject.transform.FindChild("ConsoleViewerCanvas").gameObject.SetActive(false);
 
-
-
-        Invoke("InitGS", 3f);
     }
 
     void InitGS()
@@ -134,64 +131,72 @@ public class Record : MonoBehaviour {
     // Update is called once per frame
     void Update ()
     {
-        // Start downloading audio when we have an active controller to do recordings, etc.
-        if (gameObject.activeSelf && !requestedAllAudio)
+        if (playerId != "")
         {
-            RequestAllAudio();
-        }
-
-        if (menuReleased && // pressed the button
-            !Microphone.IsRecording(null) && // not recording
-            canRecord // fits criteria to be recording
-            )
-        {
-            menuReleased = false;
-            StartCoroutine(ChangeVolume(0.2f));
-            recordButton.GetComponent<AudioSource>().clip = (AudioClip)Resources.Load("startrecord");
-            recordButton.GetComponent<AudioSource>().Play();
-
-            Debug.Log("Started Recording for: " + recordObject.name);
-
-            recordsource.clip = Microphone.Start(null, true, 45, 44100);
-            StartCoroutine(RecordingCounter());
-        }
-        else if (timerUp || // was recording and timer ran out
-            (Microphone.IsRecording(null) && menuReleased) // currently recording and press menu to stop
-            ) 
-        {
-            menuReleased = false;
-            timerUp = false;
-            StartCoroutine(ChangeVolume(defaultQuoteVolume));
-            Debug.Log("Stopped Recording " + recordsource.clip.samples);
-            gameObject.GetComponentInChildren<VRTK.VRTK_ControllerTooltips>().appMenuText = "Saving…";
-
-            if (recordsource.clip.samples > 0)
+            // Start downloading audio when we have an active controller to do recordings, etc.
+            if (gameObject.activeSelf && !requestedAllAudio)
             {
-                recordObject.GetComponentInChildren<Quote>().recorded = true;
-                ToggleRecordButton(false);
-
-                Save("tiaf", recordsource.clip);
+                RequestAllAudio();
             }
-            Microphone.End(null);
+
+            if (menuReleased && // pressed the button
+                !Microphone.IsRecording(null) && // not recording
+                canRecord // fits criteria to be recording
+                )
+            {
+                menuReleased = false;
+                StartCoroutine(ChangeVolume(0.2f));
+                recordButton.GetComponent<AudioSource>().clip = (AudioClip)Resources.Load("startrecord");
+                recordButton.GetComponent<AudioSource>().Play();
+
+                Debug.Log("Started Recording for: " + recordObject.name);
+
+                recordsource.clip = Microphone.Start(null, true, 45, 44100);
+                StartCoroutine(RecordingCounter());
+            }
+            else if (timerUp || // was recording and timer ran out
+                (Microphone.IsRecording(null) && menuReleased) // currently recording and press menu to stop
+                )
+            {
+                menuReleased = false;
+                timerUp = false;
+                StartCoroutine(ChangeVolume(defaultQuoteVolume));
+                Debug.Log("Stopped Recording " + recordsource.clip.samples);
+                gameObject.GetComponentInChildren<VRTK.VRTK_ControllerTooltips>().appMenuText = "Saving…";
+
+                if (recordsource.clip.samples > 0)
+                {
+                    recordObject.GetComponentInChildren<Quote>().recorded = true;
+                    ToggleRecordButton(false);
+
+                    Save("tiaf", recordsource.clip);
+                }
+                Microphone.End(null);
+            }
+
+
+            if (touchpadReleased && touchpadUpPressed)
+            {
+                GameObject cv = gameObject.transform.FindChild("ConsoleViewerCanvas").gameObject;
+                cv.SetActive(!cv.activeSelf);
+                touchpadReleased = false;
+                touchpadUpPressed = false;
+            }
+
+            CheckQuoteDistance();
+
+            //Debug.Log("numdownloaded: " + numDownloaded + ", total downloads:" + totalDownloads);
+            if (!playingAudio && newDownloads)
+            {
+                newDownloads = false;
+                StartCoroutine(PlayAudio());
+            }
         }
-
-
-        if (touchpadReleased && touchpadUpPressed)
+        else
         {
-            GameObject cv = gameObject.transform.FindChild("ConsoleViewerCanvas").gameObject;
-            cv.SetActive(!cv.activeSelf);
-            touchpadReleased = false;
-            touchpadUpPressed = false;
+            InitGS();
         }
 
-        CheckQuoteDistance();
-
-        //Debug.Log("numdownloaded: " + numDownloaded + ", total downloads:" + totalDownloads);
-        if (!playingAudio && newDownloads)
-        {
-            newDownloads = false;
-            StartCoroutine(PlayAudio());
-        }
     }
 
     private IEnumerator RecordingCounter ()
