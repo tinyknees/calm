@@ -113,24 +113,24 @@ public class LaserPointer : MonoBehaviour
         }
     }
 
+
     // Unity lifecycle method
     public void OnEnable()
     {
         parent.gameObject.SetActive(true);
-        SteamVR_Utils.Event.Listen("input_focus", OnInputFocus);
+        SteamVR_Events.InputFocus.Listen(OnInputFocus);
     }
 
     // Unity lifecycle method
     public void OnDisable()
     {
         parent.gameObject.SetActive(false);
-        SteamVR_Utils.Event.Remove("input_focus", OnInputFocus);
+        SteamVR_Events.InputFocus.Remove(OnInputFocus);
     }
 
     // Handle the Steam Dashboard
-    private void OnInputFocus(params object[] args)
+    private void OnInputFocus(bool hasFocus)
     {
-        bool hasFocus = (bool)args[0];
         if (hasFocus)
         {
             parent.gameObject.SetActive(this.enabled);

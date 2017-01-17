@@ -30,7 +30,6 @@ public class Record : MonoBehaviour {
     [Tooltip("Distance to objects before recording is allowed.")]
     public float distanceThreshold = 1.6f;
 
-    private bool newDownloads = false;
     private GameObject lastNearestQuote = null;
 
     [HideInInspector]
@@ -43,6 +42,8 @@ public class Record : MonoBehaviour {
 
     private string playerId = "";
     private string lastUploadId = "";
+    private bool initializingGS = false;
+    private bool requestingAudio = false;
 
     private AudioMixer mrmrMixer;
     private GameObject[] allQuoteObjects;
@@ -51,15 +52,13 @@ public class Record : MonoBehaviour {
     private bool canRecord = false; // Are you close enough, quote revealed, have you recorded?
 
     private bool requestedAllAudio = false;
-    private int numDownloaded = 0;
     private bool playingAudio = false;
     private bool timerUp = false;
 
     [Range(0,1)]
     public float defaultQuoteVolume = 0.6f;
 
-    private Dictionary<string, bool> pingedQuote = new Dictionary<string, bool>();
-
+    private Dictionary<string, List<AudioSource>> allAudio = new Dictionary<string, List<AudioSource>>();
 
     void Awake()
     {
@@ -83,12 +82,6 @@ public class Record : MonoBehaviour {
 
         allQuoteObjects = GameObject.FindGameObjectsWithTag("Quote");
 
-        // set up full dictionary
-        foreach (GameObject qc in allQuoteObjects)
-        {
-            pingedQuote.Add(qc.name, false);
-        }
-
         recordButton = gameObject.transform.FindChild("Pencil").FindChild("Record");
         recordButton.GetComponent<Renderer>().material.color = recorderColor;
 
@@ -98,18 +91,20 @@ public class Record : MonoBehaviour {
 
     void InitGS()
     {
+        initializingGS = true;
         // authenticate
         new DeviceAuthenticationRequest().Send((response) =>
         {
             if (!response.HasErrors)
             {
-                Debug.Log("Device Authenticated...");
                 playerId = response.UserId;
+                Debug.Log("Device Authenticated..." + playerId);
             }
             else
             {
                 Debug.Log("Error Authenticating Device...");
             }
+            initializingGS = false;
         });
     }
 
@@ -134,7 +129,7 @@ public class Record : MonoBehaviour {
         if (playerId != "")
         {
             // Start downloading audio when we have an active controller to do recordings, etc.
-            if (gameObject.activeSelf && !requestedAllAudio)
+            if (gameObject.activeSelf && !requestingAudio && !requestedAllAudio)
             {
                 RequestAllAudio();
             }
@@ -185,14 +180,12 @@ public class Record : MonoBehaviour {
 
             CheckQuoteDistance();
 
-            //Debug.Log("numdownloaded: " + numDownloaded + ", total downloads:" + totalDownloads);
-            if (!playingAudio && newDownloads)
+            if (!playingAudio && requestedAllAudio)
             {
-                newDownloads = false;
                 StartCoroutine(PlayAudio());
             }
         }
-        else
+        else if (!initializingGS)
         {
             InitGS();
         }
@@ -203,7 +196,7 @@ public class Record : MonoBehaviour {
     {
         float start = Time.time;
         double timer = 45;
-        String counter = "-00:";
+        string counter = "-00:";
 
         timerUp = false;
         gameObject.GetComponentInChildren<VRTK.VRTK_ControllerTooltips>().ToggleTips(true, VRTK.VRTK_ControllerTooltips.TooltipButtons.AppMenuTooltip);
@@ -237,13 +230,14 @@ public class Record : MonoBehaviour {
         {
             canRecord = true;
             StartCoroutine("PulseMaterial", recordButtonColor);
-            if (!pingedQuote[lastNearestQuote.name])
+            bool pinged = lastNearestQuote.GetComponentInChildren<Quote>().pinged;
+            if (!pinged)
             {
                 gameObject.GetComponentInChildren<VRTK.VRTK_ControllerTooltips>().appMenuText = "Press to record";
                 recordButton.GetComponent<AudioSource>().clip = (AudioClip) Resources.Load("recordprompt");
                 recordButton.GetComponent<AudioSource>().Play();
                 gameObject.GetComponentInChildren<VRTK.VRTK_ControllerTooltips>().ToggleTips(true, VRTK.VRTK_ControllerTooltips.TooltipButtons.AppMenuTooltip);
-                pingedQuote[lastNearestQuote.name] = true;
+                pinged = true;
             }
         }
         else
@@ -427,7 +421,7 @@ public class Record : MonoBehaviour {
         //		fileStream.Close();
     }
 
-    private void UploadAudio(String filename, Byte[] data)
+    private void UploadAudio(string filename, Byte[] data)
     {
         Debug.Log("uploading");
 
@@ -442,14 +436,14 @@ public class Record : MonoBehaviour {
 
 
     //Our coroutine takes the upload url
-    private IEnumerator UploadAFile(String uploadUrl, String filename, Byte[] data)
+    private IEnumerator UploadAFile(string uploadUrl, string filename, Byte[] data)
     {
         Debug.Log("uploadurl " + uploadUrl);
         Debug.Log("data size " + data.Length);
 
         // Create a Web Form, this will be our POST method's data
         var form = new WWWForm();
-        form.AddBinaryData("file", data, filename+".wav", "audio/wav");
+        form.AddBinaryData("file", data, filename, "audio/wav");
 
         gameObject.GetComponentInChildren<VRTK.VRTK_ControllerTooltips>().appMenuText = "Uploading…";
 
@@ -474,6 +468,9 @@ public class Record : MonoBehaviour {
 
     private void RequestAllAudio()
     {
+        string quotename = "";
+        requestingAudio = true;
+
         //download all files
         new LogEventRequest().SetEventKey("LOAD_AUDIO").Send((response) =>
         {
@@ -483,26 +480,36 @@ public class Record : MonoBehaviour {
                 int i = 0;
                 if (data != null)
                 {
-                    String uploadId = data.GetString("uploadId" + i);
-                    String quoteObject = data.GetString("Quote" + i);
+                    string uploadId = data.GetString("uploadId" + i);
+                    quotename = data.GetString("Quote" + i);
+
                     while (uploadId != null)
                     {
-                        DownloadAFile(uploadId, quoteObject);
-                        Debug.Log(uploadId + " / " + quoteObject);
+                        Debug.Log(uploadId + " / " + quotename);
+
+                        if (!allAudio.ContainsKey(quotename))
+                        {
+                            allAudio.Add(quotename, new List<AudioSource>());
+                        }
+                        allAudio[quotename].Add(null);
+                        DownloadAFile(uploadId, quotename);
+
                         i++;
                         uploadId = data.GetString("uploadId" + i);
-                        quoteObject = data.GetString("Quote" + i);
+                        quotename = data.GetString("Quote" + i);
                     }
+
+                    requestedAllAudio = true;
                 }
+                requestingAudio = false;
             }
         });
 
-        requestedAllAudio = true;
     }
 
 
-    //When we want to download our uploaded image
-    private void DownloadAFile(string uploadId = "", String quoteobject = "")
+    // Download a file from GameSparks given an uploadId
+    private void DownloadAFile(string uploadId = "", string quoteobject = "")
     {
         if (uploadId == "")
         {
@@ -516,10 +523,10 @@ public class Record : MonoBehaviour {
         });
     }
 
-
-    private IEnumerator DownloadAudio(string downloadUrl, string quoteobject)
+    private IEnumerator DownloadAudio(string downloadUrl, string quotename)
     {
-        var www = new WWW(downloadUrl);
+        WWW www = new WWW(downloadUrl);
+
         while (!www.isDone)
         {
             Debug.Log("Downloading: " + downloadUrl);
@@ -529,7 +536,7 @@ public class Record : MonoBehaviour {
         GameObject[] quotes = GameObject.FindGameObjectsWithTag("Quote");
         foreach (GameObject quote in quotes)
         {
-            if (quote.name == quoteobject)
+            if (quote.name == quotename)
             {
                 AudioSource quoteaudio = quote.AddComponent<AudioSource>();
                 quoteaudio.spatialBlend = 1.0f;
@@ -539,8 +546,17 @@ public class Record : MonoBehaviour {
                 quoteaudio.maxDistance = 3.5f;
                 quoteaudio.clip = www.GetAudioClip(false, false, AudioType.WAV);
                 quoteaudio.outputAudioMixerGroup = mrmrMixer.FindMatchingGroups("Mrmrs")[0];
-                numDownloaded++;
-                newDownloads = true;
+
+                
+                if (allAudio.ContainsKey(quotename))
+                {
+                    int i = 0;
+                    while (allAudio[quotename][i] != null)
+                        i++;
+                    allAudio[quotename][i] = quoteaudio;
+                    Debug.Log(quotename + " added to " + i);
+                }
+
             }
         }
 
@@ -555,53 +571,84 @@ public class Record : MonoBehaviour {
         lastUploadId = message.BaseData.GetString("uploadId");
     }
 
-
     // Runs through all the downloaded recordings and sequences them to play in a loop per object
     private IEnumerator PlayAudio()
     {
-        Dictionary<string, int> current = new Dictionary<string, int>(); // which is the current recording playing for a given object
         playingAudio = true; // global flag to inform if this coroutine is running
-        int i = 0;
+        Dictionary<string, List<int>> rando = new Dictionary<string, List<int>>();
+        Dictionary<string, int> next = new Dictionary<string, int>();
+        Dictionary<string, int> play = new Dictionary<string, int>();
 
-        // set up full dictionary
+        // set up full dictionary and randomize here
         foreach (GameObject qc in allQuoteObjects)
         {
-            current.Add(qc.name, -1);
-        }
-
-        // Initialize and play the first recording for every quote
-        foreach (GameObject qc in allQuoteObjects)
-        {
-            AudioSource aus = qc.GetComponent<AudioSource>();
-            if (aus != null)
+            next.Add(qc.name, 0);
+            play.Add(qc.name, 0);
+            rando.Add(qc.name, new List<int>());
+            Debug.Log(qc.name);
+            for (int j = 0; j < allAudio[qc.name].Count; j++)
             {
-                current[qc.name] = i;
-                aus.Play();
+                rando[qc.name].Add(j);
+            }
+            for (int j = 0; j < rando[qc.name].Count; j++)
+            {
+                int tmp = rando[qc.name][j];
+                int r = UnityEngine.Random.Range(j, rando[qc.name].Count);
+                rando[qc.name][j] = rando[qc.name][r];
+                rando[qc.name][r] = tmp;
             }
         }
-
-        while (true && !newDownloads && numDownloaded > 0)
+        foreach (GameObject qc in allQuoteObjects)
         {
+            foreach (int k in rando[qc.name])
+               Debug.Log("rando: " + qc.name +"/" + rando[qc.name][k]);
+        }
 
+
+        while (true)
+        {
             foreach (GameObject qc in allQuoteObjects)
             {
-                i = 0;
-                AudioSource[] auss = qc.GetComponents<AudioSource>();
-                foreach (AudioSource aus in auss)
+                int n = next[qc.name];
+                int p = play[qc.name];
+                int r = rando[qc.name][n];
+                AudioSource aus = allAudio[qc.name][p];
+
+                // move current up
+                if (allAudio[qc.name][p] != null)
                 {
-                    if (!aus.isPlaying && current[qc.name] == i)
+                    // the one to play next is the current one and it's not playing so play
+                    if (!aus.isPlaying)
                     {
-                        //Debug.Log("playing: " + qc.name + " " + i);
-                        current[qc.name] = (i == auss.Length - 1) ? 0 : i+1;
-                        auss[current[qc.name]].Play();
+                        if (n == p)
+                        {
+                            Debug.Log("playing: " + qc.name + " " + r + "/" + n);
+                            aus.Play();
+
+                            // move up play next
+                            n = (n >= allAudio[qc.name].Count - 1) ? 0 : n + 1;
+                            next[qc.name] = n;
+                        }
+                        // the one playing is stopped, time to move to next playing
+                        else
+                        {
+                            play[qc.name] = (p >= allAudio[qc.name].Count - 1) ? 0 : p + 1;
+                        }
                     }
-                    i++;
-                    yield return null;
+                    // if it's playing, don't do anytthing
+                    else
+                    {
+                    }
+                }
+                // if the one we're suppose to play is null, bump everything up
+                else
+                {
+                    play[qc.name] = (p >= allAudio[qc.name].Count - 1) ? 0 : p + 1;
+                    next[qc.name] = (n >= allAudio[qc.name].Count - 1) ? 0 : n + 1;
                 }
             }
+            yield return null;
         }
-
-        playingAudio = false;
     }
 
     private IEnumerator ChangeVolume(float vol)
@@ -688,7 +735,10 @@ public class Record : MonoBehaviour {
         }
     }
 
-    // Pulses a given material's color from default to parameter
+    /// <summary>
+    /// Pulses a given material's color from default to parameter while microphone is not recording.
+    /// </summary>
+    /// <param name="fc">Color to fade to</param>
     // TODO: set as multi-param allowing for steps and to color and use a flag to stop coroutine
     private IEnumerator PulseMaterial(Color fc)
     {
