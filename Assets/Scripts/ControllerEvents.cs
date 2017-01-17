@@ -12,8 +12,7 @@ public class ControllerEvents : MonoBehaviour
     private readonly Vector2 mXAxis = new Vector2(1, 0);
     private readonly Vector2 mYAxis = new Vector2(0, 1);
     private bool trackingSwipe = false;
-    private bool checkSwipe = false;
-
+    
     private Vector2 mStartPosition;
     private Vector2 endPosition;
     private float mSwipeStartTime;
