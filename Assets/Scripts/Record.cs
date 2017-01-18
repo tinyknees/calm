@@ -260,8 +260,6 @@ public class Record : MonoBehaviour {
 
         var filepath = Path.Combine(Application.persistentDataPath, filename);
 
-        Debug.Log(filepath);
-
         // Make sure directory exists if user is saving to sub dir.
         Directory.CreateDirectory(Path.GetDirectoryName(filepath));
 
@@ -423,7 +421,6 @@ public class Record : MonoBehaviour {
 
     private void UploadAudio(string filename, Byte[] data)
     {
-        Debug.Log("uploading");
 
         GSRequestData gsdata = new GSRequestData().AddString("Quote",recordObject.name);
 
@@ -438,9 +435,6 @@ public class Record : MonoBehaviour {
     //Our coroutine takes the upload url
     private IEnumerator UploadAFile(string uploadUrl, string filename, Byte[] data)
     {
-        Debug.Log("uploadurl " + uploadUrl);
-        Debug.Log("data size " + data.Length);
-
         // Create a Web Form, this will be our POST method's data
         var form = new WWWForm();
         form.AddBinaryData("file", data, filename, "audio/wav");
@@ -461,8 +455,8 @@ public class Record : MonoBehaviour {
         {
             Debug.Log(w.text);
         }
-        gameObject.GetComponentInChildren<VRTK.VRTK_ControllerTooltips>().ToggleTips(false, VRTK.VRTK_ControllerTooltips.TooltipButtons.AppMenuTooltip);
 
+        gameObject.GetComponentInChildren<VRTK.VRTK_ControllerTooltips>().ToggleTips(false, VRTK.VRTK_ControllerTooltips.TooltipButtons.AppMenuTooltip);
     }
 
 
@@ -554,7 +548,6 @@ public class Record : MonoBehaviour {
                     while (allAudio[quotename][i] != null)
                         i++;
                     allAudio[quotename][i] = quoteaudio;
-                    Debug.Log(quotename + " added to " + i);
                 }
 
             }
@@ -585,7 +578,7 @@ public class Record : MonoBehaviour {
             next.Add(qc.name, 0);
             play.Add(qc.name, 0);
             rando.Add(qc.name, new List<int>());
-            Debug.Log(qc.name);
+
             for (int j = 0; j < allAudio[qc.name].Count; j++)
             {
                 rando[qc.name].Add(j);
@@ -598,12 +591,6 @@ public class Record : MonoBehaviour {
                 rando[qc.name][r] = tmp;
             }
         }
-        foreach (GameObject qc in allQuoteObjects)
-        {
-            foreach (int k in rando[qc.name])
-               Debug.Log("rando: " + qc.name +"/" + rando[qc.name][k]);
-        }
-
 
         while (true)
         {
@@ -622,7 +609,6 @@ public class Record : MonoBehaviour {
                     {
                         if (n == p)
                         {
-                            Debug.Log("playing: " + qc.name + " " + r + "/" + n);
                             aus.Play();
 
                             // move up play next

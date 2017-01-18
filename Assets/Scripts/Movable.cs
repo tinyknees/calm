@@ -4,4 +4,7 @@ using UnityEngine;
 
 public class Movable : MonoBehaviour {
 
+    public Shader defaultShader;
+    public Shader outlineShader;
+
 }
