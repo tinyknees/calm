@@ -24,7 +24,7 @@ public class MoveObject : MonoBehaviour
 
     private Vector3 lastControllerPos;
     private bool moved = false;
-    private Transform moveObj;
+    private Transform moveTrans;
     private bool pulledDown;
     private Vector3 moveObjOriPos;
 
@@ -58,21 +58,28 @@ public class MoveObject : MonoBehaviour
     // Unity lifecycle method
     void Update()
     {
+        Movable moveobj = null;
+
+        if (hitObj.target.GetComponent<Movable>() != null)
+        {
+            moveobj = hitObj.target.GetComponent<Movable>();
+        }
+
+        // intersecting with a collider
         if (hitTarget)
         {
-            if (hitObj.target.GetComponent<Movable>() != null)
+            // that is movable
+            if (moveobj != null)
             {
-                hitObj.target.GetComponent<VRTK.Highlighters.VRTK_OutlineObjectCopyHighlighter>().Highlight(Color.blue);
-            }
-            if (triggerPressed)
-            {
-                if (hitObj.target.GetComponent<Movable>() != null)
+                hitObj.target.GetComponent<Renderer>().material.shader = moveobj.outlineShader;
+                if (triggerPressed)
                 {
                     DoMove();
                     moved = true;
                 }
             }
         }
+
     }
 
     //Event Handler
@@ -92,26 +99,26 @@ public class MoveObject : MonoBehaviour
         triggerPressed = false;
         if (moved)
         {
-            Vector3 moveObjPos = moveObj.position;
+            Vector3 moveObjPos = moveTrans.position;
             float sceneCamRef = sceneCamera.transform.position.y - 0.1f;
             // lock it down if pulled past a certain point
             if ((moveObjPos.y < sceneCamRef) && !pulledDown)
             {
                 moveObjPos.y = sceneCamRef;
-                moveObj.position = moveObjPos;
+                moveTrans.position = moveObjPos;
                 pulledDown = true;
             }
             // not pulled down far enough, return object
             else if ((moveObjPos.y > sceneCamRef) && !pulledDown)
             {
                 moveObjPos.y = moveObjOriPos.y;
-                moveObj.position = moveObjPos;
+                moveTrans.position = moveObjPos;
             }
             // object was down. pulling it down to return it.
             else if ((moveObjPos.y < sceneCamRef) && pulledDown)
             {
                 moveObjPos.y = moveObjOriPos.y;
-                moveObj.position = moveObjPos;
+                moveTrans.position = moveObjPos;
                 pulledDown = false;
             }
             moved = false;
@@ -132,24 +139,30 @@ public class MoveObject : MonoBehaviour
     private void HandlePointerOut(object sender, LaserPointer.PointerEventArgs e)
     {
         laserPointer.pointerModel.GetComponent<MeshRenderer>().material.color = laserPointerDefaultColor;
+
+        Movable lastmove = e.target.GetComponent<Movable>();
+        if (lastmove != null)
+        {
+            lastmove.GetComponent<Renderer>().material.shader = lastmove.defaultShader;
+        }
         hitTarget = false;
     }
 
 
     void DoMove ()
     {
-        moveObj = hitObj.target; // set moved object for later reference even when target is out
+        moveTrans = hitObj.target; // set moved object for later reference even when target is out
         if (!moved && !pulledDown)
         {
-            moveObjOriPos = moveObj.position; // set starting position to return to
+            moveObjOriPos = moveTrans.position; // set starting position to return to
         }
 
-        Vector3 moveObjPos = moveObj.position;
+        Vector3 moveObjPos = moveTrans.position;
         float controllerYMove = controllerEvents.gameObject.transform.position.y - lastControllerPos.y;
         if (controllerYMove < 0)
         {
             moveObjPos.y += controllerYMove * 5f;
-            moveObj.position = moveObjPos;
+            moveTrans.position = moveObjPos;
         }
         lastControllerPos = controllerEvents.gameObject.transform.position;
     }
