@@ -21,14 +21,18 @@ public class ColorObject : MonoBehaviour
 
     private bool hitTarget = false; // has the controller laser intersected with an object
     private bool invHitTarget = false;
+    [Header("Colour Pencil Settings", order = 2)]
 
     // Painting specific globals
     public GameObject brushCursor; //The cursor that overlaps the model
+    public Sprite cursorPaint;
+
     [Tooltip("Base color of all the colorable objects.")]
-    public Color baseColor = Color.black; // Default object color
+    public Color baseColour = Color.black; // Default object color
     private Material baseMaterial; // The material of our base texture (Where we will save the painted texture)
 
-    public Shader hackShader;
+    [Tooltip("Set to Unlit/Texture")]
+    public Shader unlitTexture;
 
 
     public float brushSize = 0.2f; //The size of our brush
@@ -36,13 +40,6 @@ public class ColorObject : MonoBehaviour
     [Tooltip("Distance to objects before coloring starts.")]
     [Range(0f, 0.2f)]
     public float brushDistance = 0.05f; // min distance before painting starts
-
-    [Tooltip("Amount of a quote that needs to be revealed before triggering.")]
-    [Range(0f, 100f)]
-
-    public bool cursorActive = false;
-    
-    public Sprite cursorPaint; // Cursor for the different functions 
 
     private Color brushColor; //The selected color
     private int brushCounter = 0, MAX_BRUSH_COUNT = 1000; //To avoid having millions of brushes
@@ -119,12 +116,12 @@ public class ColorObject : MonoBehaviour
                 GameObject.Destroy(quad);
                 co.canvasbase.transform.localPosition = Vector3.zero;
 
-                Material material = new Material(hackShader);
+                Material material = new Material(unlitTexture);
                 material.name = "BaseMaterial";
                 co.canvasbase.GetComponent<MeshRenderer>().material = material;
 
                 Texture2D coltexture = new Texture2D(1, 1, TextureFormat.ARGB32, false);
-                coltexture.SetPixel(1, 1, baseColor);
+                coltexture.SetPixel(1, 1, baseColour);
                 coltexture.Apply();
                 co.canvasbase.GetComponent<MeshRenderer>().material.mainTexture = coltexture;
 
@@ -209,7 +206,6 @@ public class ColorObject : MonoBehaviour
 
     void Update()
     {
-//        baseColor = new Color(0, 12, 34);
 
         if (gameObject.activeSelf && !camerasOff)
         {
@@ -218,11 +214,10 @@ public class ColorObject : MonoBehaviour
         if (hitTarget && hitObj.distance < brushDistance)
         {
             DoColor(brushColor, hitObj);
-            UpdateBrushCursor();
         }
         else if (invHitTarget && invHitObj.distance < brushDistance + 0.145)
         {
-            DoColor(baseColor, invHitObj);
+            DoColor(baseColour, invHitObj);
         }
         else
         {
@@ -241,7 +236,6 @@ public class ColorObject : MonoBehaviour
 
     private void HandlePointerIn(object sender, LaserPointer.PointerEventArgs e)
     {
-        //laserPointer.pointerModel.GetComponent<MeshRenderer>().enabled = false;
         hitTarget = true;
         hitObj = e;
         laserPointer.PointerUpdate += HandlePointerUpdate;
@@ -268,6 +262,7 @@ public class ColorObject : MonoBehaviour
         invHitObj = e;
         laserPointer.InvPointerUpdate += HandleInvPointerUpdate;
     }
+
     private void HandleInvPointerOut(object sender, LaserPointer.PointerEventArgs e)
     {
         invHitTarget = false;
@@ -292,7 +287,6 @@ public class ColorObject : MonoBehaviour
     }
 
 
-
     /* COLORING FUNCTIONS ----------------------------------------------------------------------*/
 
     void ChangeBrushColor()
@@ -309,34 +303,6 @@ public class ColorObject : MonoBehaviour
         brushCursor.GetComponent<SpriteRenderer>().material.color = brushColors[colorIndex];
     }
 
-
-    //To update at realtime the painting cursor on the mesh, off by default but good for debugging
-    void UpdateBrushCursor()
-    {
-        if (cursorActive)
-        {
-            Vector3 uvWorldPosition = Vector3.zero;
-            if (HitTestUVPosition(ref uvWorldPosition, hitObj) && !saving)
-            {
-                brushCursor.SetActive(true);
-                brushCursor.transform.position = uvWorldPosition + brushContainer.transform.position;
-            }
-            else
-            {
-                brushCursor.SetActive(false);
-            }
-        }
-    }
-
-    //Show again the user cursor (To avoid saving it to the texture)
-    void ShowCursor()
-    {
-        saving = false;
-        if (cursorActive)
-        {
-            brushCursor.SetActive(true);
-        }
-    }
 
     void SetBrushSize(float newBrushSize)
     { //Sets the size of the cursor brush or decal
@@ -470,8 +436,9 @@ public class ColorObject : MonoBehaviour
             }
             canvasCam.enabled = false;
         }
-        ////StartCoroutine ("SaveTextureToFile"); //Do you want to save the texture? This is your method!
-        Invoke("ShowCursor", 0.1f);
+
+        saving = false;
+        // StartCoroutine ("SaveTextureToFile");
     }
 
     private IEnumerator CheckQuote(Texture2D tex)
@@ -530,7 +497,7 @@ public class ColorObject : MonoBehaviour
 
 
 
-                        if (colors[index] != baseColor)
+                        if (colors[index] != baseColour)
                         {
                             //Debug.Log(quote.name + ": " +
                             //    colors[index].r.ToString("F6") + "," +

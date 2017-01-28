@@ -1,10 +1,6 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
+using VRTK;
 
-public class Movable : MonoBehaviour {
-
-    public Shader defaultShader;
-    public Shader outlineShader;
+public class Movable : VRTK_InteractableObject {
 
 }

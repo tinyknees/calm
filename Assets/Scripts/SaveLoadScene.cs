@@ -1,21 +1,19 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using VRTK;
 
-[RequireComponent(typeof(ControllerEvents))]
+public class SaveLoadScene : MonoBehaviour
+{
 
-public class SaveLoadScene : MonoBehaviour {
-
-    private ControllerEvents.ControllerInteractionEventArgs activeController;
-    private ControllerEvents controllerEvents; // the controller where event happened
     private Colorable[] colorableObjects;
     private bool loadedTextures;
 
-
     // Use this for initialization
-    void Awake()
+    void Start()
     {
-        controllerEvents = GetComponent<ControllerEvents>();
+        GetComponent<VRTK_ControllerEvents>().AliasMenuOn += new ControllerInteractionEventHandler(HandleMenuPressed);
+        GetComponent<VRTK_ControllerEvents>().AliasMenuOff += new ControllerInteractionEventHandler(HandleMenuReleased);
 
         colorableObjects = FindObjectsOfType<Colorable>();
 
@@ -24,7 +22,7 @@ public class SaveLoadScene : MonoBehaviour {
 
     private void Update()
     {
-        if (gameObject.activeSelf && !loadedTextures)
+        if (VRTK_DeviceFinder.GetControllerLeftHand(true).activeSelf && !loadedTextures)
         {
             LoadFile();
         }
@@ -35,31 +33,21 @@ public class SaveLoadScene : MonoBehaviour {
     // a few secs with all cameras on and turning them off one by one.
     private void LoadFile()
     {
-        if (gameObject.activeSelf && !loadedTextures)
+        if (VRTK_DeviceFinder.GetControllerLeftHand(true).activeSelf && !loadedTextures)
         {
             StartCoroutine(LoadTexturesFromFile());
         }
     }
 
-    private void OnEnable()
+
+    private void HandleMenuPressed(object sender, ControllerInteractionEventArgs e)
     {
-        controllerEvents.MenuPressed += HandleMenuPressed;
-        controllerEvents.MenuReleased += HandleMenuReleased;
+        Debug.Log("pressed");
     }
 
-    private void OnDisable()
+    private void HandleMenuReleased(object sender, ControllerInteractionEventArgs e)
     {
-        controllerEvents.MenuPressed -= HandleMenuPressed;
-        controllerEvents.MenuReleased -= HandleMenuReleased;
-    }
-
-    private void HandleMenuPressed(object sender, ControllerEvents.ControllerInteractionEventArgs e)
-    {
-        Debug.Log(e.controllerIndex);
-    }
-
-    private void HandleMenuReleased(object sender, ControllerEvents.ControllerInteractionEventArgs e)
-    {
+        Debug.Log("released");
         StartCoroutine(SaveTexturesToFile());
     }
 
@@ -89,7 +77,7 @@ public class SaveLoadScene : MonoBehaviour {
         }
 
         loadedTextures = true;
-        
+
     }
 
     private IEnumerator SaveTexturesToFile()

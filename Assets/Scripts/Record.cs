@@ -7,6 +7,7 @@ using UnityEngine.Audio;
 using GameSparks.Api.Requests;
 using GameSparks.Api.Messages;
 using GameSparks.Core;
+using VRTK;
 
 [RequireComponent(typeof(ControllerEvents))]
 
@@ -16,9 +17,9 @@ public class Record : MonoBehaviour {
     private ControllerEvents.ControllerInteractionEventArgs activeController;
     private AudioSource recordsource;
 
-    [Tooltip("Default color of the record button when inactive.")]
+    [Tooltip("Default colour of the record button when inactive.")]
     public Color recorderColor; 
-    [Tooltip("Krista: 'Because I'm annoyign'")]
+    [Tooltip("Colour to pulse to when active.")]
     public Color recordButtonColor = Color.red;
     [Tooltip("How many steps to pulse. Higher is slower fade.")]
     public float pulseSteps = 50f;
@@ -55,6 +56,8 @@ public class Record : MonoBehaviour {
     private bool playingAudio = false;
     private bool timerUp = false;
 
+    private GameObject consoleViewer = null;
+
     [Range(0,1)]
     public float defaultQuoteVolume = 0.6f;
 
@@ -62,6 +65,7 @@ public class Record : MonoBehaviour {
 
     void Awake()
     {
+        VRTK_DeviceFinder.GetControllerRightHand().GetComponentInChildren<VRTK_ControllerTooltips>().ToggleTips(false);
         UploadCompleteMessage.Listener += GetUploadMessage;
 
         if (audioContainer == null)
@@ -85,7 +89,8 @@ public class Record : MonoBehaviour {
         recordButton = gameObject.transform.FindChild("Pencil").FindChild("Record");
         recordButton.GetComponent<Renderer>().material.color = recorderColor;
 
-        gameObject.transform.FindChild("ConsoleViewerCanvas").gameObject.SetActive(false);
+        consoleViewer = VRTK_DeviceFinder.GetControllerRightHand().transform.FindChild("ConsoleViewerCanvas").gameObject;
+        consoleViewer.SetActive(false);
 
     }
 
@@ -124,7 +129,7 @@ public class Record : MonoBehaviour {
     }
 
     // Update is called once per frame
-    void Update ()
+    private void Update ()
     {
         if (playerId != "")
         {
@@ -157,7 +162,7 @@ public class Record : MonoBehaviour {
                 timerUp = false;
                 StartCoroutine(ChangeVolume(defaultQuoteVolume));
                 Debug.Log("Stopped Recording " + recordsource.clip.samples);
-                gameObject.GetComponentInChildren<VRTK.VRTK_ControllerTooltips>().appMenuText = "Saving…";
+                VRTK_DeviceFinder.GetControllerRightHand().GetComponentInChildren<VRTK_ControllerTooltips>().UpdateText(VRTK_ControllerTooltips.TooltipButtons.ButtonTwoTooltip, "Saving…");
 
                 if (recordsource.clip.samples > 0)
                 {
@@ -172,8 +177,7 @@ public class Record : MonoBehaviour {
 
             if (touchpadReleased && touchpadUpPressed)
             {
-                GameObject cv = gameObject.transform.FindChild("ConsoleViewerCanvas").gameObject;
-                cv.SetActive(!cv.activeSelf);
+                consoleViewer.SetActive(!consoleViewer.activeSelf);
                 touchpadReleased = false;
                 touchpadUpPressed = false;
             }
@@ -199,7 +203,8 @@ public class Record : MonoBehaviour {
         string counter = "-00:";
 
         timerUp = false;
-        gameObject.GetComponentInChildren<VRTK.VRTK_ControllerTooltips>().ToggleTips(true, VRTK.VRTK_ControllerTooltips.TooltipButtons.AppMenuTooltip);
+
+        VRTK_DeviceFinder.GetControllerRightHand().GetComponentInChildren<VRTK_ControllerTooltips>().ToggleTips(true, VRTK_ControllerTooltips.TooltipButtons.ButtonTwoTooltip);
 
         while (Microphone.IsRecording(null) && timer > 0)
         {
@@ -212,7 +217,7 @@ public class Record : MonoBehaviour {
             {
                 counter = "-00:" + timer.ToString();
             }
-            gameObject.GetComponentInChildren<VRTK.VRTK_ControllerTooltips>().appMenuText = counter;
+            VRTK_DeviceFinder.GetControllerRightHand().GetComponentInChildren<VRTK_ControllerTooltips>().UpdateText(VRTK_ControllerTooltips.TooltipButtons.ButtonTwoTooltip, counter);
             yield return null;
         }
 
@@ -233,11 +238,11 @@ public class Record : MonoBehaviour {
             bool pinged = lastNearestQuote.GetComponentInChildren<Quote>().pinged;
             if (!pinged)
             {
-                gameObject.GetComponentInChildren<VRTK.VRTK_ControllerTooltips>().appMenuText = "Press to record";
+                VRTK_DeviceFinder.GetControllerRightHand().GetComponentInChildren<VRTK_ControllerTooltips>().ToggleTips(true, VRTK_ControllerTooltips.TooltipButtons.ButtonTwoTooltip);
                 recordButton.GetComponent<AudioSource>().clip = (AudioClip) Resources.Load("recordprompt");
                 recordButton.GetComponent<AudioSource>().Play();
-                gameObject.GetComponentInChildren<VRTK.VRTK_ControllerTooltips>().ToggleTips(true, VRTK.VRTK_ControllerTooltips.TooltipButtons.AppMenuTooltip);
                 pinged = true;
+                VRTK_DeviceFinder.GetControllerRightHand().GetComponentInChildren<VRTK_ControllerTooltips>().UpdateText(VRTK_ControllerTooltips.TooltipButtons.ButtonTwoTooltip, "Press to record");
             }
         }
         else
@@ -245,7 +250,7 @@ public class Record : MonoBehaviour {
             canRecord = false;
             StopCoroutine("PulseMaterial");
             recordButton.GetComponent<Renderer>().material.color = recorderColor;
-            gameObject.GetComponentInChildren<VRTK.VRTK_ControllerTooltips>().ToggleTips(false, VRTK.VRTK_ControllerTooltips.TooltipButtons.AppMenuTooltip);
+            VRTK_DeviceFinder.GetControllerRightHand().GetComponentInChildren<VRTK_ControllerTooltips>().ToggleTips(false, VRTK_ControllerTooltips.TooltipButtons.ButtonTwoTooltip);
         }
     }
 
@@ -439,7 +444,7 @@ public class Record : MonoBehaviour {
         var form = new WWWForm();
         form.AddBinaryData("file", data, filename, "audio/wav");
 
-        gameObject.GetComponentInChildren<VRTK.VRTK_ControllerTooltips>().appMenuText = "Uploading…";
+        VRTK_DeviceFinder.GetControllerRightHand().GetComponentInChildren<VRTK_ControllerTooltips>().UpdateText(VRTK_ControllerTooltips.TooltipButtons.ButtonTwoTooltip, "Uploading…");
 
         WWW w = new WWW(uploadUrl, form);
         while (!w.isDone)
@@ -456,7 +461,7 @@ public class Record : MonoBehaviour {
             Debug.Log(w.text);
         }
 
-        gameObject.GetComponentInChildren<VRTK.VRTK_ControllerTooltips>().ToggleTips(false, VRTK.VRTK_ControllerTooltips.TooltipButtons.AppMenuTooltip);
+        VRTK_DeviceFinder.GetControllerRightHand().GetComponentInChildren<VRTK_ControllerTooltips>().ToggleTips(false, VRTK_ControllerTooltips.TooltipButtons.ButtonTwoTooltip);
     }
 
 
