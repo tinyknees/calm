@@ -1,4 +1,4 @@
-﻿// Content Handler|Controls3D|0090
+﻿// Content Handler|Controls3D|100100
 namespace VRTK
 {
     using UnityEngine;
@@ -21,7 +21,7 @@ namespace VRTK
         [Tooltip("Any transform that will act as the parent while the object is not inside the control.")]
         public Transform outside;
 
-        private void Start()
+        protected virtual void Start()
         {
             VRTK_InteractableObject io = GetComponent<VRTK_InteractableObject>();
             if (io == null)
@@ -40,10 +40,10 @@ namespace VRTK
             }
         }
 
-        private void OnCollisionEnter(Collision collision)
+        protected virtual void OnCollisionEnter(Collision collision)
         {
-            Bounds insideBounds = Utilities.GetBounds(inside, null, control.GetContent().transform);
-            Bounds objBounds = Utilities.GetBounds(transform);
+            Bounds insideBounds = VRTK_SharedMethods.GetBounds(inside, null, control.GetContent().transform);
+            Bounds objBounds = VRTK_SharedMethods.GetBounds(transform);
 
             if (objBounds.Intersects(insideBounds))
             {

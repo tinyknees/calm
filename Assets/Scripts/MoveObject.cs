@@ -1,26 +1,15 @@
 ﻿using UnityEngine;
-using System.Collections;
-using System;
+using VRTK;
 
 /// <summary>
+/// Allows user to move the object by pulling it down like a window blind
 /// </summary>
-[RequireComponent(typeof(ControllerEvents))]
-[RequireComponent(typeof(LaserPointer))]
-public class MoveObject : MonoBehaviour
+public class MoveObject : VRTK_SimplePointer
 {
-    private Color laserPointerDefaultColor; // default laser pointer color
-    public Camera sceneCamera;  //The camera that looks at the model
-
-
-    // Flags for state
-    private LaserPointer laserPointer; // references the laser coming from controller
-    private ControllerEvents controllerEvents; // the controller where event happened
-    private LaserPointer.PointerEventArgs hitObj; // shortcut to the object the laser collided with
-    private ControllerEvents.ControllerInteractionEventArgs activeController;
+    private DestinationMarkerEventArgs hitObj;
 
     private bool triggerPressed = false; // is the trigger being held
     private bool hitTarget = false; // has the controller laser intersected with an object
-
 
     private Vector3 lastControllerPos;
     private bool moved = false;
@@ -28,79 +17,76 @@ public class MoveObject : MonoBehaviour
     private bool pulledDown;
     private Vector3 moveObjOriPos;
 
-    // Unity lifecycle method
-    void Awake()
+    protected override void Start()
     {
-        laserPointer = GetComponent<LaserPointer>();
-        controllerEvents = GetComponent<ControllerEvents>();
-
-        laserPointerDefaultColor = Color.clear;
-    }
-
-    // Unity lifecycle method
-    void OnEnable()
-    {
-        controllerEvents.TriggerPressed += HandleTriggerPressed;
-        controllerEvents.TriggerReleased += HandlerTriggerReleased;
-        laserPointer.PointerIn += HandlePointerIn;
-        laserPointer.PointerOut += HandlePointerOut;
-    }
-
-    // Unity lifecycle method
-    void OnDisable()
-    {
-        controllerEvents.TriggerPressed -= HandleTriggerPressed;
-        controllerEvents.TriggerReleased -= HandlerTriggerReleased;
-        laserPointer.PointerIn -= HandlePointerIn;
-        laserPointer.PointerOut -= HandlePointerOut;
-    }
-
-    // Unity lifecycle method
-    void Update()
-    {
-        Movable moveobj = null;
-
-        if (hitObj.target.GetComponent<Movable>() != null)
+        base.Start();
+        if (GetComponent<VRTK_SimplePointer>() == null)
         {
-            moveobj = hitObj.target.GetComponent<Movable>();
+            Debug.LogError("VRTK_ControllerPointerEvents_ListenerExample is required to be attached to a Controller that has the VRTK_SimplePointer script attached to it");
+            return;
         }
 
-        // intersecting with a collider
-        if (hitTarget)
+        //Setup controller event listeners
+        GetComponent<VRTK_ControllerEvents>().TriggerPressed += new ControllerInteractionEventHandler(DoTriggerPressed);
+        GetComponent<VRTK_ControllerEvents>().TriggerReleased += new ControllerInteractionEventHandler(DoTriggerReleased);
+        GetComponent<MoveObject>().DestinationMarkerEnter += new DestinationMarkerEventHandler(DoPointerIn);
+        GetComponent<MoveObject>().DestinationMarkerExit += new DestinationMarkerEventHandler(DoPointerOut);
+        GetComponent<MoveObject>().DestinationMarkerSet += new DestinationMarkerEventHandler(DoPointerDestinationSet);
+
+    }
+    protected override void AliasRegistration(bool state)
+    {
+        if (controller)
         {
-            // that is movable
-            if (moveobj != null)
+            if (state)
             {
-                hitObj.target.GetComponent<Renderer>().material.shader = moveobj.outlineShader;
-                if (triggerPressed)
-                {
-                    DoMove();
-                    moved = true;
-                }
+                controller.TriggerPressed += new ControllerInteractionEventHandler(EnablePointerBeam);
+                controller.TriggerReleased += new ControllerInteractionEventHandler(DisablePointerBeam);
+                controller.TriggerPressed += new ControllerInteractionEventHandler(SetPointerDestination);
+            }
+            else
+            {
+                controller.TriggerPressed -= new ControllerInteractionEventHandler(EnablePointerBeam);
+                controller.TriggerReleased -= new ControllerInteractionEventHandler(DisablePointerBeam);
+                controller.TriggerPressed -= new ControllerInteractionEventHandler(SetPointerDestination);
             }
         }
-
     }
 
-    //Event Handler
-    private void HandleTriggerPressed(object sender, ControllerEvents.ControllerInteractionEventArgs e)
+    private void DebugLogger(uint index, string action, Transform target, RaycastHit raycastHit, float distance, Vector3 tipPosition)
     {
-        laserPointer.enabled = true;
+        string targetName = (target ? target.name : "<NO VALID TARGET>");
+        string colliderName = (raycastHit.collider ? raycastHit.collider.name : "<NO VALID COLLIDER>");
+        Debug.Log("Controller on index '" + index + "' is " + action + " at a distance of " + distance + " on object named [" + targetName + "] on the collider named [" + colliderName + "] - the pointer tip position is/was: " + tipPosition);
+    }
+
+    private void DebugLogger(uint index, string button, string action, ControllerInteractionEventArgs e)
+    {
+        Debug.Log("Controller on index '" + index + "' " + button + " has been " + action
+                + " with a pressure of " + e.buttonPressure + " / trackpad axis at: " + e.touchpadAxis + " (" + e.touchpadAngle + " degrees)");
+    }
+
+    private void DoTriggerPressed(object sender, ControllerInteractionEventArgs e)
+    {
         triggerPressed = true;
-        laserPointer.PointerIn -= HandlePointerIn;
-        laserPointer.PointerOut -= HandlePointerOut;
-        lastControllerPos = controllerEvents.gameObject.transform.position;
+        lastControllerPos = VRTK_DeviceFinder.GetControllerLeftHand(true).transform.position;
+        //DebugLogger(e.controllerIndex, "TRIGGER", "pressed", e);
     }
 
-    //Event Handler
-    private void HandlerTriggerReleased(object sender, ControllerEvents.ControllerInteractionEventArgs e)
+    private void DoTriggerReleased(object sender, ControllerInteractionEventArgs e)
     {
-        //laserPointer.enabled = false;
         triggerPressed = false;
+        if (hitObj.target != null)
+        {
+            if (hitObj.target.GetComponent<VRTK_InteractableObject>() != null)
+            {
+                hitObj.target.GetComponent<VRTK_InteractableObject>().ToggleHighlight(false);
+            }
+        }
         if (moved)
         {
             Vector3 moveObjPos = moveTrans.position;
-            float sceneCamRef = sceneCamera.transform.position.y - 0.1f;
+            float sceneCamRef = VRTK_DeviceFinder.HeadsetTransform().position.y - 0.1f;
             // lock it down if pulled past a certain point
             if ((moveObjPos.y < sceneCamRef) && !pulledDown)
             {
@@ -123,33 +109,39 @@ public class MoveObject : MonoBehaviour
             }
             moved = false;
         }
-        laserPointer.PointerIn += HandlePointerIn;
-        laserPointer.PointerOut += HandlePointerOut;
     }
 
-    //Event Handler
-    private void HandlePointerIn(object sender, LaserPointer.PointerEventArgs e)
+    private void DoPointerIn(object sender, DestinationMarkerEventArgs e)
     {
-        laserPointer.pointerModel.GetComponent<MeshRenderer>().material.color = Color.red;
-        hitTarget = true;
-        hitObj = e;
-    }
-
-    //Event Handler
-    private void HandlePointerOut(object sender, LaserPointer.PointerEventArgs e)
-    {
-        laserPointer.pointerModel.GetComponent<MeshRenderer>().material.color = laserPointerDefaultColor;
-
-        Movable lastmove = e.target.GetComponent<Movable>();
-        if (lastmove != null)
+        if (e.target.GetComponent<Movable>() != null)
         {
-            lastmove.GetComponent<Renderer>().material.shader = lastmove.defaultShader;
+            hitTarget = true;
+            hitObj = e;
+            if (e.target.GetComponent<VRTK_InteractableObject>() != null)
+            {
+                e.target.GetComponent<VRTK_InteractableObject>().ToggleHighlight(true);
+            }
         }
-        hitTarget = false;
     }
 
+    private void DoPointerOut(object sender, DestinationMarkerEventArgs e)
+    {
+        if (!triggerPressed)
+        {
+            if (e.target.GetComponent<VRTK_InteractableObject>() != null)
+            {
+                e.target.GetComponent<VRTK_InteractableObject>().ToggleHighlight(false);
+            }
+            hitTarget = false;
+        }
+    }
 
-    void DoMove ()
+    private void DoPointerDestinationSet(object sender, DestinationMarkerEventArgs e)
+    {
+        // DebugLogger(e.controllerIndex, "POINTER DESTINATION", e.target, e.raycastHit, e.distance, e.destinationPosition);
+    }
+
+    private void DoMove()
     {
         moveTrans = hitObj.target; // set moved object for later reference even when target is out
         if (!moved && !pulledDown)
@@ -158,13 +150,32 @@ public class MoveObject : MonoBehaviour
         }
 
         Vector3 moveObjPos = moveTrans.position;
-        float controllerYMove = controllerEvents.gameObject.transform.position.y - lastControllerPos.y;
+        float controllerYMove = VRTK_DeviceFinder.GetControllerLeftHand(true).transform.position.y - lastControllerPos.y;
         if (controllerYMove < 0)
         {
             moveObjPos.y += controllerYMove * 5f;
             moveTrans.position = moveObjPos;
         }
-        lastControllerPos = controllerEvents.gameObject.transform.position;
+        lastControllerPos = VRTK_DeviceFinder.GetControllerLeftHand(true).transform.position;
+    }
+
+
+    protected override void Update()
+    {
+        base.Update();
+
+        // intersecting with a collider
+        if (hitTarget)
+        {
+            if (hitObj.target.GetComponent<Movable>() != null)
+            {
+                if (triggerPressed)
+                {
+                    DoMove();
+                    moved = true;
+                }
+            }
+        }
     }
 }
     
