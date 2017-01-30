@@ -1,6 +1,6 @@
 fileFormatVersion: 2
-guid: c5724598571a1f542b14d381ef15b03d
-timeCreated: 1485787533
+guid: 5360ac3b0275a1947acbe32b2912bba2
+timeCreated: 1485812880
 licenseType: Free
 ModelImporter:
   serializedVersion: 19
@@ -9,9 +9,9 @@ ModelImporter:
     400000: //RootNode
     2300000: //RootNode
     3300000: //RootNode
-    4300000: Terrain_Mesh
+    4300000: Teleport_Area
   materials:
-    importMaterials: 0
+    importMaterials: 1
     materialName: 0
     materialSearch: 1
   animations:
