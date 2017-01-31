@@ -1,6 +1,6 @@
 fileFormatVersion: 2
-guid: 5360ac3b0275a1947acbe32b2912bba2
-timeCreated: 1485812880
+guid: c1038d1da9dc07d4586d5254f6b12104
+timeCreated: 1485831196
 licenseType: Free
 ModelImporter:
   serializedVersion: 19
@@ -9,7 +9,7 @@ ModelImporter:
     400000: //RootNode
     2300000: //RootNode
     3300000: //RootNode
-    4300000: Teleport_Area
+    4300000: Terrain_Smooth
   materials:
     importMaterials: 1
     materialName: 0
