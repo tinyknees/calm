@@ -1,6 +1,6 @@
 fileFormatVersion: 2
 guid: 872fc001fc4348c4da33818eafb014a9
-timeCreated: 1485884830
+timeCreated: 1485919635
 licenseType: Free
 ModelImporter:
   serializedVersion: 19
@@ -16,9 +16,9 @@ ModelImporter:
     100016: hand_index3_JNT
     100018: hand_index4_DEF
     100020: hand_index4_JNT
-    100022: hand_indexFist_grp
-    100024: hand_indexFist_grp1
-    100026: hand_indexFist_grp2
+    100022: hand_indexfist_grp
+    100024: hand_indexfist_grp1
+    100026: hand_indexfist_grp2
     100028: hand_mid1_DEF
     100030: hand_mid1_JNT
     100032: hand_mid2_DEF
@@ -27,44 +27,49 @@ ModelImporter:
     100038: hand_mid3_JNT
     100040: hand_mid4_DEF
     100042: hand_mid4_JNT
-    100044: hand_midFist_grp
-    100046: hand_midFist_grp1
-    100048: hand_midFist_grp2
-    100050: hand_pinky1_DEF
-    100052: hand_pinky1_JNT
-    100054: hand_pinky2_DEF
-    100056: hand_pinky2_JNT
-    100058: hand_pinky3_DEF
-    100060: hand_pinky3_JNT
-    100062: hand_pinky4_DEF
-    100064: hand_pinky4_JNT
-    100066: hand_pinkyFist_grp
-    100068: hand_pinkyFist_grp1
-    100070: hand_pinkyFist_grp2
-    100072: hand_ring1_DEF
-    100074: hand_ring1_JNT
-    100076: hand_ring2_DEF
-    100078: hand_ring2_JNT
-    100080: hand_ring3_DEF
-    100082: hand_ring3_JNT
-    100084: hand_ring4_DEF
-    100086: hand_ring4_JNT
-    100088: hand_ringFist_grp
-    100090: hand_ringFist_grp1
-    100092: hand_ringFist_grp2
-    100094: hand_thumb1_DEF
-    100096: hand_thumb1_JNT
-    100098: hand_thumb2_DEF
-    100100: hand_thumb2_JNT
-    100102: hand_thumb3_DEF
-    100104: hand_thumb3_JNT
-    100106: hand_thumb4_DEF
-    100108: hand_thumb4_JNT
-    100110: hand_thumbFist_grp
-    100112: hand_thumbFist_grp1
-    100114: hand_thumbFist_grp2
-    100116: hand_wrist_DEF
-    100118: hand_wrist_JNT
+    100044: hand_midfist_grp
+    100046: hand_midfist_grp1
+    100048: hand_midfist_grp2
+    100050: hand_midSpread
+    100052: hand_pinky1_DEF
+    100054: hand_pinky1_JNT
+    100056: hand_pinky2_DEF
+    100058: hand_pinky2_JNT
+    100060: hand_pinky3_DEF
+    100062: hand_pinky3_JNT
+    100064: hand_pinky4_DEF
+    100066: hand_pinky4_JNT
+    100068: hand_pinkyfist_grp
+    100070: hand_pinkyfist_grp1
+    100072: hand_pinkyfist_grp2
+    100074: hand_pinkySpread
+    100076: hand_ring1_DEF
+    100078: hand_ring1_JNT
+    100080: hand_ring2_DEF
+    100082: hand_ring2_JNT
+    100084: hand_ring3_DEF
+    100086: hand_ring3_JNT
+    100088: hand_ring4_DEF
+    100090: hand_ring4_JNT
+    100092: hand_ringfist_grp
+    100094: hand_ringfist_grp1
+    100096: hand_ringfist_grp2
+    100098: hand_ringSpread
+    100100: hand_ringSpread 1
+    100102: hand_thumb1_DEF
+    100104: hand_thumb1_JNT
+    100106: hand_thumb2_DEF
+    100108: hand_thumb2_JNT
+    100110: hand_thumb3_DEF
+    100112: hand_thumb3_JNT
+    100114: hand_thumb4_DEF
+    100116: hand_thumb4_JNT
+    100118: hand_thumbfist_grp
+    100120: hand_thumbfist_grp1
+    100122: hand_thumbfist_grp2
+    100124: hand_thumbSpread
+    100126: hand_wrist_DEF
+    100128: hand_wrist_JNT
     400000: //RootNode
     400002: hand_cup_DEF
     400004: hand_cup_JNT
@@ -76,9 +81,9 @@ ModelImporter:
     400016: hand_index3_JNT
     400018: hand_index4_DEF
     400020: hand_index4_JNT
-    400022: hand_indexFist_grp
-    400024: hand_indexFist_grp1
-    400026: hand_indexFist_grp2
+    400022: hand_indexfist_grp
+    400024: hand_indexfist_grp1
+    400026: hand_indexfist_grp2
     400028: hand_mid1_DEF
     400030: hand_mid1_JNT
     400032: hand_mid2_DEF
@@ -87,44 +92,49 @@ ModelImporter:
     400038: hand_mid3_JNT
     400040: hand_mid4_DEF
     400042: hand_mid4_JNT
-    400044: hand_midFist_grp
-    400046: hand_midFist_grp1
-    400048: hand_midFist_grp2
-    400050: hand_pinky1_DEF
-    400052: hand_pinky1_JNT
-    400054: hand_pinky2_DEF
-    400056: hand_pinky2_JNT
-    400058: hand_pinky3_DEF
-    400060: hand_pinky3_JNT
-    400062: hand_pinky4_DEF
-    400064: hand_pinky4_JNT
-    400066: hand_pinkyFist_grp
-    400068: hand_pinkyFist_grp1
-    400070: hand_pinkyFist_grp2
-    400072: hand_ring1_DEF
-    400074: hand_ring1_JNT
-    400076: hand_ring2_DEF
-    400078: hand_ring2_JNT
-    400080: hand_ring3_DEF
-    400082: hand_ring3_JNT
-    400084: hand_ring4_DEF
-    400086: hand_ring4_JNT
-    400088: hand_ringFist_grp
-    400090: hand_ringFist_grp1
-    400092: hand_ringFist_grp2
-    400094: hand_thumb1_DEF
-    400096: hand_thumb1_JNT
-    400098: hand_thumb2_DEF
-    400100: hand_thumb2_JNT
-    400102: hand_thumb3_DEF
-    400104: hand_thumb3_JNT
-    400106: hand_thumb4_DEF
-    400108: hand_thumb4_JNT
-    400110: hand_thumbFist_grp
-    400112: hand_thumbFist_grp1
-    400114: hand_thumbFist_grp2
-    400116: hand_wrist_DEF
-    400118: hand_wrist_JNT
+    400044: hand_midfist_grp
+    400046: hand_midfist_grp1
+    400048: hand_midfist_grp2
+    400050: hand_midSpread
+    400052: hand_pinky1_DEF
+    400054: hand_pinky1_JNT
+    400056: hand_pinky2_DEF
+    400058: hand_pinky2_JNT
+    400060: hand_pinky3_DEF
+    400062: hand_pinky3_JNT
+    400064: hand_pinky4_DEF
+    400066: hand_pinky4_JNT
+    400068: hand_pinkyfist_grp
+    400070: hand_pinkyfist_grp1
+    400072: hand_pinkyfist_grp2
+    400074: hand_pinkySpread
+    400076: hand_ring1_DEF
+    400078: hand_ring1_JNT
+    400080: hand_ring2_DEF
+    400082: hand_ring2_JNT
+    400084: hand_ring3_DEF
+    400086: hand_ring3_JNT
+    400088: hand_ring4_DEF
+    400090: hand_ring4_JNT
+    400092: hand_ringfist_grp
+    400094: hand_ringfist_grp1
+    400096: hand_ringfist_grp2
+    400098: hand_ringSpread
+    400100: hand_ringSpread 1
+    400102: hand_thumb1_DEF
+    400104: hand_thumb1_JNT
+    400106: hand_thumb2_DEF
+    400108: hand_thumb2_JNT
+    400110: hand_thumb3_DEF
+    400112: hand_thumb3_JNT
+    400114: hand_thumb4_DEF
+    400116: hand_thumb4_JNT
+    400118: hand_thumbfist_grp
+    400120: hand_thumbfist_grp1
+    400122: hand_thumbfist_grp2
+    400124: hand_thumbSpread
+    400126: hand_wrist_DEF
+    400128: hand_wrist_JNT
     7400000: Take 001
     9500000: //RootNode
   materials:

@@ -1,6 +1,6 @@
 fileFormatVersion: 2
 guid: 01b5faf55d81dd047bfd645bc1722797
-timeCreated: 1485884825
+timeCreated: 1485918645
 licenseType: Free
 ModelImporter:
   serializedVersion: 19
@@ -29,43 +29,6 @@ ModelImporter:
     100042: hand_thumb3_DEF
     100044: hand_thumb4_DEF
     100046: hand_wrist_DEF
-    100048: hand_cup_JNT
-    100050: hand_index1_JNT
-    100052: hand_index2_JNT
-    100054: hand_index3_JNT
-    100056: hand_index4_JNT
-    100058: hand_indexFist_grp
-    100060: hand_indexFist_grp1
-    100062: hand_indexFist_grp2
-    100064: hand_mid1_JNT
-    100066: hand_mid2_JNT
-    100068: hand_mid3_JNT
-    100070: hand_mid4_JNT
-    100072: hand_midFist_grp
-    100074: hand_midFist_grp1
-    100076: hand_midFist_grp2
-    100078: hand_pinky1_JNT
-    100080: hand_pinky2_JNT
-    100082: hand_pinky3_JNT
-    100084: hand_pinky4_JNT
-    100086: hand_pinkyFist_grp
-    100088: hand_pinkyFist_grp1
-    100090: hand_pinkyFist_grp2
-    100092: hand_ring1_JNT
-    100094: hand_ring2_JNT
-    100096: hand_ring3_JNT
-    100098: hand_ring4_JNT
-    100100: hand_ringFist_grp
-    100102: hand_ringFist_grp1
-    100104: hand_ringFist_grp2
-    100106: hand_thumb1_JNT
-    100108: hand_thumb2_JNT
-    100110: hand_thumb3_JNT
-    100112: hand_thumb4_JNT
-    100114: hand_thumbFist_grp
-    100116: hand_thumbFist_grp1
-    100118: hand_thumbFist_grp2
-    100120: hand_wrist_JNT
     400000: //RootNode
     400002: hand_cup_DEF
     400004: hand_geo
@@ -90,45 +53,6 @@ ModelImporter:
     400042: hand_thumb3_DEF
     400044: hand_thumb4_DEF
     400046: hand_wrist_DEF
-    400048: hand_cup_JNT
-    400050: hand_index1_JNT
-    400052: hand_index2_JNT
-    400054: hand_index3_JNT
-    400056: hand_index4_JNT
-    400058: hand_indexFist_grp
-    400060: hand_indexFist_grp1
-    400062: hand_indexFist_grp2
-    400064: hand_mid1_JNT
-    400066: hand_mid2_JNT
-    400068: hand_mid3_JNT
-    400070: hand_mid4_JNT
-    400072: hand_midFist_grp
-    400074: hand_midFist_grp1
-    400076: hand_midFist_grp2
-    400078: hand_pinky1_JNT
-    400080: hand_pinky2_JNT
-    400082: hand_pinky3_JNT
-    400084: hand_pinky4_JNT
-    400086: hand_pinkyFist_grp
-    400088: hand_pinkyFist_grp1
-    400090: hand_pinkyFist_grp2
-    400092: hand_ring1_JNT
-    400094: hand_ring2_JNT
-    400096: hand_ring3_JNT
-    400098: hand_ring4_JNT
-    400100: hand_ringFist_grp
-    400102: hand_ringFist_grp1
-    400104: hand_ringFist_grp2
-    400106: hand_thumb1_JNT
-    400108: hand_thumb2_JNT
-    400110: hand_thumb3_JNT
-    400112: hand_thumb4_JNT
-    400114: hand_thumbFist_grp
-    400116: hand_thumbFist_grp1
-    400118: hand_thumbFist_grp2
-    400120: hand_wrist_JNT
-    2300000: hand_geo
-    3300000: hand_geo
     4300000: hand_geo
     9500000: //RootNode
     13700000: hand_geo
