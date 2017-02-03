@@ -12,17 +12,11 @@ public class HandAnimator : MonoBehaviour
     void Start()
     {
         myAnimator = VRTK_DeviceFinder.GetControllerLeftHand(true).GetComponentInChildren<Animator>();
-        GetComponent<VRTK_ControllerEvents>().TriggerTouchStart += new ControllerInteractionEventHandler(DoTriggerTouchStart);
-        GetComponent<VRTK_ControllerEvents>().TriggerTouchEnd += new ControllerInteractionEventHandler(DoTriggerTouchEnd);
+        GetComponent<VRTK_ControllerEvents>().TriggerAxisChanged += new ControllerInteractionEventHandler(DoTriggerAxisChanged);
     }
 
-    private void DoTriggerTouchStart(object sender, ControllerInteractionEventArgs e)
+    private void DoTriggerAxisChanged(object sender, ControllerInteractionEventArgs e)
     {
-        myAnimator.SetBool("Grab", true);
-    }
-
-    private void DoTriggerTouchEnd(object sender, ControllerInteractionEventArgs e)
-    {
-        myAnimator.SetBool("Grab", false);
+        myAnimator.SetFloat("GrabSpeed", e.buttonPressure);
     }
 }
