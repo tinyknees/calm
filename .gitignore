@@ -33,12 +33,6 @@ sysinfo.txt
 *.apk
 *.unitypackage
 
-Assets/Plugins/Metro/GameSparks.dll.meta
-Assets/Plugins/Metro/GameSparks.dll.meta
-Assets/Plugins/Metro/GameSparksRT.dll.meta
-Assets/Plugins/Metro/GameSparks.dll.meta
-Assets/Plugins/WP8/GameSparks.dll.meta
-Assets/Plugins/XboxOne.meta
-Assets/Plugins/XboxOne/GameSparksNative.dll.meta
 /SavedCanvas/*
 Assets/Skyboxes/skybox-darkNight.mat
+
