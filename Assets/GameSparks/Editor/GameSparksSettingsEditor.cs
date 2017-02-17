@@ -18,6 +18,7 @@ namespace GameSparks.Editor
     {
         GUIContent apiSecretLabel = new GUIContent("Api Secret [?]:", "GameSparks Api Secret can be found at https://portal.gamesparks.net");
         GUIContent apiKeyLabel = new GUIContent("Api Key [?]:", "GameSparks Api Key can be found at https://portal.gamesparks.net");
+		GUIContent credentialLabel = new GUIContent("Credential [?]:", "GameSparks Credential can be found at https://portal.gamesparks.net");
     	GUIContent previewLabel = new GUIContent("Preview Build [?]:", "Run app against the preview service");
     	GUIContent debugLabel = new GUIContent("Debug Build [?]:", "Run app with extended debugging");
 
@@ -55,47 +56,198 @@ namespace GameSparks.Editor
 			UpdateSDK (true);
         }
 
-
     	void OnDisable()
     	{
     		// make sure the runtime code will load the Asset from Resources when it next tries to access this. 
     		GameSparksSettings.SetInstance(null);
     	}
 
-		static GameSparksSettingsEditor() {
+		static GameSparksSettingsEditor()
+		{
+		}
 
-			string[] oldSDKFiles = {
-				"Assets/GameSparks/Platforms/IOS",
-				"Assets/Plugins/iOS/GameSparksWebSocket.h",
-				"Assets/Plugins/iOS/GameSparksWebSocket.m",
-				"Assets/Plugins/iOS/SRWebSocket.h",
-				"Assets/Plugins/iOS/SRWebSocket.m",
-				"Assets/Plugins/iOS/SocketController.h",
-				"Assets/Plugins/iOS/SocketController.m",
-				"Assets/GameSparks/Editor/GameSparksPostprocessScript.cs",
-				"Assets/GameSparks/Editor/mod_pbxproj.py",
-				"Assets/GameSparks/Editor/mod_pbxproj.pyc",
-				"Assets/GameSparks/Editor/post_process.py"
-			};
+		private static void RecursiveDeleteFolders(DirectoryInfo baseDir)
+        {
+            if (!baseDir.Exists)
+                return;
 
-			foreach(string oldSDKFile in oldSDKFiles) {
-				bool hasDeleted = false;
+            foreach (var dir in baseDir.GetDirectories("*", SearchOption.AllDirectories))
+            {
+                RecursiveDeleteFolders(dir);
+            }
 
-				if(File.Exists(oldSDKFile))
-				{
-					File.Delete(oldSDKFile);
-					hasDeleted = true;
-				} else if(Directory.Exists(oldSDKFile)) {
-					Directory.Delete(oldSDKFile, true);
-					hasDeleted = true;
+            try
+            {
+                if (baseDir.GetFiles().Length == 0)
+                {
+                    baseDir.Delete(true);
+
+                    AssetDatabase.Refresh();
+                }
+            }
+            catch
+            {
+            }
+        }
+      
+        static bool firstLaunch = true;
+
+        [InitializeOnLoadMethod]
+        private static void FixSDK()
+		{
+            if (UnityEditorInternal.InternalEditorUtility.inBatchMode)
+			{
+				return;
+			}
+			
+			try
+			{
+				string[] oldSDKFiles = {
+					"Assets/GameSparks/Platforms/IOS",
+
+                    "Assets/Plugins/GameSparks.Api.dll.mdb.meta",
+                    "Assets/Plugins/GameSparks.Api.dll.mdb",
+
+                    "Assets/Plugins/iOS/GameSparksWebSocket.h",
+					"Assets/Plugins/iOS/GameSparksWebSocket.m",
+					"Assets/Plugins/iOS/SRWebSocket.h",
+					"Assets/Plugins/iOS/SRWebSocket.m",
+					"Assets/Plugins/iOS/SocketController.h",
+					"Assets/Plugins/iOS/SocketController.m",
+
+					"Assets/GameSparks/Editor/GameSparksPostprocessScript.cs",
+					"Assets/GameSparks/Editor/mod_pbxproj.py",
+					"Assets/GameSparks/Editor/mod_pbxproj.pyc",
+					"Assets/GameSparks/Editor/post_process.py"
+				};
+
+				foreach (string oldSDKFile in oldSDKFiles) {
+					if (File.Exists(oldSDKFile))
+					{
+						File.Delete(oldSDKFile);
+					} else if (Directory.Exists(oldSDKFile)) {
+						Directory.Delete(oldSDKFile, true);                   
+					}
 				}
-				if(hasDeleted) {
-					AssetDatabase.Refresh();
-				}
-
+			}
+			catch
+			{		
 			}
 
-		}
+            string[] oldFiles = {
+				"Assets/Plugins/gamesparksunityosx.bundle/Contents/_CodeSignature/CodeResources.meta",
+                "Assets/Plugins/gamesparksunityosx.bundle/Contents/_CodeSignature/CodeResources",
+				"Assets/Plugins/gamesparksunityosx.bundle/Contents/MacOS/gamesparksunityosx.meta",
+                "Assets/Plugins/gamesparksunityosx.bundle/Contents/MacOS/gamesparksunityosx",
+				"Assets/Plugins/gamesparksunityosx.bundle/Contents/Info.plist.meta",
+                "Assets/Plugins/gamesparksunityosx.bundle/Contents/Info.plist",
+				"Assets/Plugins/iOS/GSExternal.h.meta",
+                "Assets/Plugins/iOS/GSExternal.h",
+				"Assets/Plugins/iOS/GSExternal.m.meta",
+                "Assets/Plugins/iOS/GSExternal.m",
+				"Assets/Plugins/Metro/GameSparks.dll.meta",
+                "Assets/Plugins/Metro/GameSparks.dll",
+				"Assets/Plugins/Metro/GameSparks.pri.meta",
+                "Assets/Plugins/Metro/GameSparks.pri",
+				"Assets/Plugins/Metro/GameSparks.XML.meta",
+                "Assets/Plugins/Metro/GameSparks.XML",
+				"Assets/Plugins/Metro/GameSparksRT.dll.meta",
+                "Assets/Plugins/Metro/GameSparksRT.dll",
+				"Assets/Plugins/Metro/GameSparksRT.pri.meta",
+                "Assets/Plugins/Metro/GameSparksRT.pri",
+				"Assets/Plugins/Metro/GameSparksRT.xml.meta",
+                "Assets/Plugins/Metro/GameSparksRT.xml",
+				"Assets/Plugins/WebGL/GameSparks.jslib.meta",
+                "Assets/Plugins/WebGL/GameSparks.jslib",
+				"Assets/Plugins/WP8/GameSparks.dll.meta",
+                "Assets/Plugins/WP8/GameSparks.dll",
+				"Assets/Plugins/WP8/GameSparks.XML.meta",
+                "Assets/Plugins/WP8/GameSparks.XML",
+				"Assets/Plugins/x86_64/GameSparksNative.dll.meta",
+                "Assets/Plugins/x86_64/GameSparksNative.dll",
+				"Assets/Plugins/XboxOne/GameSparksNative.dll.meta",
+                "Assets/Plugins/XboxOne/GameSparksNative.dll",
+				"Assets/Plugins/BouncyCastle_GameSparks.dll.meta",
+                "Assets/Plugins/BouncyCastle_GameSparks.dll",
+				"Assets/Plugins/GameSparks.Api.dll.meta",
+                "Assets/Plugins/GameSparks.Api.dll",
+				"Assets/Plugins/GameSparks.Api.XML.meta",
+                "Assets/Plugins/GameSparks.Api.XML",
+				"Assets/Plugins/GameSparks.dll.meta",
+                "Assets/Plugins/GameSparks.dll",
+				"Assets/Plugins/GameSparks.XML.meta",
+                "Assets/Plugins/GameSparks.XML",
+				"Assets/Plugins/GameSparksRT.dll.meta",
+                "Assets/Plugins/GameSparksRT.dll",
+				"Assets/Plugins/GameSparksRT.xml.meta",
+                "Assets/Plugins/GameSparksRT.xml"
+            };
+     
+            string baseDir = "Plugins";
+            string targetDir = "Assets/GameSparks/Plugins";
+            DirectoryInfo dirInfo = new DirectoryInfo(targetDir);
+            DirectoryInfo dirInfo2 = new DirectoryInfo("Assets/" + baseDir);
+
+            if (!dirInfo.Exists)
+            {
+                Directory.CreateDirectory(dirInfo.ToString());
+            }
+
+            foreach (string file in oldFiles)
+            {
+                try
+                {
+                    FileInfo fileInfo = new FileInfo(file);
+
+                    string relativePath = fileInfo.DirectoryName;
+
+                    int index = relativePath.IndexOf(baseDir);
+
+                    if (index + baseDir.Length < relativePath.Length)
+                    {
+                        index++;
+                    }
+
+                    relativePath = relativePath.Substring(index + baseDir.Length);
+
+                    DirectoryInfo dirInfo3 = new DirectoryInfo(dirInfo + "/" + relativePath);
+
+                    if (!dirInfo3.Exists)
+                    {
+                        Directory.CreateDirectory(dirInfo3.ToString());
+                    }
+
+                    if ((new FileInfo(dirInfo3 + "/" + fileInfo.Name)).Exists)
+					{
+                        if (fileInfo.Exists)
+                        {
+                            fileInfo.Delete();                       
+                        }
+                    }
+					else
+                    {
+                        fileInfo.MoveTo(dirInfo3 + "/" + fileInfo.Name);
+                    }
+                }
+                catch
+                {             
+                }
+            }
+            
+            AssetDatabase.Refresh();
+
+            RecursiveDeleteFolders(dirInfo2);
+
+            if (firstLaunch)
+            {
+                firstLaunch = false;
+
+                var assembly = Assembly.GetAssembly(typeof(UnityEditor.ActiveEditorTracker));
+                var type = assembly.GetType("UnityEditorInternal.LogEntries");
+                var method = type.GetMethod("Clear");
+                method.Invoke(new object(), null);
+            }
+        }
     	
     	public override void OnInspectorGUI()
     	{
@@ -107,13 +259,17 @@ namespace GameSparks.Editor
     		EditorGUILayout.HelpBox("Add the GameSparks Api Key and Secret associated with this game", MessageType.None);
     		
     		EditorGUILayout.BeginHorizontal();
-    		GameSparksSettings.ApiKey = EditorGUILayout.TextField(apiKeyLabel, GameSparksSettings.ApiKey);
+    		GameSparksSettings.ApiKey = EditorGUILayout.TextField(apiKeyLabel, GameSparksSettings.ApiKey).Trim();
             EditorGUILayout.EndHorizontal();
 
     		
             EditorGUILayout.BeginHorizontal();
-    		GameSparksSettings.ApiSecret = EditorGUILayout.TextField(apiSecretLabel, GameSparksSettings.ApiSecret);
+    		GameSparksSettings.ApiSecret = EditorGUILayout.TextField(apiSecretLabel, GameSparksSettings.ApiSecret).Trim();
             EditorGUILayout.EndHorizontal();
+
+			EditorGUILayout.BeginHorizontal();
+			GameSparksSettings.Credential = EditorGUILayout.TextField(credentialLabel, GameSparksSettings.Credential);
+			EditorGUILayout.EndHorizontal();
     		
     		
     		EditorGUILayout.BeginHorizontal();
