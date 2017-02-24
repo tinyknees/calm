@@ -1,6 +1,6 @@
 fileFormatVersion: 2
-guid: cd9f5f4ce729c224ea2c6a1d32a8feee
-timeCreated: 1487978089
+guid: e429dc105f977854cbcca1004dcf813d
+timeCreated: 1483637048
 licenseType: Free
 ModelImporter:
   serializedVersion: 19
@@ -9,90 +9,35 @@ ModelImporter:
     100002: Eraser
     100004: //RootNode
     100006: Record
-    100008: Ring
-    100010: Ring1
-    100012: Ring2
-    100014: Tip
-    100016: wedge_01
-    100018: wedge_02
-    100020: wedge_03
-    100022: wedge_04
-    100024: wedge_05
-    100026: wedge_06
-    100028: wedge_07
-    100030: wedge_08
+    100008: Ring1
+    100010: Ring2
+    100012: Tip
     400000: Body
     400002: Eraser
     400004: //RootNode
     400006: Record
-    400008: Ring
-    400010: Ring1
-    400012: Ring2
-    400014: Tip
-    400016: wedge_01
-    400018: wedge_02
-    400020: wedge_03
-    400022: wedge_04
-    400024: wedge_05
-    400026: wedge_06
-    400028: wedge_07
-    400030: wedge_08
+    400008: Ring1
+    400010: Ring2
+    400012: Tip
     2300000: Body
     2300002: Eraser
     2300004: Record
     2300006: Ring1
     2300008: Ring2
     2300010: Tip
-    2300012: wedge_01
-    2300014: wedge_02
-    2300016: wedge_03
-    2300018: wedge_04
-    2300020: wedge_05
-    2300022: wedge_06
-    2300024: wedge_07
-    2300026: wedge_08
     3300000: Body
     3300002: Eraser
     3300004: Record
     3300006: Ring1
     3300008: Ring2
     3300010: Tip
-    3300012: wedge_01
-    3300014: wedge_02
-    3300016: wedge_03
-    3300018: wedge_04
-    3300020: wedge_05
-    3300022: wedge_06
-    3300024: wedge_07
-    3300026: wedge_08
     4300000: Tip
     4300002: Eraser
     4300004: Record
     4300006: Body
     4300008: Ring1
     4300010: Ring2
-    4300012: wedge_01
-    4300014: wedge_02
-    4300016: wedge_03
-    4300018: wedge_04
-    4300020: wedge_05
-    4300022: wedge_06
-    4300024: wedge_07
-    4300026: wedge_08
-    6400000: Body
-    6400002: Eraser
-    6400004: Record
-    6400006: Ring1
-    6400008: Ring2
-    6400010: Tip
-    6400012: wedge_01
-    6400014: wedge_02
-    6400016: wedge_03
-    6400018: wedge_04
-    6400020: wedge_05
-    6400022: wedge_06
-    6400024: wedge_07
-    6400026: wedge_08
+    9500000: //RootNode
   materials:
     importMaterials: 0
     materialName: 0
@@ -119,7 +64,7 @@ ModelImporter:
     lODScreenPercentages: []
     globalScale: 1
     meshCompression: 0
-    addColliders: 1
+    addColliders: 0
     importBlendShapes: 1
     swapUVChannels: 0
     generateSecondaryUV: 0
@@ -155,7 +100,7 @@ ModelImporter:
     hasExtraRoot: 0
     skeletonHasParents: 1
   lastHumanDescriptionAvatarSource: {instanceID: 0}
-  animationType: 0
+  animationType: 2
   humanoidOversampling: 1
   additionalBone: 0
   userData: 
