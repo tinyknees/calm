@@ -1,6 +1,6 @@
 fileFormatVersion: 2
-guid: efcd52024eb0b68458441b982673c278
-timeCreated: 1483632474
+guid: 46d015243b707bf4d9d1213ad5f4a729
+timeCreated: 1487961675
 licenseType: Free
 ModelImporter:
   serializedVersion: 19
@@ -9,9 +9,8 @@ ModelImporter:
     400000: //RootNode
     2300000: //RootNode
     3300000: //RootNode
-    4300000: Moon
+    4300000: Moon_smooth
     6400000: //RootNode
-    9500000: //RootNode
   materials:
     importMaterials: 0
     materialName: 0
@@ -74,7 +73,7 @@ ModelImporter:
     hasExtraRoot: 0
     skeletonHasParents: 1
   lastHumanDescriptionAvatarSource: {instanceID: 0}
-  animationType: 2
+  animationType: 0
   humanoidOversampling: 1
   additionalBone: 0
   userData: 
