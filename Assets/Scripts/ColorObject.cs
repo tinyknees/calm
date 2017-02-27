@@ -43,6 +43,7 @@ public class ColorObject : MonoBehaviour
 
     private Color brushColor; //The selected color
     private int brushCounter = 0, MAX_BRUSH_COUNT = 1000; //To avoid having millions of brushes
+    private Transform pieRing;
     private bool saving = false; //Flag to check if we are saving the texture
 
     private Transform savObj;
@@ -138,6 +139,16 @@ public class ColorObject : MonoBehaviour
             i++;
         }
 
+        int j = 0;
+        pieRing = transform.Find("Pencil").Find("Pie");
+        if (pieRing != null)
+        {
+            foreach (Transform pie in pieRing)
+            {
+                pie.GetComponent<Renderer>().material.color = brushColors[j];
+                j++;
+            }
+        }
     }
 
     void Awake()
@@ -190,6 +201,8 @@ public class ColorObject : MonoBehaviour
         laserPointer.InvPointerOut += HandleInvPointerOut;
         controllerEvents.SwipedRight += HandleSwipedRight;
         controllerEvents.SwipedLeft += HandleSwipedLeft;
+        controllerEvents.TouchpadRightPressed += HandleSwipedRight;
+        controllerEvents.TouchpadLeftPressed += HandleSwipedLeft;
     }
 
     // Unsubscribe from event handlers
@@ -201,6 +214,8 @@ public class ColorObject : MonoBehaviour
         laserPointer.InvPointerOut -= HandleInvPointerOut;
         controllerEvents.SwipedRight -= HandleSwipedRight;
         controllerEvents.SwipedLeft -= HandleSwipedLeft;
+        controllerEvents.TouchpadRightPressed -= HandleSwipedRight;
+        controllerEvents.TouchpadLeftPressed -= HandleSwipedLeft;
     }
 
 
@@ -232,7 +247,7 @@ public class ColorObject : MonoBehaviour
 
 
 
-    /* BUTTON EVENT HANDLERS ----------------------------------------------------------------------*/
+    #region Button Event Handlers
 
     private void HandlePointerIn(object sender, LaserPointer.PointerEventArgs e)
     {
@@ -286,6 +301,7 @@ public class ColorObject : MonoBehaviour
         ChangeBrushColor();
     }
 
+    #endregion
 
     /* COLORING FUNCTIONS ----------------------------------------------------------------------*/
 
@@ -297,6 +313,11 @@ public class ColorObject : MonoBehaviour
         } else if (colorIndex < 0)
         {
             colorIndex = brushColors.Length - 1;
+        }
+        if (pieRing)
+        {
+            Debug.Log("index:" + colorIndex + ", angle: " + colorIndex * 360 / brushColors.Length);
+            pieRing.localRotation = Quaternion.Euler(colorIndex * 360 / brushColors.Length, 0, 0);
         }
         brushColor = brushColors[colorIndex];
         controllerEvents.gameObject.GetComponentInChildren<Renderer>().material.color = brushColors[colorIndex];

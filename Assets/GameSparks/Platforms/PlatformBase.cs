@@ -15,6 +15,7 @@ namespace GameSparks.Platforms
 
 		static string PLAYER_PREF_AUTHTOKEN_KEY = "gamesparks.authtoken";
 		static string PLAYER_PREF_USERID_KEY = "gamesparks.userid";
+        static string PLAYER_PREF_DEVICEID_KEY = "gamesparks.deviceid";
 
 
 		virtual protected void Start()
@@ -22,17 +23,35 @@ namespace GameSparks.Platforms
 
 			DeviceName = SystemInfo.deviceName.ToString();
 			DeviceType = SystemInfo.deviceType.ToString();
-			DeviceId = SystemInfo.deviceUniqueIdentifier.ToString();
-			#if !GS_DONT_USE_PLAYER_PREFS
+            if (Application.platform == RuntimePlatform.PS4 || Application.platform == RuntimePlatform.XboxOne)
+            {
+#if GS_DONT_USE_PLAYER_PREFS
+                DeviceId = SystemInfo.deviceUniqueIdentifier.ToString();
+#else
+                DeviceId = PlayerPrefs.GetString(PLAYER_PREF_DEVICEID_KEY);
+                if (DeviceId.Equals(""))
+                {
+                    DeviceId = System.Guid.NewGuid().ToString();
+
+                    PlayerPrefs.SetString(PLAYER_PREF_DEVICEID_KEY, DeviceId);
+                    PlayerPrefs.Save();
+                }
+#endif
+            }
+            else
+            {
+                DeviceId = SystemInfo.deviceUniqueIdentifier.ToString();
+            }
+#if !GS_DONT_USE_PLAYER_PREFS
 			AuthToken = PlayerPrefs.GetString(PLAYER_PREF_AUTHTOKEN_KEY);
 			UserId = PlayerPrefs.GetString(PLAYER_PREF_USERID_KEY);
-			#endif
+#endif
 			Platform = Application.platform.ToString();
 			ExtraDebug = GameSparksSettings.DebugBuild;
 
-			#if !UNITY_WEBPLAYER
+#if !UNITY_WEBPLAYER
 			PersistentDataPath = Application.persistentDataPath;
-			#endif
+#endif
 			RequestTimeoutSeconds = 10;
 
 			GS.Initialise(this);
@@ -79,9 +98,9 @@ namespace GameSparks.Platforms
 		{
 			if(paused)
 			{
-				#if UNITY_EDITOR
+#if UNITY_EDITOR
 				GS.Disconnect();
-				#endif
+#endif
 			}
 			else
 			{
@@ -106,21 +125,55 @@ namespace GameSparks.Platforms
 
 		public String DeviceOS {
 			get{
-				#if UNITY_IOS
-				return "IOS";
-				#elif UNITY_TVOS
-				return "TVOS";
-				#elif UNITY_ANDROID
-				return "ANDROID";
-				#elif UNITY_METRO
-				return "W8";
-				#elif UNITY_PS4
-				return "PS4";
-				#elif UNITY_XBOXONE
-				return "XBOXONE";
-				#else
-				return "WP8";
-				#endif
+                switch (Application.platform)
+                {
+                    case RuntimePlatform.OSXEditor:
+                    case RuntimePlatform.OSXPlayer:
+                    case RuntimePlatform.OSXDashboardPlayer:             
+                        return "MACOS";
+
+                    case RuntimePlatform.WindowsPlayer:
+                    case RuntimePlatform.WindowsEditor:
+                        return "WINDOWS";
+
+                    case RuntimePlatform.IPhonePlayer:
+                        return "IOS";         
+
+                    case RuntimePlatform.Android:
+                        return "ANDROID";
+
+                    case RuntimePlatform.LinuxPlayer:
+                        return "LINUX";
+
+                    case RuntimePlatform.WebGLPlayer:
+                        return "WEBGL";
+
+                    case RuntimePlatform.WSAPlayerX86:
+                    case RuntimePlatform.WSAPlayerX64:
+                    case RuntimePlatform.WSAPlayerARM:
+                        return "WSA";
+
+                    case RuntimePlatform.TizenPlayer:
+                        return "TIZEN";
+
+                    case RuntimePlatform.PS4:
+                        return "PS4";
+
+                    case RuntimePlatform.XboxOne:
+                        return "XBOXONE";
+
+                    case RuntimePlatform.SamsungTVPlayer:
+                        return "SAMSUNGTV";
+
+                    case RuntimePlatform.WiiU:
+                        return "WIIU";
+
+                    case RuntimePlatform.tvOS:
+                        return "TVOS";
+
+                    default:
+                        return "UNKNOWN";
+                }
 			}
 		}
 
@@ -183,9 +236,9 @@ namespace GameSparks.Platforms
 			get {return m_authToken;}
 			set {
 				m_authToken = value;
-				#if !GS_DONT_USE_PLAYER_PREFS
+#if !GS_DONT_USE_PLAYER_PREFS
 				PlayerPrefs.SetString(PLAYER_PREF_AUTHTOKEN_KEY, value);
-				#endif
+#endif
 			}
 		}
 
@@ -195,9 +248,9 @@ namespace GameSparks.Platforms
 			get {return m_userId;}
 			set {
 				m_userId = value;
-				#if !GS_DONT_USE_PLAYER_PREFS
+#if !GS_DONT_USE_PLAYER_PREFS
 				PlayerPrefs.SetString(PLAYER_PREF_USERID_KEY, value);
-				#endif
+#endif
 			}
 		}
 
