@@ -50,6 +50,7 @@ public class ColorObject : MonoBehaviour
     private GameObject brushContainer; // Our container for the brushes painted
     private Camera canvasCam; // The camera that looks at the canvas
     private RenderTexture canvasTexture; // Render Texture that looks at our Base Texture and the painted brushes
+    private bool loadedTextures;
 
     int colorIndex = 0;
 
@@ -149,6 +150,7 @@ public class ColorObject : MonoBehaviour
                 j++;
             }
         }
+
     }
 
     void Awake()
@@ -167,6 +169,7 @@ public class ColorObject : MonoBehaviour
         Init();
 
         Invoke("TurnOff", 3);
+        Invoke("LoadFile", 4);
     }
 
     // For some reason, the render cameras aren't fast enough to capture
@@ -179,6 +182,7 @@ public class ColorObject : MonoBehaviour
             StartCoroutine("TurnOffCameras");
         }
     }
+
     private IEnumerator TurnOffCameras()
     {
         // go through all colorable objects and create canvases for them
@@ -191,6 +195,15 @@ public class ColorObject : MonoBehaviour
         }
         camerasOff = true;
     }
+
+    private void LoadFile()
+    {
+        if (!loadedTextures)
+        {
+            StartCoroutine(LoadTexturesFromFile());
+        }
+    }
+
 
     // Subscribe to event handlers
     void OnEnable()
@@ -459,7 +472,7 @@ public class ColorObject : MonoBehaviour
         }
 
         saving = false;
-        // StartCoroutine ("SaveTextureToFile");
+        StartCoroutine(SaveTexturesToFile());
     }
 
     private IEnumerator CheckQuote(Texture2D tex)
@@ -584,6 +597,65 @@ public class ColorObject : MonoBehaviour
             if (!canvasCam.enabled) { canvasCam.enabled = true; }
         }
     }
+
+    private IEnumerator LoadTexturesFromFile()
+    {
+        string fullPath = System.IO.Directory.GetCurrentDirectory() + "\\SavedCanvas\\";
+        if (System.IO.Directory.Exists(fullPath))
+        {
+            System.DateTime date = System.DateTime.Now;
+            uint i = 0;
+            byte[] bytes;
+            string filename = "";
+            foreach (Colorable co in colorableObjects)
+            {
+                filename = "CanvasTexture-" + co.name + "-" + i + ".png";
+                i++;
+                if (System.IO.File.Exists(fullPath + filename))
+                {
+                    bytes = System.IO.File.ReadAllBytes(fullPath + filename);
+                    Texture2D tex = new Texture2D(1024, 1024);
+                    tex.LoadImage(bytes);
+                    co.canvasbase.GetComponent<Renderer>().material.mainTexture = tex;
+                    co.canvascam.GetComponent<Camera>().Render();
+                }
+            }
+            yield return null;
+        }
+
+        loadedTextures = true;
+
+    }
+
+    private IEnumerator SaveTexturesToFile()
+    {
+        string fullPath = System.IO.Directory.GetCurrentDirectory() + "\\SavedCanvas\\";
+        if (!System.IO.Directory.Exists(fullPath))
+            System.IO.Directory.CreateDirectory(fullPath);
+        Debug.Log("Saving to: " + fullPath);
+
+        System.DateTime date = System.DateTime.Now;
+
+        uint i = 0;
+        byte[] bytes;
+        string filename = "";
+        foreach (Colorable co in colorableObjects)
+        {
+            if (co.saved)
+            {
+                Texture2D tex = (Texture2D)co.canvasbase.GetComponent<Renderer>().material.mainTexture;
+                bytes = tex.EncodeToPNG();
+                filename = "CanvasTexture-" + co.name + "-" + i + ".png";
+                System.IO.File.WriteAllBytes(fullPath + filename, bytes);
+            }
+            i++;
+            yield return null;
+        }
+
+        Debug.Log("<color=orange>Saved Successfully!</color>" + fullPath + filename);
+        yield return null;
+    }
+
 
 }
 

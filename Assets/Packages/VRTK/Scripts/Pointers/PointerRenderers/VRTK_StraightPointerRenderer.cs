@@ -38,8 +38,6 @@ namespace VRTK
         protected GameObject actualTracer;
         protected GameObject actualCursor;
 
-        protected bool tracerVisible;
-        protected bool cursorVisible;
         protected Vector3 cursorOriginalScale = Vector3.one;
 
         /// <summary>
@@ -47,7 +45,7 @@ namespace VRTK
         /// </summary>
         public override void UpdateRenderer()
         {
-            if ((controllingPointer && controllingPointer.IsPointerActive()) || tracerVisible || cursorVisible)
+            if ((controllingPointer && controllingPointer.IsPointerActive()) || IsVisible())
             {
                 float tracerLength = CastRayForward();
                 SetPointerAppearance(tracerLength);
@@ -74,6 +72,7 @@ namespace VRTK
             if (controllingPointer)
             {
                 controllingPointer.ResetActivationTimer(true);
+                controllingPointer.ResetSelectionTimer(true);
             }
         }
 
@@ -174,7 +173,8 @@ namespace VRTK
 
         protected virtual float CastRayForward()
         {
-            Ray pointerRaycast = new Ray(GetOriginPosition(), GetOriginForward());
+            Transform origin = GetOrigin();
+            Ray pointerRaycast = new Ray(origin.position, origin.forward);
             RaycastHit pointerCollidedWith;
             var rayHit = Physics.Raycast(pointerRaycast, out pointerCollidedWith, maximumLength, ~layersToIgnore);
 
@@ -202,8 +202,9 @@ namespace VRTK
                 actualCursor.transform.localScale = Vector3.one * (scaleFactor * cursorScaleMultiplier);
                 actualCursor.transform.localPosition = new Vector3(0f, 0f, tracerLength);
 
-                actualContainer.transform.position = GetOriginPosition();
-                actualContainer.transform.rotation = GetOriginRotation();
+                Transform origin = GetOrigin();
+                actualContainer.transform.position = origin.position;
+                actualContainer.transform.rotation = origin.rotation;
 
                 ScaleObjectInteractor(actualCursor.transform.localScale * 1.05f);
 
@@ -215,7 +216,7 @@ namespace VRTK
                     }
                     if (cursorDistanceRescale)
                     {
-                        float collisionDistance = Vector3.Distance(destinationHit.point, GetOriginPosition());
+                        float collisionDistance = Vector3.Distance(destinationHit.point, origin.position);
                         actualCursor.transform.localScale = cursorOriginalScale * collisionDistance;
                     }
                 }
@@ -223,7 +224,7 @@ namespace VRTK
                 {
                     if (cursorMatchTargetRotation)
                     {
-                        actualCursor.transform.forward = GetOriginForward();
+                        actualCursor.transform.forward = origin.forward;
                     }
                     if (cursorDistanceRescale)
                     {
@@ -231,6 +232,7 @@ namespace VRTK
                     }
                 }
 
+                ToggleRenderer(controllingPointer.IsPointerActive(), false);
                 UpdateDependencies(actualCursor.transform.position);
             }
         }
