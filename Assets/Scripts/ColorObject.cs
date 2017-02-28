@@ -107,32 +107,14 @@ public class ColorObject : MonoBehaviour
                 canvascamera.orthographic = true;
                 canvascamera.orthographicSize = 0.5f;
 
-                if (co.canvasbase == null) { co.canvasbase = new GameObject(); }
-                co.canvasbase.name = "CanvasBase";
-                co.canvasbase.transform.SetParent(co.paintcanvas.transform);
-                co.canvasbase.AddComponent<MeshCollider>();
-                co.canvasbase.AddComponent<MeshRenderer>();
-                co.canvasbase.AddComponent<MeshFilter>();
-                GameObject quad = GameObject.CreatePrimitive(PrimitiveType.Quad);
-                co.canvasbase.GetComponent<MeshFilter>().mesh = quad.GetComponent<MeshFilter>().mesh;
-                GameObject.Destroy(quad);
-                co.canvasbase.transform.localPosition = Vector3.zero;
-
-                Material material = new Material(unlitTexture);
-                material.name = "BaseMaterial";
-                co.canvasbase.GetComponent<MeshRenderer>().material = material;
-
-                Texture2D coltexture = new Texture2D(1, 1, TextureFormat.ARGB32, false);
-                coltexture.SetPixel(1, 1, baseColour);
-                coltexture.Apply();
-                co.canvasbase.GetComponent<MeshRenderer>().material.mainTexture = coltexture;
+                CreateCanvasBase(co);
 
                 RenderTexture rt = new RenderTexture(1024, 1024, 32, RenderTextureFormat.ARGB32);
                 rt.name = "PaintTexture";
                 rt.Create();
-                co.canvascam.GetComponent<Camera>().targetTexture = rt;
+                canvascamera.targetTexture = rt;
 
-                co.canvascam.GetComponent<Camera>().enabled = true;
+                canvascamera.enabled = true;
 
                 co.GetComponent<MeshRenderer>().material.mainTexture = rt;
 
@@ -316,7 +298,7 @@ public class ColorObject : MonoBehaviour
 
     #endregion
 
-    /* COLORING FUNCTIONS ----------------------------------------------------------------------*/
+    #region Colouring Functions
 
     void ChangeBrushColor()
     {
@@ -329,7 +311,6 @@ public class ColorObject : MonoBehaviour
         }
         if (pieRing)
         {
-            Debug.Log("index:" + colorIndex + ", angle: " + colorIndex * 360 / brushColors.Length);
             pieRing.localRotation = Quaternion.Euler(colorIndex * 360 / brushColors.Length, 0, 0);
         }
         brushColor = brushColors[colorIndex];
@@ -345,7 +326,7 @@ public class ColorObject : MonoBehaviour
     }
 
     /// <summary>
-    /// Colors the hit target supplied
+    /// Colours the hit target supplied
     /// </summary>
     /// <param name="bcolor">What colour to colour with.</param>
     /// <param name="hit">A raycast target from laser pointer.</param>
@@ -435,45 +416,8 @@ public class ColorObject : MonoBehaviour
 
     }
 
-    //Sets the base material with a our canvas texture, then removes all our brushes
-    void SaveTexture()
-    {
-       if (brushCounter > 0)
-       {
-            System.DateTime date = System.DateTime.Now;
-            brushCounter = 0;
+    #endregion
 
-            PickCanvas(savObj);
-
-            foreach (Colorable co in colorableObjects)
-            {
-                if (co.name == savObj.name)
-                {
-                    co.saved = true;
-                }
-            }
-
-            RenderTexture canvas = canvasCam.targetTexture;
-            RenderTexture.active = canvas;
-            Texture2D tex = new Texture2D(canvas.width, canvas.height, TextureFormat.RGB24, false);
-            tex.ReadPixels(new Rect(0, 0, canvas.width, canvas.height), 0, 0);
-            tex.Apply();
-            RenderTexture.active = null;
-            baseMaterial = savObj.FindChild("PaintCanvas").FindChild("CanvasBase").transform.GetComponent<MeshRenderer>().material;
-            baseMaterial.mainTexture = tex; //Put the painted texture as the base
-
-            StartCoroutine("CheckQuote", tex);
-
-            foreach (Transform child in brushContainer.transform)
-            {//Clear brushes
-                Destroy(child.gameObject);
-            }
-            canvasCam.enabled = false;
-        }
-
-        saving = false;
-        StartCoroutine(SaveTexturesToFile());
-    }
 
     private IEnumerator CheckQuote(Texture2D tex)
     {
@@ -583,7 +527,7 @@ public class ColorObject : MonoBehaviour
         return (r && g && b) ? true : false;
     }
 
-    void PickCanvas (Transform target)
+    private void PickCanvas (Transform target)
     {
         if (target != null)
         {
@@ -596,6 +540,77 @@ public class ColorObject : MonoBehaviour
 
             if (!canvasCam.enabled) { canvasCam.enabled = true; }
         }
+    }
+
+    public void CreateCanvasBase(Colorable co)
+    {
+        if (co.canvasbase != null)
+        {
+            Destroy(co.canvasbase);
+        }
+        co.canvasbase = new GameObject();
+
+        co.canvasbase.name = "CanvasBase";
+        co.canvasbase.transform.SetParent(co.paintcanvas.transform);
+        co.canvasbase.AddComponent<MeshCollider>();
+        co.canvasbase.AddComponent<MeshRenderer>();
+        co.canvasbase.AddComponent<MeshFilter>();
+        GameObject quad = GameObject.CreatePrimitive(PrimitiveType.Quad);
+        co.canvasbase.GetComponent<MeshFilter>().mesh = quad.GetComponent<MeshFilter>().mesh;
+        GameObject.Destroy(quad);
+        co.canvasbase.transform.localPosition = Vector3.zero;
+
+        Material material = new Material(unlitTexture);
+        material.name = "BaseMaterial";
+        co.canvasbase.GetComponent<MeshRenderer>().material = material;
+
+        Texture2D coltexture = new Texture2D(1, 1, TextureFormat.ARGB32, false);
+        coltexture.SetPixel(1, 1, baseColour);
+        coltexture.Apply();
+        co.canvasbase.GetComponent<MeshRenderer>().material.mainTexture = coltexture;
+
+    }
+
+    #region Loading and Saving
+    //Sets the base material with a our canvas texture, then removes all our brushes
+    void SaveTexture()
+    {
+        if (brushCounter > 0)
+        {
+            System.DateTime date = System.DateTime.Now;
+            brushCounter = 0;
+
+            PickCanvas(savObj);
+
+            foreach (Colorable co in colorableObjects)
+            {
+                if (co.name == savObj.name)
+                {
+                    co.saved = true;
+                }
+            }
+
+            RenderTexture canvas = canvasCam.targetTexture;
+            RenderTexture.active = canvas;
+            Texture2D tex = new Texture2D(canvas.width, canvas.height, TextureFormat.RGB24, false);
+            tex.ReadPixels(new Rect(0, 0, canvas.width, canvas.height), 0, 0);
+            tex.Apply();
+            RenderTexture.active = null;
+            baseMaterial = savObj.FindChild("PaintCanvas").FindChild("CanvasBase").transform.GetComponent<MeshRenderer>().material;
+            baseMaterial.mainTexture = tex; //Put the painted texture as the base
+
+            StartCoroutine("CheckQuote", tex);
+
+            foreach (Transform child in brushContainer.transform)
+            {//Clear brushes
+                Destroy(child.gameObject);
+            }
+            canvasCam.enabled = false;
+
+            StartCoroutine(SaveTexturesToFile());
+        }
+
+        saving = false;
     }
 
     private IEnumerator LoadTexturesFromFile()
@@ -656,6 +671,6 @@ public class ColorObject : MonoBehaviour
         yield return null;
     }
 
-
+    #endregion
 }
 
