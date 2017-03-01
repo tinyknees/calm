@@ -9,8 +9,23 @@ using System.Linq;
 [RequireComponent(typeof(LaserPointer))]
 public class ColorObject : MonoBehaviour
 {
+    #region Public Variables
+    [Tooltip("Set to Unlit/Texture")]
+    public Shader unlitTexture;
 
-    public Color[] brushColors = new Color[5];
+    [Header("Colour Pencil Settings", order = 2)]
+    public Color[] brushColors = new Color[8];
+    public Sprite brushSprite;
+    public float brushSize = 0.2f; //The size of our brush
+
+    [Tooltip("Base color of all the colorable objects.")]
+    public Color baseColour = Color.black; // Default object color
+
+    [Tooltip("Distance to objects before coloring starts.")]
+    [Range(0f, 0.2f)]
+    public float brushDistance = 0.05f; // min distance before painting starts
+    #endregion
+
     private Color laserPointerDefaultColor; // default laser pointer color
 
     // Flags for state
@@ -21,25 +36,10 @@ public class ColorObject : MonoBehaviour
 
     private bool hitTarget = false; // has the controller laser intersected with an object
     private bool invHitTarget = false;
-    [Header("Colour Pencil Settings", order = 2)]
 
-    // Painting specific globals
-    public GameObject brushCursor; //The cursor that overlaps the model
-    public Sprite cursorPaint;
-
-    [Tooltip("Base color of all the colorable objects.")]
-    public Color baseColour = Color.black; // Default object color
     private Material baseMaterial; // The material of our base texture (Where we will save the painted texture)
 
-    [Tooltip("Set to Unlit/Texture")]
-    public Shader unlitTexture;
 
-
-    public float brushSize = 0.2f; //The size of our brush
-
-    [Tooltip("Distance to objects before coloring starts.")]
-    [Range(0f, 0.2f)]
-    public float brushDistance = 0.05f; // min distance before painting starts
 
     private Color brushColor; //The selected color
     private int brushCounter = 0, MAX_BRUSH_COUNT = 1000; //To avoid having millions of brushes
@@ -58,6 +58,8 @@ public class ColorObject : MonoBehaviour
 
     private bool camerasOff = false;
 
+    #region Initialization
+
     void Init()
     {
         // go through all colorable objects and create canvases for them
@@ -65,6 +67,7 @@ public class ColorObject : MonoBehaviour
 
         uint i = 0;
 
+        // For every colorable gameobject (which must have a mesh), add necessary paintcanvas and render camera
         foreach (Colorable co in colorableObjects)
         {
             if ((co.transform.GetComponent<Collider>()) &&
@@ -116,7 +119,7 @@ public class ColorObject : MonoBehaviour
 
                 canvascamera.enabled = true;
 
-                co.GetComponent<MeshRenderer>().material.mainTexture = rt;
+                co.GetComponent<Renderer>().material.mainTexture = rt;
 
             }
             i++;
@@ -142,11 +145,7 @@ public class ColorObject : MonoBehaviour
         
         laserPointerDefaultColor = Color.clear;
 
-        brushCursor.GetComponent<SpriteRenderer>().sprite = cursorPaint;
-        brushColor = brushColors[colorIndex];
-
-        brushCursor.transform.localScale *= brushSize;
-        ChangeBrushColor();
+        ChangeBrushColor(colorIndex);
 
         Init();
 
@@ -186,7 +185,6 @@ public class ColorObject : MonoBehaviour
         }
     }
 
-
     // Subscribe to event handlers
     void OnEnable()
     {
@@ -213,6 +211,7 @@ public class ColorObject : MonoBehaviour
         controllerEvents.TouchpadLeftPressed -= HandleSwipedLeft;
     }
 
+    #endregion
 
     void Update()
     {
@@ -242,7 +241,7 @@ public class ColorObject : MonoBehaviour
 
 
 
-    #region Button Event Handlers
+    #region Event Handlers
 
     private void HandlePointerIn(object sender, LaserPointer.PointerEventArgs e)
     {
@@ -256,7 +255,7 @@ public class ColorObject : MonoBehaviour
         laserPointer.pointerModel.GetComponent<MeshRenderer>().material.color = laserPointerDefaultColor;
         hitTarget = false;
         laserPointer.PointerUpdate -= HandlePointerUpdate;
-        brushCursor.SetActive(false);
+        //brushCursor.SetActive(false);
         saving = true;
         Invoke("SaveTexture", 0.1f);
     }
@@ -284,30 +283,33 @@ public class ColorObject : MonoBehaviour
         invHitObj = e;
     }
 
+    // triggered by either swiping left or tapping on left side of trackpad
     private void HandleSwipedLeft(object sender, ControllerEvents.ControllerInteractionEventArgs e)
     {
-        colorIndex--;
-        ChangeBrushColor();
+        ChangeBrushColor(colorIndex - 1);
     }
 
+    // triggered by either swiping right or tapping on right side of trackpad
     private void HandleSwipedRight(object sender, ControllerEvents.ControllerInteractionEventArgs e)
     {
-        colorIndex++;
-        ChangeBrushColor();
+        ChangeBrushColor(colorIndex + 1);
     }
 
     #endregion
 
     #region Colouring Functions
 
-    void ChangeBrushColor()
+    void ChangeBrushColor(int c)
     {
-        if (colorIndex == brushColors.Length)
+        if (c == brushColors.Length)
         {
             colorIndex = 0;
-        } else if (colorIndex < 0)
+        } else if (c < 0)
         {
             colorIndex = brushColors.Length - 1;
+        } else
+        {
+            colorIndex = c;
         }
         if (pieRing)
         {
@@ -315,15 +317,8 @@ public class ColorObject : MonoBehaviour
         }
         brushColor = brushColors[colorIndex];
         controllerEvents.gameObject.GetComponentInChildren<Renderer>().material.color = brushColors[colorIndex];
-        brushCursor.GetComponent<SpriteRenderer>().material.color = brushColors[colorIndex];
     }
 
-
-    void SetBrushSize(float newBrushSize)
-    { //Sets the size of the cursor brush or decal
-        brushSize = newBrushSize;
-        brushCursor.transform.localScale = Vector3.one * brushSize;
-    }
 
     /// <summary>
     /// Colours the hit target supplied
@@ -384,7 +379,6 @@ public class ColorObject : MonoBehaviour
             //If we reach the max brushes available, flatten the texture and clear the brushes
             if (brushCounter >= MAX_BRUSH_COUNT)
             {
-                brushCursor.SetActive(false);
                 saving = true;
                 Invoke("SaveTexture", 0.1f);
             }
@@ -418,7 +412,11 @@ public class ColorObject : MonoBehaviour
 
     #endregion
 
-
+    /// <summary>
+    /// Checks the texture to see if there's a quote and if the quote's been revealed
+    /// </summary>
+    /// <param name="tex">The render texture to check against</param>
+    /// <returns></returns>
     private IEnumerator CheckQuote(Texture2D tex)
     {
         if (savObj != null)
@@ -542,6 +540,10 @@ public class ColorObject : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Creates a new base canvas and destroys the old one. Used for initialization and resetting.
+    /// </summary>
+    /// <param name="co">GameObject of type Colorable</param>
     public void CreateCanvasBase(Colorable co)
     {
         if (co.canvasbase != null)
@@ -639,7 +641,6 @@ public class ColorObject : MonoBehaviour
         }
 
         loadedTextures = true;
-
     }
 
     private IEnumerator SaveTexturesToFile()
