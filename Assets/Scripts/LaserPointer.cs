@@ -1,7 +1,6 @@
 ﻿using UnityEngine;
 using UnityEngine.Events;
 
-[RequireComponent(typeof(SteamVR_TrackedObject))]
 public class LaserPointer : MonoBehaviour
 {
     // Event Declaration Code
@@ -58,7 +57,7 @@ public class LaserPointer : MonoBehaviour
     // Unity lifecycle method
     public void Awake()
     {
-        controller = GetComponent<SteamVR_TrackedObject>();
+        controller = VRTK.VRTK_DeviceFinder.GetControllerRightHand(true).GetComponent<SteamVR_TrackedObject>();
 
         // Make sure the Laser Pointer has a Parent
         if (parent == null)

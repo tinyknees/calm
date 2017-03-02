@@ -9,13 +9,11 @@ using GameSparks.Api.Messages;
 using GameSparks.Core;
 using VRTK;
 
-[RequireComponent(typeof(ControllerEvents))]
-
 public class Record : MonoBehaviour {
-    public GameObject audioContainer;
-    private ControllerEvents controllerEvents; // the controller where event happened
-    private ControllerEvents.ControllerInteractionEventArgs activeController;
     private AudioSource recordsource;
+
+    #region Public Variables
+    public GameObject audioContainer;
 
     [Tooltip("Default colour of the record button when inactive.")]
     public Color recorderColor; 
@@ -31,14 +29,14 @@ public class Record : MonoBehaviour {
     [Tooltip("Distance to objects before recording is allowed.")]
     public float distanceThreshold = 1.6f;
 
-    private GameObject lastNearestQuote = null;
 
     [HideInInspector]
     public GameObject recordObject = null;
 
+    #endregion
 
-    private bool touchpadUpPressed = false;
-    private bool touchpadReleased = false;
+    private GameObject lastNearestQuote = null;
+
     private bool menuReleased = false;
 
     private string playerId = "";
@@ -56,8 +54,6 @@ public class Record : MonoBehaviour {
     private bool playingAudio = false;
     private bool timerUp = false;
 
-    private GameObject consoleViewer = null;
-
     [Range(0,1)]
     public float defaultQuoteVolume = 0.6f;
 
@@ -65,7 +61,7 @@ public class Record : MonoBehaviour {
 
     void Awake()
     {
-        VRTK_DeviceFinder.GetControllerRightHand().GetComponentInChildren<VRTK_ControllerTooltips>().ToggleTips(false);
+        GetComponentInChildren<VRTK_ControllerTooltips>().ToggleTips(false);
         UploadCompleteMessage.Listener += GetUploadMessage;
 
         if (audioContainer == null)
@@ -81,17 +77,11 @@ public class Record : MonoBehaviour {
 
         mrmrMixer = Resources.Load("Mrmrs") as AudioMixer;
         
-
-        controllerEvents = GetComponent<ControllerEvents>();
-
         allQuoteObjects = GameObject.FindGameObjectsWithTag("Quote");
 
         recordButton = gameObject.transform.FindChild("Pencil").FindChild("Record");
         recordButton.GetComponent<Renderer>().material.color = recorderColor;
-
-        consoleViewer = VRTK_DeviceFinder.GetControllerRightHand().transform.FindChild("ConsoleViewerCanvas").gameObject;
-        consoleViewer.SetActive(false);
-
+       
     }
 
     void InitGS()
@@ -115,17 +105,19 @@ public class Record : MonoBehaviour {
 
     void OnEnable()
     {
-        controllerEvents.TouchpadUpPressed += HandleTouchpadUpPressed;
-        controllerEvents.MenuPressed += HandleMenuPressed;
-        controllerEvents.MenuReleased += HandleMenuReleased;
-        controllerEvents.TouchpadReleased += HandleTouchpadReleased;
+        GetComponent<VRTK_ControllerEvents>().ButtonTwoPressed += HandleMenuPressed;
+        GetComponent<VRTK_ControllerEvents>().ButtonTwoReleased += HandleMenuReleased;
     }
+
+    private void Record_ButtonTwoPressed(object sender, ControllerInteractionEventArgs e)
+    {
+        throw new NotImplementedException();
+    }
+
     void OnDisable()
     {
-        controllerEvents.TouchpadUpPressed -= HandleTouchpadUpPressed;
-        controllerEvents.MenuPressed -= HandleMenuPressed;
-        controllerEvents.MenuReleased -= HandleMenuReleased;
-        controllerEvents.TouchpadReleased -= HandleTouchpadReleased;
+        GetComponent<VRTK_ControllerEvents>().ButtonTwoPressed -= HandleMenuPressed;
+        GetComponent<VRTK_ControllerEvents>().ButtonTwoReleased -= HandleMenuReleased;
     }
 
     // Update is called once per frame
@@ -174,13 +166,6 @@ public class Record : MonoBehaviour {
                 Microphone.End(null);
             }
 
-
-            if (touchpadReleased && touchpadUpPressed)
-            {
-                consoleViewer.SetActive(!consoleViewer.activeSelf);
-                touchpadReleased = false;
-                touchpadUpPressed = false;
-            }
 
             CheckQuoteDistance();
 
@@ -580,20 +565,22 @@ public class Record : MonoBehaviour {
         // set up full dictionary and randomize here
         foreach (GameObject qc in allQuoteObjects)
         {
-            next.Add(qc.name, 0);
-            play.Add(qc.name, 0);
-            rando.Add(qc.name, new List<int>());
-
-            for (int j = 0; j < allAudio[qc.name].Count; j++)
+            if (allAudio.ContainsKey(qc.name))
             {
-                rando[qc.name].Add(j);
-            }
-            for (int j = 0; j < rando[qc.name].Count; j++)
-            {
-                int tmp = rando[qc.name][j];
-                int r = UnityEngine.Random.Range(j, rando[qc.name].Count);
-                rando[qc.name][j] = rando[qc.name][r];
-                rando[qc.name][r] = tmp;
+                next.Add(qc.name, 0);
+                play.Add(qc.name, 0);
+                rando.Add(qc.name, new List<int>());
+                for (int j = 0; j < allAudio[qc.name].Count; j++)
+                {
+                    rando[qc.name].Add(j);
+                }
+                for (int j = 0; j < rando[qc.name].Count; j++)
+                {
+                    int tmp = rando[qc.name][j];
+                    int r = UnityEngine.Random.Range(j, rando[qc.name].Count);
+                    rando[qc.name][j] = rando[qc.name][r];
+                    rando[qc.name][r] = tmp;
+                }
             }
         }
 
@@ -601,44 +588,47 @@ public class Record : MonoBehaviour {
         {
             foreach (GameObject qc in allQuoteObjects)
             {
-                int n = next[qc.name];
-                int p = play[qc.name];
-                int r = rando[qc.name][n];
-                AudioSource aus = allAudio[qc.name][p];
-
-                // move current up
-                if (allAudio[qc.name][p] != null)
+                if (allAudio.ContainsKey(qc.name))
                 {
-                    // the one to play next is the current one and it's not playing so play
-                    if (!aus.isPlaying)
-                    {
-                        if (n == p)
-                        {
-                            aus.Play();
+                    int n = next[qc.name];
+                    int p = play[qc.name];
+                    int r = rando[qc.name][n];
+                    AudioSource aus = allAudio[qc.name][p];
 
-                            // move up play next
-                            n = (n >= allAudio[qc.name].Count - 1) ? 0 : n + 1;
-                            next[qc.name] = n;
+                    // move current up
+                    if (allAudio[qc.name][p] != null)
+                    {
+                        // the one to play next is the current one and it's not playing so play
+                        if (!aus.isPlaying)
+                        {
+                            if (n == p)
+                            {
+                                aus.Play();
+
+                                // move up play next
+                                n = (n >= allAudio[qc.name].Count - 1) ? 0 : n + 1;
+                                next[qc.name] = n;
+                            }
+                            // the one playing is stopped, time to move to next playing
+                            else
+                            {
+                                play[qc.name] = (p >= allAudio[qc.name].Count - 1) ? 0 : p + 1;
+                            }
                         }
-                        // the one playing is stopped, time to move to next playing
+                        // if it's playing, don't do anytthing
                         else
                         {
-                            play[qc.name] = (p >= allAudio[qc.name].Count - 1) ? 0 : p + 1;
                         }
                     }
-                    // if it's playing, don't do anytthing
+                    // if the one we're suppose to play is null, bump everything up
                     else
                     {
+                        play[qc.name] = (p >= allAudio[qc.name].Count - 1) ? 0 : p + 1;
+                        next[qc.name] = (n >= allAudio[qc.name].Count - 1) ? 0 : n + 1;
                     }
                 }
-                // if the one we're suppose to play is null, bump everything up
-                else
-                {
-                    play[qc.name] = (p >= allAudio[qc.name].Count - 1) ? 0 : p + 1;
-                    next[qc.name] = (n >= allAudio[qc.name].Count - 1) ? 0 : n + 1;
-                }
+                yield return null;
             }
-            yield return null;
         }
     }
 
@@ -756,24 +746,13 @@ public class Record : MonoBehaviour {
     
     /* EVENT HANDLERS ----------------------------------------------------------------------*/
 
-    private void HandleTouchpadUpPressed(object sender, ControllerEvents.ControllerInteractionEventArgs e)
-    {
-        touchpadUpPressed = true;
-    }
-
-    private void HandleMenuPressed(object sender, ControllerEvents.ControllerInteractionEventArgs e)
+    private void HandleMenuPressed(object sender, ControllerInteractionEventArgs e)
     {
     }
 
-    private void HandleMenuReleased(object sender, ControllerEvents.ControllerInteractionEventArgs e)
+    private void HandleMenuReleased(object sender, ControllerInteractionEventArgs e)
     {
         menuReleased = true;
     }
-
-    private void HandleTouchpadReleased(object sender, ControllerEvents.ControllerInteractionEventArgs e)
-    {
-        touchpadReleased = true;
-   }
-
 
 }

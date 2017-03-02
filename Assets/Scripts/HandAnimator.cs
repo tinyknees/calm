@@ -11,7 +11,7 @@ public class HandAnimator : MonoBehaviour
     // Use this for initialization
     void Start()
     {
-        myAnimator = VRTK_DeviceFinder.GetControllerLeftHand(true).GetComponentInChildren<Animator>();
+        myAnimator = VRTK_DeviceFinder.GetControllerLeftHand().GetComponentInChildren<Animator>();
         GetComponent<VRTK_ControllerEvents>().TriggerAxisChanged += new ControllerInteractionEventHandler(DoTriggerAxisChanged);
     }
 
