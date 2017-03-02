@@ -1,12 +1,12 @@
 ﻿using UnityEngine;
 using System.Collections;
 using System;
-using System.Linq;
+using VRTK;
 
 /// <summary>
 /// </summary>
-[RequireComponent(typeof(ControllerEvents))]
-[RequireComponent(typeof(LaserPointer))]
+/// 
+
 public class ColorObject : MonoBehaviour
 {
     #region Public Variables
@@ -24,13 +24,15 @@ public class ColorObject : MonoBehaviour
     [Tooltip("Distance to objects before coloring starts.")]
     [Range(0f, 0.2f)]
     public float brushDistance = 0.05f; // min distance before painting starts
+
+    [HideInInspector]
+    public uint numCanvas = 0;
     #endregion
 
     private Color laserPointerDefaultColor; // default laser pointer color
 
     // Flags for state
     private LaserPointer laserPointer; // references the laser coming from controller
-    private ControllerEvents controllerEvents; // the controller where event happened
     private LaserPointer.PointerEventArgs hitObj; // shortcut to the object the laser collided with
     private LaserPointer.PointerEventArgs invHitObj; // shortcut to the object the eraser collided with
 
@@ -38,8 +40,6 @@ public class ColorObject : MonoBehaviour
     private bool invHitTarget = false;
 
     private Material baseMaterial; // The material of our base texture (Where we will save the painted texture)
-
-
 
     private Color brushColor; //The selected color
     private int brushCounter = 0, MAX_BRUSH_COUNT = 1000; //To avoid having millions of brushes
@@ -58,72 +58,21 @@ public class ColorObject : MonoBehaviour
 
     private bool camerasOff = false;
 
+    // swipe variables
+    private event ControllerInteractionEventHandler SwipedRight;
+    private event ControllerInteractionEventHandler SwipedLeft;
+    private readonly Vector2 touchXAxis = new Vector2(1, 0);
+    private readonly Vector2 touchYAxis = new Vector2(0, 1);
+    private float swipeStartTime;
+    private Vector2 swipeStart;
+    private Vector2 swipeEnd;
+
     #region Initialization
 
     void Init()
     {
         // go through all colorable objects and create canvases for them
         colorableObjects = FindObjectsOfType<Colorable>();
-
-        uint i = 0;
-
-        // For every colorable gameobject (which must have a mesh), add necessary paintcanvas and render camera
-        foreach (Colorable co in colorableObjects)
-        {
-            if ((co.transform.GetComponent<Collider>()) &&
-                (!co.transform.Find("PaintCanvas")))
-            {
-                if (co.paintcanvas == null) { co.paintcanvas = new GameObject(); }
-                co.paintcanvas.name = "PaintCanvas";
-                co.paintcanvas.transform.SetParent(co.transform);
-                co.paintcanvas.transform.localPosition = new Vector3(0, -10 * (i+1), 0);
-
-                if (co.brushcontainer == null) { co.brushcontainer = new GameObject(); }
-                co.brushcontainer.name = "BrushContainer";
-                co.brushcontainer.transform.SetParent(co.paintcanvas.transform);
-                co.brushcontainer.transform.localPosition = Vector3.zero;
-
-                // look for quote in the object
-                Quote quote = co.GetComponentInChildren<Quote>();
-                if (quote != null)
-                {
-                    Vector3 quotepos = quote.transform.localPosition;
-                    Quaternion quoterot = quote.transform.localRotation;
-                    quote.transform.SetParent(co.paintcanvas.transform);
-                    quotepos.z = -0.01f;
-                    quoterot.eulerAngles = Vector3.zero + new Vector3(0, 0, quoterot.eulerAngles.z);
-                    quote.transform.localPosition = quotepos;
-                    quote.transform.localRotation = quoterot;
-                }
-
-                if (co.canvascam == null) { co.canvascam = new GameObject(); }
-                co.canvascam.name = "CanvasCamera";
-                co.canvascam.transform.SetParent(co.paintcanvas.transform);
-                co.canvascam.AddComponent<Camera>();
-                co.canvascam.transform.localPosition = new Vector3(0, 0, -2);
-
-                Camera canvascamera = co.canvascam.GetComponent<Camera>();
-                canvascamera.nearClipPlane = 0.3f;
-                canvascamera.farClipPlane = 5;
-                canvascamera.clearFlags = CameraClearFlags.Depth;
-                canvascamera.enabled = false;
-                canvascamera.orthographic = true;
-                canvascamera.orthographicSize = 0.5f;
-
-                CreateCanvasBase(co);
-
-                RenderTexture rt = new RenderTexture(1024, 1024, 32, RenderTextureFormat.ARGB32);
-                rt.name = "PaintTexture";
-                rt.Create();
-                canvascamera.targetTexture = rt;
-
-                canvascamera.enabled = true;
-
-                co.GetComponent<Renderer>().material.mainTexture = rt;
-
-            }
-            i++;
-        }
 
         int j = 0;
         pieRing = transform.Find("Pencil").Find("Pie");
@@ -141,49 +90,14 @@ public class ColorObject : MonoBehaviour
     void Awake()
     {
         laserPointer = GetComponent<LaserPointer>();
-        controllerEvents = GetComponent<ControllerEvents>();
         
         laserPointerDefaultColor = Color.clear;
 
         ChangeBrushColor(colorIndex);
 
         Init();
-
-        Invoke("TurnOff", 3);
-        Invoke("LoadFile", 4);
     }
 
-    // For some reason, the render cameras aren't fast enough to capture
-    // the render to texture before the cameras turn off so we are waiting
-    // a few secs with all cameras on and turning them off one by one.
-    private void TurnOff ()
-    {
-        if (gameObject.activeSelf && !camerasOff)
-        {
-            StartCoroutine("TurnOffCameras");
-        }
-    }
-
-    private IEnumerator TurnOffCameras()
-    {
-        // go through all colorable objects and create canvases for them
-        colorableObjects = FindObjectsOfType<Colorable>();
-
-        foreach (Colorable co in colorableObjects)
-        {
-            co.canvascam.GetComponent<Camera>().enabled = false;
-            yield return null;
-        }
-        camerasOff = true;
-    }
-
-    private void LoadFile()
-    {
-        if (!loadedTextures)
-        {
-            StartCoroutine(LoadTexturesFromFile());
-        }
-    }
 
     // Subscribe to event handlers
     void OnEnable()
@@ -192,11 +106,13 @@ public class ColorObject : MonoBehaviour
         laserPointer.PointerOut += HandlePointerOut;
         laserPointer.InvPointerIn += HandleInvPointerIn;
         laserPointer.InvPointerOut += HandleInvPointerOut;
-        controllerEvents.SwipedRight += HandleSwipedRight;
-        controllerEvents.SwipedLeft += HandleSwipedLeft;
-        controllerEvents.TouchpadRightPressed += HandleSwipedRight;
-        controllerEvents.TouchpadLeftPressed += HandleSwipedLeft;
+
+        GetComponent<VRTK_ControllerEvents>().TouchpadTouchStart += HandleTouchpadTouchStart;
+        GetComponent<VRTK_ControllerEvents>().TouchpadTouchEnd += HandleTouchpadTouchEnd;
+        GetComponent<VRTK_ControllerEvents>().TouchpadPressed += HandleTouchpadPressed;
+        GetComponent<VRTK_ControllerEvents>().TouchpadAxisChanged += HandleTouchpadAxisChanged;
     }
+
 
     // Unsubscribe from event handlers
     void OnDisable()
@@ -205,10 +121,11 @@ public class ColorObject : MonoBehaviour
         laserPointer.PointerOut -= HandlePointerOut;
         laserPointer.InvPointerIn -= HandleInvPointerIn;
         laserPointer.InvPointerOut -= HandleInvPointerOut;
-        controllerEvents.SwipedRight -= HandleSwipedRight;
-        controllerEvents.SwipedLeft -= HandleSwipedLeft;
-        controllerEvents.TouchpadRightPressed -= HandleSwipedRight;
-        controllerEvents.TouchpadLeftPressed -= HandleSwipedLeft;
+
+        GetComponent<VRTK_ControllerEvents>().TouchpadTouchStart -= HandleTouchpadTouchStart;
+        GetComponent<VRTK_ControllerEvents>().TouchpadTouchEnd -= HandleTouchpadTouchEnd;
+        GetComponent<VRTK_ControllerEvents>().TouchpadPressed -= HandleTouchpadPressed;
+        GetComponent<VRTK_ControllerEvents>().TouchpadAxisChanged -= HandleTouchpadAxisChanged;
     }
 
     #endregion
@@ -216,13 +133,17 @@ public class ColorObject : MonoBehaviour
     void Update()
     {
 
-        if (gameObject.activeSelf && !camerasOff)
-        {
-            TurnOff();
-        }
         if (hitTarget && hitObj.distance < brushDistance)
         {
-            DoColor(brushColor, hitObj);
+            MenuSelect ms = hitObj.target.GetComponent<MenuSelect>();
+            if (hitObj.target.GetComponent<Colorable>() != null)
+            {
+                DoColor(brushColor, hitObj);
+            }
+            else if (ms != null)
+            {
+                ms.Activate();
+            }
         }
         else if (invHitTarget && invHitObj.distance < brushDistance + 0.145)
         {
@@ -231,12 +152,13 @@ public class ColorObject : MonoBehaviour
         else
         {
             // not coloring, stop sounds if any coloring sound is playing
-            AudioSource audio = controllerEvents.transform.GetComponent<AudioSource>();
+            AudioSource audio = transform.GetComponent<AudioSource>();
             if (audio.isPlaying)
             {
                 audio.Stop();
             }
         }
+
     }
 
 
@@ -255,9 +177,14 @@ public class ColorObject : MonoBehaviour
         laserPointer.pointerModel.GetComponent<MeshRenderer>().material.color = laserPointerDefaultColor;
         hitTarget = false;
         laserPointer.PointerUpdate -= HandlePointerUpdate;
-        //brushCursor.SetActive(false);
-        saving = true;
-        Invoke("SaveTexture", 0.1f);
+
+        if (!saving)
+        {
+            saving = true;
+            Invoke("SaveTexture", 0.1f);
+        }
+
+        
     }
 
     private void HandlePointerUpdate(object sender, LaserPointer.PointerEventArgs e)
@@ -283,17 +210,71 @@ public class ColorObject : MonoBehaviour
         invHitObj = e;
     }
 
-    // triggered by either swiping left or tapping on left side of trackpad
-    private void HandleSwipedLeft(object sender, ControllerEvents.ControllerInteractionEventArgs e)
+    private void HandleTouchpadPressed(object sender, ControllerInteractionEventArgs e)
     {
-        ChangeBrushColor(colorIndex - 1);
+        int anglerange = 10;
+
+        if (e.touchpadAngle < 270 + anglerange && e.touchpadAngle > 270 - anglerange)
+        {
+            ChangeBrushColor(colorIndex - 1);
+        }
+        else if(e.touchpadAngle < 90 + anglerange && e.touchpadAngle > 90 - anglerange)
+        {
+            ChangeBrushColor(colorIndex + 1);
+        }
     }
 
-    // triggered by either swiping right or tapping on right side of trackpad
-    private void HandleSwipedRight(object sender, ControllerEvents.ControllerInteractionEventArgs e)
+    public void HandleTouchpadTouchStart(object sender, ControllerInteractionEventArgs e)
     {
-        ChangeBrushColor(colorIndex + 1);
+        swipeStart = new Vector2(e.touchpadAxis.x, e.touchpadAxis.y);
+        swipeStartTime = Time.time;
     }
+
+    public void HandleTouchpadAxisChanged(object sender, ControllerInteractionEventArgs e)
+    {
+        swipeEnd = new Vector2(e.touchpadAxis.x, e.touchpadAxis.y);
+    }
+
+    private void HandleTouchpadTouchEnd(object sender, ControllerInteractionEventArgs e)
+    {
+        Debug.Log("HandleTouchpadTouchEnd");
+        // The angle range for detecting swipe
+        const float anglerange = 30;
+
+        // To recognize as swipe user should at lease swipe for this many pixels
+        const float minswipedist = 0.2f;
+        float deltaTime = Time.time - swipeStartTime;
+
+        // To recognize as a swipe the velocity of the swipe
+        // Reduce or increase to control the swipe speed
+        const float minvel = 4.0f;
+
+        Vector2 swipeVector = swipeEnd - swipeStart;
+
+        float velocity = swipeVector.magnitude / deltaTime;
+        if (velocity > minvel &&
+            swipeVector.magnitude > minswipedist)
+        {
+            // if the swipe has enough velocity and enough distance
+
+
+            swipeVector.Normalize();
+
+            float angleOfSwipe = Vector2.Dot(swipeVector, touchXAxis);
+            angleOfSwipe = Mathf.Acos(angleOfSwipe) * Mathf.Rad2Deg;
+
+            // Detect left and right swipe
+            if (angleOfSwipe < anglerange)
+            {
+                ChangeBrushColor(colorIndex - 1);
+            }
+            else if ((180.0f - angleOfSwipe) < anglerange)
+            {
+                ChangeBrushColor(colorIndex + 1);
+            }
+        }
+    }
+
 
     #endregion
 
@@ -316,7 +297,7 @@ public class ColorObject : MonoBehaviour
             pieRing.localRotation = Quaternion.Euler(colorIndex * 360 / brushColors.Length, 0, 0);
         }
         brushColor = brushColors[colorIndex];
-        controllerEvents.gameObject.GetComponentInChildren<Renderer>().material.color = brushColors[colorIndex];
+        gameObject.GetComponentInChildren<Renderer>().material.color = brushColors[colorIndex];
     }
 
 
@@ -362,7 +343,7 @@ public class ColorObject : MonoBehaviour
             }
             brushObj.GetComponent<SpriteRenderer>().color = bcolor; //Set the brush color
 
-            AudioSource audio = controllerEvents.transform.GetComponent<AudioSource>();
+            AudioSource audio = GetComponent<AudioSource>();
             if (!audio.isPlaying)
             {
                 audio.Play();
@@ -393,9 +374,6 @@ public class ColorObject : MonoBehaviour
         {
             PickCanvas(hit.target);
 
-            MeshCollider meshCollider = hit.target.GetComponent<Collider>() as MeshCollider;
-            if (meshCollider == null || meshCollider.sharedMesh == null)
-                return false;
             Vector2 pixelUV = new Vector2(hit.textureCoord.x, hit.textureCoord.y);
             uvWorldPosition.x = pixelUV.x - canvasCam.orthographicSize;//To center the UV on X
             uvWorldPosition.y = pixelUV.y - canvasCam.orthographicSize;//To center the UV on Y
@@ -425,7 +403,7 @@ public class ColorObject : MonoBehaviour
             Quote quote = savObj.GetComponentInChildren<Quote>();
             if (quote != null)
             {
-                Transform canvasbase = savObj.FindChild("PaintCanvas").FindChild("CanvasBase").transform;
+                Transform canvasbase = savObj.GetComponent<Colorable>().canvasbase.transform;
 
                 Vector2 basesize = canvasbase.GetComponent<Renderer>().bounds.size;
                 Vector2 quotesize = quote.gameObject.GetComponent<Renderer>().bounds.size;
@@ -465,14 +443,7 @@ public class ColorObject : MonoBehaviour
                     {
                         index = y * (int)texsize + x;
 
-                        // test which pixels are no longer the base color i.e., revealed
-                        //if (!CompareColors(colors[index], baseColor))
-                        //{
-                        //    colored++;
-                        //}
-
-
-
+                        // Test which pixels are no longer the base color i.e., revealed
                         if (colors[index] != baseColour)
                         {
                             //Debug.Log(quote.name + ": " +
@@ -492,9 +463,10 @@ public class ColorObject : MonoBehaviour
                 }
 
                 float percentrevealed = colored / (quotesize.x / basesize.x * quotesize.y / basesize.y * colors.Length) * 100;
-                Debug.Log(quote.name + ": " + percentrevealed + "% revealed.");
 
-                // start playing sounds and enable recording if sufficient amount revealed
+                // Debug.Log(quote.name + ": " + percentrevealed + "% revealed.");
+
+                // Start playing sounds and enable recording if sufficient amount revealed
                 quote.revealed = (percentrevealed > quote.revealThreshold) ? true : false;
             }
         }
@@ -531,46 +503,13 @@ public class ColorObject : MonoBehaviour
         {
             if (target != savObj)
             {
-                canvasCam = target.GetComponentInChildren<Camera>();
-                brushContainer = target.Find("PaintCanvas").Find("BrushContainer").gameObject;
                 savObj = target;
+                canvasCam = target.GetComponentInChildren<Camera>();
+                brushContainer = savObj.GetComponent<Colorable>().brushcontainer;
             }
 
             if (!canvasCam.enabled) { canvasCam.enabled = true; }
         }
-    }
-
-    /// <summary>
-    /// Creates a new base canvas and destroys the old one. Used for initialization and resetting.
-    /// </summary>
-    /// <param name="co">GameObject of type Colorable</param>
-    public void CreateCanvasBase(Colorable co)
-    {
-        if (co.canvasbase != null)
-        {
-            Destroy(co.canvasbase);
-        }
-        co.canvasbase = new GameObject();
-
-        co.canvasbase.name = "CanvasBase";
-        co.canvasbase.transform.SetParent(co.paintcanvas.transform);
-        co.canvasbase.AddComponent<MeshCollider>();
-        co.canvasbase.AddComponent<MeshRenderer>();
-        co.canvasbase.AddComponent<MeshFilter>();
-        GameObject quad = GameObject.CreatePrimitive(PrimitiveType.Quad);
-        co.canvasbase.GetComponent<MeshFilter>().mesh = quad.GetComponent<MeshFilter>().mesh;
-        GameObject.Destroy(quad);
-        co.canvasbase.transform.localPosition = Vector3.zero;
-
-        Material material = new Material(unlitTexture);
-        material.name = "BaseMaterial";
-        co.canvasbase.GetComponent<MeshRenderer>().material = material;
-
-        Texture2D coltexture = new Texture2D(1, 1, TextureFormat.ARGB32, false);
-        coltexture.SetPixel(1, 1, baseColour);
-        coltexture.Apply();
-        co.canvasbase.GetComponent<MeshRenderer>().material.mainTexture = coltexture;
-
     }
 
     #region Loading and Saving
@@ -592,16 +531,20 @@ public class ColorObject : MonoBehaviour
                 }
             }
 
+            Quote quote = savObj.GetComponentInChildren<Quote>();
+            if (quote != null)
+            {
+                quote.gameObject.SetActive(false);
+            }
+
             RenderTexture canvas = canvasCam.targetTexture;
             RenderTexture.active = canvas;
             Texture2D tex = new Texture2D(canvas.width, canvas.height, TextureFormat.RGB24, false);
             tex.ReadPixels(new Rect(0, 0, canvas.width, canvas.height), 0, 0);
             tex.Apply();
             RenderTexture.active = null;
-            baseMaterial = savObj.FindChild("PaintCanvas").FindChild("CanvasBase").transform.GetComponent<MeshRenderer>().material;
+            baseMaterial = savObj.GetComponent<Colorable>().canvasbase.transform.GetComponent<MeshRenderer>().material;
             baseMaterial.mainTexture = tex; //Put the painted texture as the base
-
-            StartCoroutine("CheckQuote", tex);
 
             foreach (Transform child in brushContainer.transform)
             {//Clear brushes
@@ -609,39 +552,19 @@ public class ColorObject : MonoBehaviour
             }
             canvasCam.enabled = false;
 
+            if (quote != null)
+            {
+                quote.gameObject.SetActive(true);
+            }
+
+            StartCoroutine("CheckQuote", tex);
+
             StartCoroutine(SaveTexturesToFile());
         }
 
         saving = false;
     }
-
-    private IEnumerator LoadTexturesFromFile()
-    {
-        string fullPath = System.IO.Directory.GetCurrentDirectory() + "\\SavedCanvas\\";
-        if (System.IO.Directory.Exists(fullPath))
-        {
-            System.DateTime date = System.DateTime.Now;
-            uint i = 0;
-            byte[] bytes;
-            string filename = "";
-            foreach (Colorable co in colorableObjects)
-            {
-                filename = "CanvasTexture-" + co.name + "-" + i + ".png";
-                i++;
-                if (System.IO.File.Exists(fullPath + filename))
-                {
-                    bytes = System.IO.File.ReadAllBytes(fullPath + filename);
-                    Texture2D tex = new Texture2D(1024, 1024);
-                    tex.LoadImage(bytes);
-                    co.canvasbase.GetComponent<Renderer>().material.mainTexture = tex;
-                    co.canvascam.GetComponent<Camera>().Render();
-                }
-            }
-            yield return null;
-        }
-
-        loadedTextures = true;
-    }
+    
 
     private IEnumerator SaveTexturesToFile()
     {
@@ -650,7 +573,7 @@ public class ColorObject : MonoBehaviour
             System.IO.Directory.CreateDirectory(fullPath);
         Debug.Log("Saving to: " + fullPath);
 
-        System.DateTime date = System.DateTime.Now;
+        DateTime date = DateTime.Now;
 
         uint i = 0;
         byte[] bytes;
@@ -661,7 +584,7 @@ public class ColorObject : MonoBehaviour
             {
                 Texture2D tex = (Texture2D)co.canvasbase.GetComponent<Renderer>().material.mainTexture;
                 bytes = tex.EncodeToPNG();
-                filename = "CanvasTexture-" + co.name + "-" + i + ".png";
+                filename = "CanvasTexture-" + co.name + "-" + co.index + ".png";
                 System.IO.File.WriteAllBytes(fullPath + filename, bytes);
             }
             i++;

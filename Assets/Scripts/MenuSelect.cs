@@ -4,21 +4,41 @@ using UnityEngine;
 
 public class MenuSelect : MonoBehaviour {
 
-    void OnCollisionEnter(Collision collision)
+    private void OnTriggerEnter(Collider other)
     {
-        if (collision.transform.name == "[CameraRig]")
+        Debug.Log(other.gameObject);
+        if (other.name == "Pencil")
         {
             GetComponent<Renderer>().material.color = Color.red;
-            MenuManager mm = collision.gameObject.GetComponentInChildren<MenuManager>();
-            Debug.Log(mm.gameObject.name);
-            Debug.Log("Selected: " + name);
-            StartCoroutine(mm.ResetScene());
+            MenuManager mm = VRTK.VRTK_DeviceFinder.GetControllerLeftHand(true).GetComponentInChildren<MenuManager>();
 
+            Debug.Log("Selected: " + name.Substring(5));
+
+            switch (name.Substring(5))
+            {
+                case ("0"):
+                    StartCoroutine(mm.Screenshot());
+                    break;
+                case ("1"):
+                    break;
+                case ("2"):
+                    StartCoroutine(mm.ResetScene());
+                    break;
+                default:
+                    break;
+            }
         }
     }
 
-    void OnCollisionExit(Collision collision)
+    private void OnTriggerExit(Collider other)
     {
-        GetComponent<Renderer>().material.color = Color.white;
+        if (other.name == "Pencil")
+        {
+            GetComponent<Renderer>().material.color = Color.white;
+        }
     }
+    public void Activate()
+    {
+    }
+
 }
